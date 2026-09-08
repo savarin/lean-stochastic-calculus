@@ -1,2 +1,16 @@
 # cache and other artifacts produced by Lean's Lake build tool
 .lake/
+
+# squad coordination and agent config (local, per-agent state)
+.claude/
+.squad/
+.mcp.json
+.install-local.json
+.sessions/
+
+# Local Palomar exports can be several gigabytes each. Keep only bounded
+# reports and checksums in Git, never raw exported environments.
+palomar-exports/*.json
+build.log
+__pycache__/
+*.pyc
