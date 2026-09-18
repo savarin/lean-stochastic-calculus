@@ -4,3 +4,4 @@ import StochasticCalculus.FubiniLift
 import StochasticCalculus.IteratedIntegral
 import StochasticCalculus.Simplex
 import StochasticCalculus.Symmetrization
+import StochasticCalculus.WienerIntegral
