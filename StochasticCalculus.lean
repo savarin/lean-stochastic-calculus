@@ -1,5 +1,6 @@
 import StochasticCalculus.CameronMartin
 import StochasticCalculus.CameronMartinTheorem
 import StochasticCalculus.FubiniLift
+import StochasticCalculus.IteratedIntegral
 import StochasticCalculus.Simplex
 import StochasticCalculus.Symmetrization
