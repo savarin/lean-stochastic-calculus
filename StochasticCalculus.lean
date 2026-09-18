@@ -2,7 +2,10 @@ import StochasticCalculus.CameronMartin
 import StochasticCalculus.CameronMartinTheorem
 import StochasticCalculus.ElementaryIto
 import StochasticCalculus.FubiniLift
+import StochasticCalculus.GirsanovConstantOracle
 import StochasticCalculus.ItoConstruction
+import StochasticCalculus.ItoProcess
+import StochasticCalculus.ItoSDE
 import StochasticCalculus.IteratedIntegral
 import StochasticCalculus.PredictableDensity
 import StochasticCalculus.PredictableProcess

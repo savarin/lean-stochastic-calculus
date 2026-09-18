@@ -142,8 +142,7 @@ theorem memLp_natural_adapted_mul_increment
   simp only [Pi.mul_apply]
   ring
 
-/-- The genuine Brownian terminal value `Z (B_b - B_a)` of an adapted elementary process,
-constructed without a `ClarkOconeFamily`. -/
+/-- The genuine Brownian terminal value `Z (B_b - B_a)` of an adapted elementary process. -/
 noncomputable def elementaryBrownianValue
     (hB : IsPreBrownianReal B P) (hsm : ∀ t, StronglyMeasurable (B t))
     {𝓕 : Filtration ℝ≥0 ‹MeasurableSpace W›}

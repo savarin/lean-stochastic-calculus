@@ -11,8 +11,7 @@ import Mathlib.Probability.BrownianMotion.Basic
 /-!
 # Iterated-integral Hilbert laws
 
-Rung 2 of the Clark--Ocone ladder: operators `Jₙ(fₙ)` with the Hilbert-space laws of iterated
-Itô integrals.
+Operators `Jₙ(fₙ)` with the Hilbert-space laws of iterated Itô integrals.
 
 We axiomatize the second-moment behaviour of a Wiener process (centered, with
 covariance function `min s t`) as `IsWienerCov`, define the stochastic
