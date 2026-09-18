@@ -3,5 +3,6 @@ import StochasticCalculus.CameronMartinTheorem
 import StochasticCalculus.FubiniLift
 import StochasticCalculus.IteratedIntegral
 import StochasticCalculus.Simplex
+import StochasticCalculus.PredictableProcess
 import StochasticCalculus.Symmetrization
 import StochasticCalculus.WienerIntegral
