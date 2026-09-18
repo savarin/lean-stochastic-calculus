@@ -8,6 +8,9 @@ import StochasticCalculus.ItoProcess
 import StochasticCalculus.ItoSDE
 import StochasticCalculus.IteratedIntegral
 import StochasticCalculus.PredictableDensity
+import StochasticCalculus.QuadraticVariation
+import StochasticCalculus.QuadraticVariationDensity
+import StochasticCalculus.QuadraticVariationElementary
 import StochasticCalculus.PredictableProcess
 import StochasticCalculus.Simplex
 import StochasticCalculus.Symmetrization
