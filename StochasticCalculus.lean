@@ -11,6 +11,13 @@ import StochasticCalculus.PredictableDensity
 import StochasticCalculus.QuadraticVariation
 import StochasticCalculus.QuadraticVariationDensity
 import StochasticCalculus.QuadraticVariationElementary
+import StochasticCalculus.QuadraticVariationGrid
+import StochasticCalculus.QuadraticVariationTightness
+import StochasticCalculus.ItoFormula
+import StochasticCalculus.ItoFormulaGeneral
+import StochasticCalculus.ItoMaximal
+import StochasticCalculus.TightProduct
+import StochasticCalculus.WeightedBracketRiemann
 import StochasticCalculus.PredictableProcess
 import StochasticCalculus.Simplex
 import StochasticCalculus.Symmetrization
