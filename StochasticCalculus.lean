@@ -18,6 +18,10 @@ import StochasticCalculus.ItoFormulaGeneral
 import StochasticCalculus.ItoMaximal
 import StochasticCalculus.TightProduct
 import StochasticCalculus.WeightedBracketRiemann
+import StochasticCalculus.DoleansDade
+import StochasticCalculus.GBMGronwall
+import StochasticCalculus.GeometricBrownianMotion
+import StochasticCalculus.Novikov
 import StochasticCalculus.PredictableProcess
 import StochasticCalculus.Simplex
 import StochasticCalculus.Symmetrization
