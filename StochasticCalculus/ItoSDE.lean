@@ -11,7 +11,7 @@ import StochasticCalculus.ItoProcess
 This file connects the pointwise process notation used by the quadratic-
 variation development to the natural-filtration `L²` Itô integral.  In
 particular, the stochastic term below is not an abstract placeholder: it is
-the strongly measurable representative constructed in `Ito.ItoProcess`.
+the strongly measurable representative constructed in `StochasticCalculus.ItoProcess`.
 -/
 
 open MeasureTheory ProbabilityTheory

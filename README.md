@@ -1,118 +1,97 @@
 # lean-stochastic-calculus
 
-## Library guide
+Black-Scholes option pricing from first principles, formalized in Lean 4
+against Mathlib. The proof builds the Itô integral, derives the Girsanov
+change-of-measure theorem, and uses it to price European call options
+under the risk-neutral measure. Prepared for submission to
+[Palomar](https://palomar-registry.org).
 
-### Shared foundation
+## Main result
 
-**Layer 0** — no internal dependencies, only Mathlib.
+- `PalomarBlackScholes.black_scholes`
+  (Challenge declaration): for any strong solution of the geometric
+  Brownian motion SDE, the Girsanov risk-neutral measure prices the
+  European call at the Black-Scholes closed form.
 
-| File | Description |
-|---|---|
-| CameronMartin | Cameron-Martin Hilbert space of a Gaussian measure and its covariance embedding |
-| Symmetrization | Symmetrization operator on functions of n variables; orthogonal L² projection |
-| FubiniLift | Fubini isomorphism L²(μ; L²(ν)) ≅ L²(ν × μ) |
+## Scope
 
-**Layer 1** — depends on Layer 0.
+The formalization covers a single asset driven by scalar Brownian motion
+on a finite time horizon. Starting from the Itô integral construction,
+it proves:
 
-| File | Description |
-|---|---|
-| CameronMartinTheorem | Cameron-Martin theorem: translated Gaussian density formula and mutual absolute continuity |
-| Simplex | The simplex Δₙ = {t₁ < ⋯ < tₙ} and its n!-fold tiling of the cube; ∫g = n!·∫\_Δₙ g for symmetric g |
+- Existence and mutual absolute continuity of the risk-neutral measure
+- Brownianity of the shifted driver under the new measure
+- The martingale property of the discounted stopped asset
+- Integrability of the call payoff
+- Equality of the discounted expectation with the Black-Scholes formula
 
-**Layer 2** — depends on Layer 1.
+The library contains 45 Lean source files (~65k lines) organized in six
+stages. See [LIBRARY.md](LIBRARY.md) for per-file descriptions.
 
-| File | Description |
-|---|---|
-| IteratedIntegral | Iterated-integral Hilbert laws: step-function Itô isometry, IteratedIntegralFamily on L²((ℝ≥0)ⁿ), Hilbert-sum assembly |
+## Proof architecture
 
-**Layer 3** — depends on Layers 1–2.
+```
+Itô integral construction
+         │
+  Quadratic variation ⟨B⟩ = t
+         │
+     Itô formula
+         │
+  Doléans-Dade exponential ── Novikov condition
+         │
+  Girsanov change of measure
+         │
+  Black-Scholes pricing
+```
 
-| File | Description |
-|---|---|
-| WienerIntegral | Wiener integral J₁: L²(ℝ≥0) → L²(P) via dense extension of B(t) = J₁(1\_{(0,t]}); Itô isometry, Gaussianity, first-chaos characterization |
+## Trust boundary
 
-**Layer 4** — depends on Layer 2.
+The 114-line Mathlib-only
+[BlackScholesChallenge.lean](BlackScholesChallenge.lean) exposes the
+Palomar boundary: one theorem, zero definition holes.
+[BlackScholesSolution.lean](BlackScholesSolution.lean) delegates to the
+sorry-free proof library under `StochasticCalculus/`.
 
-| File | Description |
-|---|---|
-| PredictableProcess | Predictable processes in L²: adapted elementary step functions, predictable projection via conditional expectation, timewise L² conditional expectation |
+- Imports: Mathlib only
+- Permitted axioms: `propext`, `Classical.choice`, `Quot.sound`
 
-**Layer 5** — depends on Layer 4.
+## Build and verify
 
-| File | Description |
-|---|---|
-| ElementaryIto | Itô isometry on elementary step processes: orthogonality of disjoint-interval Brownian values, inner product agreement with predictable tensors, partition-level isometry |
-| PredictableDensity | Density of adapted elementary processes in predictable L²: π-system generation, orthogonality propagation by π-λ, trimmed-measure equivalence |
+Lean and Mathlib v4.33.0 are pinned.
 
-**Layer 6** — depends on Layer 5.
+```bash
+lake exe cache get
+lake build
+python3 scripts/check_boundary.py
+```
 
-| File | Description |
-|---|---|
-| ItoConstruction | Brownian Itô integral on all predictable L²: cross-interval reduction, dense extension via `extendOfNorm`, centering and isometry packaging |
+Negative control (requires pinned Comparator and lean4export binaries):
 
-### Black-Scholes chain
+```bash
+COMPARATOR=<path> LEAN4EXPORT=<path> bash scripts/negative_control.sh
+```
 
-**Stage A** — BS roots, depends on shared foundation.
+Optional Comparator smoke test:
 
-| File | Description |
-|---|---|
-| GirsanovConstantOracle | Constant-drift Girsanov: Esscher tilt of Gaussians, MGF-based measure identification, stopped-drift pre-Brownian property |
-| ItoProcess | Natural Itô integral as a time-indexed L² process: predictable time restriction, representative selection, martingale property |
-| ItoSDE | Itô process SDE structure: X\_t = X\_0 + ∫μ ds + ∫σ dB with the constructed stochastic integral pinned as the representative |
+```bash
+COMPARATOR=<path> LEAN4EXPORT=<path> bash scripts/run_comparator.sh
+```
 
-**Stage B** — Quadratic variation, depends on Stage A.
+Palomar runs its own pinned Comparator, Landrun sandbox, and NanoDa
+kernel independently; `enable_nanoda` is set to `false` in the local
+config because the NanoDa binary is not distributed.
 
-| File | Description |
-|---|---|
-| QuadraticVariation | Quadratic variation ⟨B⟩\_t = t and ⟨X⟩\_t = ∫σ² ds: uniform-partition L² and in-probability convergence, stopped brackets, elementary diffusion brackets |
-| QuadraticVariationElementary | Exact bracket for finite sums of adapted Brownian blocks: clipped-interval covariation, predictable bracket ∫σ² ds for finitely supported integrands |
-| QuadraticVariationDensity | Extension of exact bracket to all predictable L² integrands: uniform L¹ perturbation estimates, convergence-together, change of variables to displayed diffusion |
+## Verification
 
-**Stage C** — Itô formula, depends on Stage B.
+The Comparator accepts the Challenge/Solution pair. The negative control
+requires the unmodified baseline to pass, then mutates the Challenge
+(dropping the absolute-continuity clauses), confirms the mutated boundary
+still elaborates, and verifies that Comparator rejects specifically the
+named theorem. `check_boundary.py` validates the closed Comparator
+schema, verifies Mathlib-only imports, checks the deliberate sorry count,
+confirms each selected declaration is present in the Challenge, and
+audits that all declarations use only the permitted axioms.
 
-| File | Description |
-|---|---|
-| ItoFormula | Itô's formula for Brownian motion: f(B\_t) = f(0) + ∫f' dB + ½∫f'' ds via Taylor partition sums, convergence in measure, and the no-pointwise-identity rule |
-| ItoMaximal | Doob's maximal inequality for Itô integrals: conditional Jensen for L² submartingales, grid-independent finite-time bounds |
-| QuadraticVariationTightness | Tail-transfer lemma: terminal QV convergence in measure implies uniform probability control for weighted bracket arguments |
-| QuadraticVariationGrid | Quadratic variation on a common rational grid: prefix sums, rescaling identity, coherent-process convergence along common refinements |
-| TightProduct | Vanishing-error localization: a random error vanishing in measure stays negligible after multiplication by an eventually tight nonneg control |
-| ItoFormulaGeneral | General Itô formula f(t,X\_t): exact partition reduction into dt/dX/d⟨X⟩ sums plus remainder, unconditional formula for quadratic state functions of Itô processes |
-| WeightedBracketRiemann | Weighted bracket Riemann sums: continuous weights integrated against ⟨X⟩ via uniform half-open partitions, closing diffusion-weighted QV for natural Itô integrals |
+## License
 
-**Stage D** — Exponential martingales, depends on Stage C.
-
-| File | Description |
-|---|---|
-| DoleansDade | Doléans-Dade stochastic exponential: continuous local martingales, ε(M)\_t = exp(M\_t − ½⟨M⟩\_t), Itô cancellation, Brownian exponential martingale |
-| GeometricBrownianMotion | Geometric Brownian motion exp((μ−σ²/2)t + σB\_t): linear SDE identity via time-dependent Itô formula, L² uniqueness of strong solutions |
-| GBMGronwall | Integral Grönwall for localized moment profiles: nonneg integrable function controlled by its own time integral vanishes |
-| Novikov | Novikov's condition: exponential integrability E[exp(½⟨M⟩\_T)] < ∞ upgrades local martingale to true uniformly integrable martingale on [0,T] |
-
-**Stage E** — Girsanov core, depends on Stages B–D.
-
-| File | Description |
-|---|---|
-| GBMLocalization | Localization of linear SDE: dyadic sampled exits approximate bounded path-exit coefficient under original measure |
-| Girsanov | Girsanov change of measure: terminal density Z\_T from Doléans-Dade, Novikov normalization, shifted Brownian pre-Brownian property, PredictableGirsanovDensityData |
-| GirsanovClosure | Common-grid closure: stochastic Taylor residual transport to rational times, martingale closure for exponential density |
-| GirsanovMoments | Moment consequences of Novikov: half-bracket exponential bounds both signs of stopped martingale, all polynomial moments |
-| MartingaleFourthMoment | Fourth-moment bounds for discrete martingale variation: quartic convexity inequality, second moment of quadratic sum bounded by terminal fourth moment |
-| GirsanovBounded | Girsanov closure under bounded density: paired probability limit becomes L¹ limit, real integrator is true L² martingale |
-| StoppedVariation | Random cutoffs of variation approximations: monotone completed-cell sandwich, evaluation at bounded random cutoff without path regularity |
-| ZeroBracket | Vanishing of continuous local martingale on zero-bracket paths: exponential bounds force square moment to vanish, continuity makes it simultaneous |
-
-**Stage F** — Girsanov applications → Black-Scholes, depends on Stages A + E.
-
-| File | Description |
-|---|---|
-| GirsanovCrossVariation | Mixed-variation stopping: L⁴ martingale estimates upgrade deterministic cross sums to L¹ compensated products |
-| StoppedCrossVariation | Cross-variation under continuous stopping: first process stopped, second on deterministic grids |
-| GirsanovLocalization | Polynomial moment control from terminally stopped brackets, enabling bounded-density closure |
-| GirsanovExits | Bounded path exits for the predictable Girsanov closure |
-| GirsanovTheorem | Predictable Girsanov theorem: Novikov UI removes bounded exits, characteristic functions identify the shifted measure |
-| GirsanovFiltered | Girsanov in an arbitrary Brownian filtration: adaptedness + independent increments suffice |
-| GirsanovRegression | Constant-coefficient Girsanov regression: exact identities for every real coefficient and finite horizon |
-| BlackScholes | Black-Scholes call pricing: Gaussian CDF calculation + SDE derivation via Girsanov measure change, merged from BlackScholes + BlackScholesSDE |
-
-
+Apache-2.0.
