@@ -34,3 +34,11 @@ import StochasticCalculus.GirsanovMoments
 import StochasticCalculus.MartingaleFourthMoment
 import StochasticCalculus.StoppedVariation
 import StochasticCalculus.ZeroBracket
+import StochasticCalculus.BlackScholes
+import StochasticCalculus.GirsanovCrossVariation
+import StochasticCalculus.GirsanovExits
+import StochasticCalculus.GirsanovFiltered
+import StochasticCalculus.GirsanovLocalization
+import StochasticCalculus.GirsanovRegression
+import StochasticCalculus.GirsanovTheorem
+import StochasticCalculus.StoppedCrossVariation
