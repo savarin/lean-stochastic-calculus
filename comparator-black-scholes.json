@@ -1,0 +1,10 @@
+{
+  "challenge_module": "BlackScholesChallenge",
+  "solution_module": "BlackScholesSolution",
+  "theorem_names": [
+    "PalomarBlackScholes.black_scholes"
+  ],
+  "definition_names": [],
+  "permitted_axioms": ["propext", "Quot.sound", "Classical.choice"],
+  "enable_nanoda": false
+}

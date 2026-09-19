@@ -1,0 +1,98 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/mathlib-initiative/formalization.yaml/main/schema/formalization.schema.json
+version: "v0.4"
+
+project:
+  name: "Black-Scholes pricing via Girsanov change of measure"
+  description: >-
+    Formal proof that every strong solution of the geometric Brownian motion
+    SDE is priced by the Black-Scholes formula under the Girsanov
+    risk-neutral measure. The discounted stopped asset is a martingale
+    under one fixed terminal measure, and the call-payoff expectation
+    equals the closed-form Black-Scholes expression.
+  authors:
+    - "Ezzeri Esa"
+  responsible_maintainers:
+    - "Ezzeri Esa"
+  license: "Apache-2.0"
+
+classification:
+  arxiv: ["math.PR", "q-fin.MF"]
+  msc2020: ["91G20", "60H10", "60H05"]
+
+sources:
+  - title: "The Pricing of Options and Corporate Liabilities"
+    authors:
+      - "Fischer Black"
+      - "Myron Scholes"
+    type: "paper"
+    id: "doi:10.1086/260062"
+    location: "Theorem statement and pricing formula"
+    relationship: "background"
+    author_endorsement: "not-contacted"
+    note: >-
+      TODO: fill in source details.
+
+status:
+  scope: >-
+    The formalization covers the finite-horizon European call on a single
+    asset driven by scalar Brownian motion. It proves existence and mutual
+    absolute continuity of the risk-neutral measure, Brownianity of the
+    shifted driver, the martingale property of the discounted stopped
+    asset, integrability of the call payoff, and equality of the
+    discounted expectation with the Black-Scholes closed form.
+  sorry_count: 0
+  sorry_in_definitions: 0
+  axioms: ["propext", "Classical.choice", "Quot.sound"]
+  main_results:
+    - declaration: "PalomarBlackScholes.black_scholes"
+      file: "BlackScholesSolution.lean"
+      sorry_count: 0
+      axioms: ["propext", "Classical.choice", "Quot.sound"]
+      comparator_config: "comparator-black-scholes.json"
+
+automation:
+  methods:
+    - method: "agent"
+      models: ["TODO"]
+      framework: "TODO"
+      tool_setup: >-
+        TODO: describe tool setup.
+      cost:
+        wall_time: "TODO"
+        spend_usd: "TODO"
+        hardware: "local machine"
+      prompting_notes: >-
+        TODO: describe prompting approach.
+  spend_usd: "TODO"
+  notes: >-
+    TODO: describe automation process.
+
+fidelity:
+  divergences: >-
+    The Challenge states the SDE solution via concrete left-sum convergence
+    in probability (IsStrongLinearSolution), which is definitionally equal
+    to the library's IsStrongLinearSDESolution. The Challenge uses
+    Mathlib's gaussianReal CDF for the Black-Scholes expression rather
+    than the standard normal CDF symbol Phi. The formalization works in
+    the universe-polymorphic setting with Type u sample spaces.
+
+review:
+  status: "agent-reviewed"
+  reviewers:
+    - "Ezzeri Esa"
+  notes: >-
+    TODO: describe review process.
+
+alignment:
+  namespace: "PalomarBlackScholes"
+  statements:
+    - source: "Black-Scholes pricing theorem"
+      lean: "PalomarBlackScholes.black_scholes"
+      module: "BlackScholesSolution"
+      status: "proved"
+      note: >-
+        Proves risk-neutral pricing, martingale property, and closed-form
+        call valuation for any strong GBM SDE solution.
+
+acknowledgements: >-
+  Mathlib contributors; leanprover/comparator and NanoDa maintainers.
