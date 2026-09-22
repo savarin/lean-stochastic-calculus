@@ -249,32 +249,6 @@ theorem continuousOn_completeCauchySeqLimit
   exact (hF.tendstoUniformlyOn_of_tendsto htendsto).continuousOn
     (Frequently.of_forall hcontinuous)
 
-/-- Maximum squared value of a process on the endpoints of the positive
-uniform `n + 1` partition. -/
-noncomputable def uniformPartitionSqMax
-    (X : ℝ≥0 → Ω → ℝ) (t : ℝ≥0) (n : ℕ) (ω : Ω) : ℝ :=
-  (Finset.range (n + 2)).sup' Finset.nonempty_range_add_one
-    (fun k => (X (uniformPartitionTime t (n + 1) k) ω) ^ 2)
-
-omit [IsFiniteMeasure μ] in
-/-- Fixed-time almost-everywhere equality transfers to the maximum on each
-finite uniform grid. -/
-theorem uniformPartitionSqMax_congr_ae
-    {X Y : ℝ≥0 → Ω → ℝ} (hXY : ∀ s, X s =ᵐ[μ] Y s)
-    (t : ℝ≥0) (n : ℕ) :
-    uniformPartitionSqMax X t n =ᵐ[μ] uniformPartitionSqMax Y t n := by
-  have hgrid : ∀ᵐ ω ∂μ, ∀ k : ℕ,
-      X (uniformPartitionTime t (n + 1) k) ω =
-        Y (uniformPartitionTime t (n + 1) k) ω := by
-    apply ae_all_iff.mpr
-    intro k
-    exact hXY (uniformPartitionTime t (n + 1) k)
-  filter_upwards [hgrid] with ω hω
-  unfold uniformPartitionSqMax
-  congr 1
-  funext k
-  rw [hω k]
-
 /-- Maximum squared value on the dyadic grid with denominator `2ⁿ`. -/
 noncomputable def dyadicPartitionSqMax
     (X : ℝ≥0 → Ω → ℝ) (t : ℝ≥0) (n : ℕ) (ω : Ω) : ℝ :=
@@ -442,17 +416,6 @@ def uniformPartitionFiltration
   monotoneReindexFiltration 𝓕 (uniformPartitionTime t n)
     (monotone_uniformPartitionTime_general t n)
 
-omit [CompleteSpace W] [BorelSpace W] [IsGaussian P] [IsFiniteMeasure μ] in
-/-- Sigma-finiteness is inherited by the filtration sampled on a uniform
-partition. -/
-instance sigmaFiniteFiltration_uniformPartition
-    {𝓕 : Filtration ℝ≥0 ‹MeasurableSpace W›} [SigmaFiniteFiltration P 𝓕]
-    (t : ℝ≥0) (n : ℕ) :
-    SigmaFiniteFiltration P (uniformPartitionFiltration 𝓕 t n) where
-  SigmaFinite k := by
-    change SigmaFinite (P.trim (𝓕.le (uniformPartitionTime t n k)))
-    infer_instance
-
 omit [CompleteSpace W] [BorelSpace W] in
 /-- Sampling the selected natural Itô process on a uniform deterministic
 grid gives a discrete-time martingale for the sampled filtration. -/
@@ -606,47 +569,5 @@ theorem naturalItoProcessRepresentative_dyadicPartition_maximal_sq_iUnion
   intro n
   exact naturalItoProcessRepresentative_dyadicPartition_maximal_sq_ineq
     hB hsm U ε t n
-
-omit [CompleteSpace W] [BorelSpace W] in
-/-- Grid-uniform Doob estimate for the difference of two selected natural
-Itô-process representatives.  Unlike a pointwise linearity assertion, the
-proof transfers the finite-grid event through the available fixed-time
-almost-everywhere linearity theorem. -/
-theorem naturalItoProcessRepresentative_sub_uniformPartition_maximal_sq_ineq
-    (hB : IsPreBrownianReal B P) (hsm : ∀ t, StronglyMeasurable (B t))
-    (U V : PredictableProcessL2 (Filtration.natural B hsm) P)
-    (ε : ℝ≥0) (t : ℝ≥0) (n : ℕ) :
-    ε * P {ω |
-        (ε : ℝ) ≤ uniformPartitionSqMax
-          (fun s ω =>
-            naturalItoProcessRepresentative hB hsm rfl U s ω -
-              naturalItoProcessRepresentative hB hsm rfl V s ω)
-          t n ω} ≤
-      ENNReal.ofReal (‖U - V‖ ^ 2) := by
-  let X : ℝ≥0 → W → ℝ := fun s ω =>
-    naturalItoProcessRepresentative hB hsm rfl U s ω -
-      naturalItoProcessRepresentative hB hsm rfl V s ω
-  let D : ℝ≥0 → W → ℝ :=
-    naturalItoProcessRepresentative hB hsm rfl (U - V)
-  have hXD : ∀ s, X s =ᵐ[P] D s := by
-    intro s
-    simpa only [X, D] using
-      naturalItoProcessRepresentative_sub_ae hB hsm U V s
-  have hmax := uniformPartitionSqMax_congr_ae hXD t n
-  have hmeasure :
-      P {ω | (ε : ℝ) ≤ uniformPartitionSqMax X t n ω} =
-        P {ω | (ε : ℝ) ≤ uniformPartitionSqMax D t n ω} := by
-    apply measure_congr
-    filter_upwards [hmax] with ω hω
-    change ((ε : ℝ) ≤ uniformPartitionSqMax X t n ω) =
-      ((ε : ℝ) ≤ uniformPartitionSqMax D t n ω)
-    rw [hω]
-  rw [show (fun s ω =>
-      naturalItoProcessRepresentative hB hsm rfl U s ω -
-        naturalItoProcessRepresentative hB hsm rfl V s ω) = X by rfl]
-  rw [hmeasure]
-  simpa only [D, uniformPartitionSqMax] using
-    naturalItoProcessRepresentative_uniformPartition_maximal_sq_ineq
-      hB hsm (U - V) ε t n
 
 end StochasticCalculus

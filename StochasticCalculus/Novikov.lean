@@ -60,22 +60,6 @@ theorem NovikovCondition.mono_time
     apply Real.exp_le_exp.mpr
     exact div_le_div_of_nonneg_right (hmonoOmega ht) (by norm_num)
 
-/-- Novikov's condition propagates to earlier times for the continuous
-quadratic-variation contract used by the Doléans theorem. -/
-theorem IsContinuousQuadraticVariationProcess.novikovCondition_mono_time
-    {W : Type*} [MeasurableSpace W] {P : Measure W}
-    {𝒱 : Filtration ℝ≥0 ‹MeasurableSpace W›}
-    {M bracket : ℝ≥0 → W → ℝ} {T : ℝ≥0}
-    (hbracket : IsContinuousQuadraticVariationProcess M bracket P)
-    (hbracketAdapt : StronglyAdapted 𝒱 bracket)
-    (hN : NovikovCondition bracket P T) {t : ℝ≥0} (ht : t ≤ T) :
-    NovikovCondition bracket P t := by
-  apply hN.mono_time
-  · intro s
-    exact ((hbracketAdapt s).mono (𝒱.le s)).aestronglyMeasurable
-  · exact hbracket.2.1.mono fun omega homega => homega.2
-  · exact ht
-
 /-- Pointwise factorization behind the Cauchy--Schwarz step from Novikov's
 condition to Kazamaki's exponential bound. -/
 theorem novikovKazamaki_factor
@@ -114,38 +98,6 @@ theorem IsLocalMartingale.tendsto_ae_localizations
     WithTop.untopA_eq_untop WithTop.coe_ne_top, WithTop.untop_coe]
   have hne : hM.localSeq n omega ≠ 0 := ne_of_gt hpos
   simp [Set.indicator, hne]
-
-/-- At each deterministic time, the canonical localized values of a local
-martingale converge in measure to the original value. -/
-theorem IsLocalMartingale.tendstoInMeasure_localizations
-    {W : Type*} [MeasurableSpace W] {P : Measure W} [IsFiniteMeasure P]
-    {𝒱 : Filtration ℝ≥0 ‹MeasurableSpace W›} [SigmaFiniteFiltration P 𝒱]
-    {M : ℝ≥0 → W → ℝ} (hM : IsLocalMartingale M 𝒱 P) (t : ℝ≥0) :
-    TendstoInMeasure P
-      (fun n => localizingStoppedProcess M (hM.localSeq n) t)
-      atTop (M t) := by
-  change Locally (fun N => Martingale N 𝒱 P) 𝒱 M P at hM
-  apply tendstoInMeasure_of_tendsto_ae
-    (fun n => (hM.stoppedProcess_localSeq n).integrable t |>.1)
-  exact IsLocalMartingale.tendsto_ae_localizations hM t
-
-/-- A local martingale is a genuine martingale when the values of one of its
-canonical localizations are uniformly integrable at every deterministic time.
-The localized values eventually agree pointwise with the original process,
-because the localizing stopping times tend to infinity. -/
-theorem IsLocalMartingale.martingale_of_uniformIntegrable_localizations
-    {W : Type*} [MeasurableSpace W] {P : Measure W} [IsFiniteMeasure P]
-    {𝒱 : Filtration ℝ≥0 ‹MeasurableSpace W›} [SigmaFiniteFiltration P 𝒱]
-    {M : ℝ≥0 → W → ℝ} (hM : IsLocalMartingale M 𝒱 P)
-    (hMadapt : StronglyAdapted 𝒱 M)
-    (hUI : ∀ t, UniformIntegrable
-      (fun n => localizingStoppedProcess M (hM.localSeq n) t) 1 P) :
-    Martingale M 𝒱 P := by
-  change Locally (fun N => Martingale N 𝒱 P) 𝒱 M P at hM
-  apply martingale_of_tendstoInMeasure_of_uniformIntegrable
-    (fun n => hM.stoppedProcess_localSeq n) hMadapt hUI
-  intro t
-  exact StochasticCalculus.IsLocalMartingale.tendstoInMeasure_localizations hM t
 
 /-- A real martingale has constant expectation. -/
 theorem Martingale.integral_eq
@@ -404,142 +356,6 @@ theorem integrable_doleansDadeExponential_and_integral_le_one
   simpa only [hEzero, integral_const, Measure.real, measure_univ,
     ENNReal.toReal_one, one_smul] using hresult
 
-/-- The sharp Cauchy--Schwarz estimate behind the Novikov-to-Kazamaki
-implication. It uses exactly the one-half exponential moment of the bracket,
-not any stronger moment. -/
-theorem integrable_exp_half_and_integral_le_doleansDade_bracket
-    {W : Type*} [MeasurableSpace W] {P : Measure W}
-    (M bracket : ℝ≥0 → W → ℝ) (t : ℝ≥0)
-    (hEint : Integrable (doleansDadeExponential M bracket t) P)
-    (hbracketMeas : AEStronglyMeasurable (bracket t) P)
-    (hbracketInt : Integrable
-      (fun omega => Real.exp (bracket t omega / 2)) P) :
-    Integrable (fun omega => Real.exp (M t omega / 2)) P ∧
-      (∫ omega, Real.exp (M t omega / 2) ∂P) ≤
-        (∫ omega, doleansDadeExponential M bracket t omega ∂P) ^
-            (1 / 2 : ℝ) *
-          (∫ omega, Real.exp (bracket t omega / 2) ∂P) ^
-            (1 / 2 : ℝ) := by
-  let f : W → ℝ := fun omega =>
-    Real.sqrt (doleansDadeExponential M bracket t omega)
-  let g : W → ℝ := fun omega => Real.exp (bracket t omega / 4)
-  have hfMeas : AEStronglyMeasurable f P :=
-    Real.continuous_sqrt.comp_aestronglyMeasurable hEint.aestronglyMeasurable
-  have hgMeas : AEStronglyMeasurable g P := by
-    have hscaled : AEStronglyMeasurable
-        (fun omega => (1 / 4 : ℝ) * bracket t omega) P :=
-      hbracketMeas.const_mul (1 / 4 : ℝ)
-    exact Real.continuous_exp.comp_aestronglyMeasurable <| by
-      simpa [div_eq_mul_inv, mul_comm] using hscaled
-  have hfMem : MemLp f 2 P := by
-    apply (memLp_two_iff_integrable_sq hfMeas).2
-    apply hEint.congr
-    exact Filter.Eventually.of_forall fun omega => by
-      dsimp only [f]
-      exact (Real.sq_sqrt (Real.exp_nonneg _)).symm
-  have hgMem : MemLp g 2 P := by
-    apply (memLp_two_iff_integrable_sq hgMeas).2
-    apply hbracketInt.congr
-    exact Filter.Eventually.of_forall fun omega => by
-      dsimp only [g]
-      rw [pow_two, ← Real.exp_add]
-      congr 1
-      ring
-  have hproductInt : Integrable (fun omega => f omega * g omega) P :=
-    hfMem.integrable_mul hgMem
-  have hfactor : (fun omega => Real.exp (M t omega / 2)) =
-      fun omega => f omega * g omega := by
-    funext omega
-    rw [novikovKazamaki_factor, ← Real.sqrt_eq_rpow]
-  refine ⟨hfactor ▸ hproductInt, ?_⟩
-  rw [hfactor]
-  calc
-    (∫ omega, f omega * g omega ∂P) ≤
-        (∫ omega, f omega ^ (2 : ℝ) ∂P) ^ (1 / (2 : ℝ)) *
-          (∫ omega, g omega ^ (2 : ℝ) ∂P) ^ (1 / (2 : ℝ)) := by
-      exact integral_mul_le_Lp_mul_Lq_of_nonneg
-        Real.HolderConjugate.two_two
-        (Filter.Eventually.of_forall fun _ => Real.sqrt_nonneg _)
-        (Filter.Eventually.of_forall fun _ => Real.exp_nonneg _)
-        (by simpa only [ENNReal.ofReal_ofNat] using hfMem)
-        (by simpa only [ENNReal.ofReal_ofNat] using hgMem)
-    _ = (∫ omega, doleansDadeExponential M bracket t omega ∂P) ^
-          (1 / 2 : ℝ) *
-        (∫ omega, Real.exp (bracket t omega / 2) ∂P) ^
-          (1 / 2 : ℝ) := by
-      congr 2
-      · apply integral_congr_ae
-        exact Filter.Eventually.of_forall fun omega => by
-          dsimp only [f]
-          rw [Real.rpow_two, Real.sq_sqrt]
-          unfold doleansDadeExponential
-          positivity
-      · apply integral_congr_ae
-        exact Filter.Eventually.of_forall fun omega => by
-          dsimp only [g]
-          rw [Real.rpow_two, pow_two, ← Real.exp_add]
-          congr 1
-          ring
-
-/-- Novikov's condition gives the sharp finite-horizon Kazamaki exponential
-bound. The only moment on the right is the stated terminal half-bracket
-moment. -/
-theorem NovikovCondition.integrable_exp_half
-    {W : Type*} [MeasurableSpace W] {P : Measure W} [IsProbabilityMeasure P]
-    {𝒱 : Filtration ℝ≥0 ‹MeasurableSpace W›} [SigmaFiniteFiltration P 𝒱]
-    [𝒱.IsRightContinuous]
-    {M bracket : ℝ≥0 → W → ℝ} {T : ℝ≥0}
-    (hN : NovikovCondition bracket P T)
-    (hlocalQV : HasLocalQuadraticVariationProcessInProbability
-      M bracket 𝒱 P)
-    (hMcont : ∀ omega, Continuous (fun t => M t omega))
-    (hMadapt : StronglyAdapted 𝒱 M)
-    (hbracket : StronglyAdapted 𝒱 bracket)
-    (hbracketPath : ∀ omega,
-      Continuous (fun t => bracket t omega) ∧
-        Monotone (fun t => bracket t omega))
-    (hMzero : ∀ omega, M 0 omega = 0)
-    (hbracketZero : ∀ omega, bracket 0 omega = 0)
-    {t : ℝ≥0} (ht : t ≤ T) :
-    Integrable (fun omega => Real.exp (M t omega / 2)) P ∧
-      (∫ omega, Real.exp (M t omega / 2) ∂P) ≤
-        Real.sqrt (∫ omega, Real.exp (bracket T omega / 2) ∂P) := by
-  have hbracketMeas (s : ℝ≥0) : AEStronglyMeasurable (bracket s) P :=
-    ((hbracket s).mono (𝒱.le s)).aestronglyMeasurable
-  have hNt : NovikovCondition bracket P t :=
-    hN.mono_time hbracketMeas
-      (Filter.Eventually.of_forall fun omega => (hbracketPath omega).2) ht
-  have hE :=
-    isContinuousLocalMartingale_doleansDadeExponential_of_localQuadraticVariation
-      hlocalQV hMcont hbracket hbracketPath hMzero hbracketZero
-  have hEadapt : StronglyAdapted 𝒱 (doleansDadeExponential M bracket) :=
-    stronglyAdapted_doleansDadeExponential hMadapt hbracket
-  have hEbound := integrable_doleansDadeExponential_and_integral_le_one
-    hE.1 hEadapt hMzero hbracketZero t
-  have hCS := integrable_exp_half_and_integral_le_doleansDade_bracket
-    M bracket t hEbound.1 (hbracketMeas t) hNt
-  refine ⟨hCS.1, hCS.2.trans ?_⟩
-  have hEIntegralNonneg :
-      0 ≤ ∫ omega, doleansDadeExponential M bracket t omega ∂P :=
-    integral_nonneg fun _ => (doleansDadeExponential_pos M bracket t _).le
-  have hbracketIntegralMono :
-      (∫ omega, Real.exp (bracket t omega / 2) ∂P) ≤
-        ∫ omega, Real.exp (bracket T omega / 2) ∂P := by
-    apply integral_mono hNt hN
-    intro omega
-    apply Real.exp_le_exp.mpr
-    exact div_le_div_of_nonneg_right ((hbracketPath omega).2 ht) (by norm_num)
-  rw [← Real.sqrt_eq_rpow, ← Real.sqrt_eq_rpow]
-  calc
-    Real.sqrt (∫ omega, doleansDadeExponential M bracket t omega ∂P) *
-        Real.sqrt (∫ omega, Real.exp (bracket t omega / 2) ∂P) ≤
-      1 * Real.sqrt (∫ omega, Real.exp (bracket t omega / 2) ∂P) :=
-        mul_le_mul_of_nonneg_right
-          (Real.sqrt_le_one.mpr hEbound.2) (Real.sqrt_nonneg _)
-    _ = Real.sqrt (∫ omega, Real.exp (bracket t omega / 2) ∂P) := one_mul _
-    _ ≤ Real.sqrt (∫ omega, Real.exp (bracket T omega / 2) ∂P) :=
-      Real.sqrt_le_sqrt hbracketIntegralMono
-
 /-- Deterministically stopping a martingale at `T` again gives a martingale.
 This is the constant finite-range case of optional stopping. -/
 theorem Martingale.stopAt
@@ -596,41 +412,6 @@ theorem IsLocalMartingale.martingale_stopAt_of_uniformIntegrable_localizations
       WithTop.untopA_eq_untop WithTop.coe_ne_top, WithTop.untop_coe]
     have hne : hM.localSeq n omega ≠ 0 := ne_of_gt hpos
     simp [Set.indicator, hne]
-
-/-- On a probability space, a uniform `L²` bound for every deterministic-time
-family of canonical localizations is a convenient sufficient condition for
-the preceding local-to-true martingale upgrade. -/
-theorem IsLocalMartingale.martingale_of_uniform_eLpNorm_two_localizations
-    {W : Type*} [MeasurableSpace W] {P : Measure W} [IsProbabilityMeasure P]
-    {𝒱 : Filtration ℝ≥0 ‹MeasurableSpace W›} [SigmaFiniteFiltration P 𝒱]
-    {M : ℝ≥0 → W → ℝ} (hM : IsLocalMartingale M 𝒱 P)
-    (hMadapt : StronglyAdapted 𝒱 M)
-    (hL2 : ∀ t, ∃ C : ℝ≥0, ∀ n,
-      eLpNorm (localizingStoppedProcess M (hM.localSeq n) t) 2 P ≤ C) :
-    Martingale M 𝒱 P := by
-  apply hM.martingale_of_uniformIntegrable_localizations hMadapt
-  intro t
-  obtain ⟨C, hC⟩ := hL2 t
-  apply uniformIntegrable_one_of_uniform_eLpNorm_two (C := C) _ hC
-  intro n
-  exact ((hM.stoppedProcess_localSeq n).integrable t).1
-
-/-- Finite-horizon `L²` version: localized second-moment bounds are needed
-only at times at most `T`. -/
-theorem IsLocalMartingale.martingale_stopAt_of_uniform_eLpNorm_two_localizations
-    {W : Type*} [MeasurableSpace W] {P : Measure W} [IsProbabilityMeasure P]
-    {𝒱 : Filtration ℝ≥0 ‹MeasurableSpace W›} [SigmaFiniteFiltration P 𝒱]
-    {M : ℝ≥0 → W → ℝ} (hM : IsLocalMartingale M 𝒱 P)
-    (hMadapt : StronglyAdapted 𝒱 M) (T : ℝ≥0)
-    (hL2 : ∀ t, t ≤ T → ∃ C : ℝ≥0, ∀ n,
-      eLpNorm (localizingStoppedProcess M (hM.localSeq n) t) 2 P ≤ C) :
-    Martingale (fun t => M (min t T)) 𝒱 P := by
-  apply hM.martingale_stopAt_of_uniformIntegrable_localizations hMadapt T
-  intro t ht
-  obtain ⟨C, hC⟩ := hL2 t ht
-  apply uniformIntegrable_one_of_uniform_eLpNorm_two (C := C) _ hC
-  intro n
-  exact ((hM.stoppedProcess_localSeq n).integrable t).1
 
 /-- A genuine real martingale, restricted to all deterministic times below a
 fixed terminal horizon, is a uniformly integrable family.  Each value is the
@@ -722,210 +503,6 @@ theorem Martingale.uniformIntegrable_stoppedValue_of_bounded
     exact ⟨delta, hdelta, fun i s hs hPs => hbound (g i) s hs hPs⟩
   · rcases hLimits.2.2 with ⟨C, hC⟩
     exact ⟨C, fun i => hC (g i)⟩
-
-/-- Once the stochastic exponential has been promoted to a genuine
-martingale, its deterministic-time finite-horizon uniform integrability is
-automatic.  This is the final generic step in the Novikov argument. -/
-theorem uniformIntegrable_Iic_doleansDadeExponential_of_martingale
-    {W : Type*} [MeasurableSpace W] {P : Measure W} [IsFiniteMeasure P]
-    {𝒱 : Filtration ℝ≥0 ‹MeasurableSpace W›}
-    {M bracket : ℝ≥0 → W → ℝ}
-    (hE : Martingale (doleansDadeExponential M bracket) 𝒱 P)
-    (T : ℝ≥0) :
-    UniformIntegrable
-      (fun t : Set.Iic T => doleansDadeExponential M bracket t) 1 P :=
-  StochasticCalculus.Martingale.uniformIntegrable_Iic hE T
-
-/-- Uniform integrability of canonical localizations promotes a local
-Doléans exponential to a true martingale.  In a proof of Novikov's theorem,
-this isolates the one remaining probabilistic estimate supplied by the
-exponential-moment condition. -/
-theorem martingale_doleansDadeExponential_of_uniformIntegrable_localizations
-    {W : Type*} [MeasurableSpace W] {P : Measure W} [IsFiniteMeasure P]
-    {𝒱 : Filtration ℝ≥0 ‹MeasurableSpace W›} [SigmaFiniteFiltration P 𝒱]
-    {M bracket : ℝ≥0 → W → ℝ}
-    (hE : IsLocalMartingale (doleansDadeExponential M bracket) 𝒱 P)
-    (hEadapt : StronglyAdapted 𝒱 (doleansDadeExponential M bracket))
-    (hUI : ∀ t, UniformIntegrable (fun n => localizingStoppedProcess
-      (doleansDadeExponential M bracket) (hE.localSeq n) t) 1 P) :
-    Martingale (doleansDadeExponential M bracket) 𝒱 P :=
-  hE.martingale_of_uniformIntegrable_localizations hEadapt hUI
-
-/-- Finite-horizon local-to-true upgrade for a Doléans exponential.  The
-localization estimate is required only through the target horizon. -/
-theorem
-    martingale_stopAt_doleansDadeExponential_of_uniformIntegrable_localizations
-    {W : Type*} [MeasurableSpace W] {P : Measure W} [IsFiniteMeasure P]
-    {𝒱 : Filtration ℝ≥0 ‹MeasurableSpace W›} [SigmaFiniteFiltration P 𝒱]
-    {M bracket : ℝ≥0 → W → ℝ}
-    (hE : IsLocalMartingale (doleansDadeExponential M bracket) 𝒱 P)
-    (hEadapt : StronglyAdapted 𝒱 (doleansDadeExponential M bracket))
-    (T : ℝ≥0)
-    (hUI : ∀ t, t ≤ T → UniformIntegrable (fun n => localizingStoppedProcess
-      (doleansDadeExponential M bracket) (hE.localSeq n) t) 1 P) :
-    Martingale
-      (fun t => doleansDadeExponential M bracket (min t T)) 𝒱 P :=
-  hE.martingale_stopAt_of_uniformIntegrable_localizations hEadapt T hUI
-
-/-- A uniform localized `L²` estimate is enough to make a local Doléans
-exponential a genuine martingale. -/
-theorem martingale_doleansDadeExponential_of_uniform_eLpNorm_two_localizations
-    {W : Type*} [MeasurableSpace W] {P : Measure W} [IsProbabilityMeasure P]
-    {𝒱 : Filtration ℝ≥0 ‹MeasurableSpace W›} [SigmaFiniteFiltration P 𝒱]
-    {M bracket : ℝ≥0 → W → ℝ}
-    (hE : IsLocalMartingale (doleansDadeExponential M bracket) 𝒱 P)
-    (hEadapt : StronglyAdapted 𝒱 (doleansDadeExponential M bracket))
-    (hL2 : ∀ t, ∃ C : ℝ≥0, ∀ n, eLpNorm (localizingStoppedProcess
-      (doleansDadeExponential M bracket) (hE.localSeq n) t) 2 P ≤ C) :
-    Martingale (doleansDadeExponential M bracket) 𝒱 P :=
-  hE.martingale_of_uniform_eLpNorm_two_localizations hEadapt hL2
-
-/-- Finite-horizon localized `L²` criterion for the stopped Doléans
-exponential. -/
-theorem
-    martingale_stopAt_doleansDadeExponential_of_uniform_eLpNorm_two_localizations
-    {W : Type*} [MeasurableSpace W] {P : Measure W} [IsProbabilityMeasure P]
-    {𝒱 : Filtration ℝ≥0 ‹MeasurableSpace W›} [SigmaFiniteFiltration P 𝒱]
-    {M bracket : ℝ≥0 → W → ℝ}
-    (hE : IsLocalMartingale (doleansDadeExponential M bracket) 𝒱 P)
-    (hEadapt : StronglyAdapted 𝒱 (doleansDadeExponential M bracket))
-    (T : ℝ≥0)
-    (hL2 : ∀ t, t ≤ T → ∃ C : ℝ≥0, ∀ n,
-      eLpNorm (localizingStoppedProcess (doleansDadeExponential M bracket)
-        (hE.localSeq n) t) 2 P ≤ C) :
-    Martingale
-      (fun t => doleansDadeExponential M bracket (min t T)) 𝒱 P :=
-  hE.martingale_stopAt_of_uniform_eLpNorm_two_localizations hEadapt T hL2
-
-/-- The deterministic-time finite-horizon class-D conclusion obtained from
-uniform integrability of the canonical localizations. -/
-theorem
-    uniformIntegrable_Iic_doleansDadeExponential_of_uniformIntegrable_localizations
-    {W : Type*} [MeasurableSpace W] {P : Measure W} [IsFiniteMeasure P]
-    {𝒱 : Filtration ℝ≥0 ‹MeasurableSpace W›} [SigmaFiniteFiltration P 𝒱]
-    {M bracket : ℝ≥0 → W → ℝ}
-    (hE : IsLocalMartingale (doleansDadeExponential M bracket) 𝒱 P)
-    (hEadapt : StronglyAdapted 𝒱 (doleansDadeExponential M bracket))
-    (hUI : ∀ t, UniformIntegrable (fun n => localizingStoppedProcess
-      (doleansDadeExponential M bracket) (hE.localSeq n) t) 1 P)
-    (T : ℝ≥0) :
-    UniformIntegrable
-      (fun t : Set.Iic T => doleansDadeExponential M bracket t) 1 P :=
-  uniformIntegrable_Iic_doleansDadeExponential_of_martingale
-    (martingale_doleansDadeExponential_of_uniformIntegrable_localizations
-      hE hEadapt hUI) T
-
-/-- The corresponding class-D conclusion for any family of bounded
-countable-range stopping times, once the Doléans exponential is known to be a
-genuine martingale. -/
-theorem
-    uniformIntegrable_stoppedValue_doleansDadeExponential_of_martingale
-    {W ι : Type*} [MeasurableSpace W] {P : Measure W} [IsFiniteMeasure P]
-    {𝒱 : Filtration ℝ≥0 ‹MeasurableSpace W›}
-    {M bracket : ℝ≥0 → W → ℝ}
-    (hE : Martingale (doleansDadeExponential M bracket) 𝒱 P)
-    (T : ℝ≥0) (tau : ι → W → WithTop ℝ≥0)
-    (htau : ∀ i, IsStoppingTime 𝒱 (tau i))
-    (hle : ∀ i omega, tau i omega ≤ (T : WithTop ℝ≥0))
-    (hrange : ∀ i, (Set.range (tau i)).Countable) :
-    UniformIntegrable
-      (fun i => stoppedValue (doleansDadeExponential M bracket) (tau i))
-      1 P :=
-  StochasticCalculus.Martingale.uniformIntegrable_stoppedValue_of_countableRange
-    hE T tau htau hle hrange
-
-/-- The exact finite-horizon class-D conclusion for a continuous Doléans
-exponential known to be a genuine martingale: its values at every bounded
-family of stopping times are uniformly integrable. -/
-theorem
-    uniformIntegrable_stoppedValue_doleansDadeExponential_of_bounded
-    {W ι : Type*} [MeasurableSpace W] {P : Measure W} [IsFiniteMeasure P]
-    {𝒱 : Filtration ℝ≥0 ‹MeasurableSpace W›} [SigmaFiniteFiltration P 𝒱]
-    {M bracket : ℝ≥0 → W → ℝ}
-    (hE : Martingale (doleansDadeExponential M bracket) 𝒱 P)
-    (hEcont : ∀ᵐ omega ∂P, Continuous (fun t =>
-      doleansDadeExponential M bracket t omega))
-    (T : ℝ≥0) (tau : ι → W → WithTop ℝ≥0)
-    (htau : ∀ i, IsStoppingTime 𝒱 (tau i))
-    (hle : ∀ i omega, tau i omega ≤ (T : WithTop ℝ≥0)) :
-    UniformIntegrable
-      (fun i => stoppedValue (doleansDadeExponential M bracket) (tau i))
-      1 P :=
-  StochasticCalculus.Martingale.uniformIntegrable_stoppedValue_of_bounded
-    hE hEcont T tau htau hle
-
-/-- The full finite-horizon class-D conclusion from the remaining Novikov
-proof obligation: uniform integrability of the canonical localizations. -/
-theorem
-    uniformIntegrable_stoppedValue_doleansDadeExponential_of_localizations
-    {W ι : Type*} [MeasurableSpace W] {P : Measure W} [IsFiniteMeasure P]
-    {𝒱 : Filtration ℝ≥0 ‹MeasurableSpace W›} [SigmaFiniteFiltration P 𝒱]
-    {M bracket : ℝ≥0 → W → ℝ}
-    (hE : IsLocalMartingale (doleansDadeExponential M bracket) 𝒱 P)
-    (hEadapt : StronglyAdapted 𝒱 (doleansDadeExponential M bracket))
-    (hEcont : ∀ᵐ omega ∂P, Continuous (fun t =>
-      doleansDadeExponential M bracket t omega))
-    (hUI : ∀ t, UniformIntegrable (fun n => localizingStoppedProcess
-      (doleansDadeExponential M bracket) (hE.localSeq n) t) 1 P)
-    (T : ℝ≥0) (tau : ι → W → WithTop ℝ≥0)
-    (htau : ∀ i, IsStoppingTime 𝒱 (tau i))
-    (hle : ∀ i omega, tau i omega ≤ (T : WithTop ℝ≥0)) :
-    UniformIntegrable
-      (fun i => stoppedValue (doleansDadeExponential M bracket) (tau i))
-      1 P :=
-  uniformIntegrable_stoppedValue_doleansDadeExponential_of_bounded
-    (martingale_doleansDadeExponential_of_uniformIntegrable_localizations
-      hE hEadapt hUI) hEcont T tau htau hle
-
-/-- Finite-horizon Novikov assembly.  Uniform integrability of localized
-values is assumed only through `T`; it yields both the martingale stopped at
-`T` and uniform integrability of the original exponential evaluated at every
-family of stopping times bounded by `T`. -/
-theorem uniformIntegrable_stoppedValue_doleansDadeExponential_horizon
-    {W ι : Type*} [MeasurableSpace W] {P : Measure W} [IsFiniteMeasure P]
-    {𝒱 : Filtration ℝ≥0 ‹MeasurableSpace W›} [SigmaFiniteFiltration P 𝒱]
-    {M bracket : ℝ≥0 → W → ℝ}
-    (hE : IsLocalMartingale (doleansDadeExponential M bracket) 𝒱 P)
-    (hEadapt : StronglyAdapted 𝒱 (doleansDadeExponential M bracket))
-    (hEcont : ∀ᵐ omega ∂P, Continuous (fun t =>
-      doleansDadeExponential M bracket t omega))
-    (T : ℝ≥0)
-    (hUI : ∀ t, t ≤ T → UniformIntegrable (fun n => localizingStoppedProcess
-      (doleansDadeExponential M bracket) (hE.localSeq n) t) 1 P)
-    (tau : ι → W → WithTop ℝ≥0)
-    (htau : ∀ i, IsStoppingTime 𝒱 (tau i))
-    (hle : ∀ i omega, tau i omega ≤ (T : WithTop ℝ≥0)) :
-    UniformIntegrable
-      (fun i => stoppedValue (doleansDadeExponential M bracket) (tau i))
-      1 P := by
-  let E := doleansDadeExponential M bracket
-  have hmart : Martingale (fun t => E (min t T)) 𝒱 P :=
-    martingale_stopAt_doleansDadeExponential_of_uniformIntegrable_localizations
-      hE hEadapt T hUI
-  have hcont : ∀ᵐ omega ∂P, Continuous (fun t => E (min t T) omega) := by
-    filter_upwards [hEcont] with omega homega
-    exact homega.comp (continuous_id.min continuous_const)
-  have hstopUI : UniformIntegrable
-      (fun i => stoppedValue (fun t => E (min t T)) (tau i)) 1 P :=
-    StochasticCalculus.Martingale.uniformIntegrable_stoppedValue_of_bounded
-      hmart hcont T tau htau hle
-  apply hstopUI.ae_eq
-  intro i
-  exact Filter.Eventually.of_forall fun omega => by
-    unfold stoppedValue
-    have hne : tau i omega ≠ ⊤ :=
-      ne_top_of_le_ne_top WithTop.coe_ne_top (hle i omega)
-    have hcoe : (((tau i omega).untopA : ℝ≥0) : WithTop ℝ≥0) =
-        tau i omega := by
-      rw [WithTop.untopA_eq_untop hne]
-      exact WithTop.coe_untop (tau i omega) hne
-    have hut : (tau i omega).untopA ≤ T := by
-      apply WithTop.coe_le_coe.mp
-      rw [hcoe]
-      exact hle i omega
-    change E (min (tau i omega).untopA T) omega =
-      E (tau i omega).untopA omega
-    rw [min_eq_left hut]
 
 theorem novikovKazamaki_stoppedValue_factor
     {W : Type*} (M bracket : ℝ≥0 → W → ℝ)
@@ -1105,7 +682,6 @@ theorem NovikovCondition.integrable_stoppedValue_exp_half
         ne_top_of_le_ne_top WithTop.coe_ne_top (hbound omega)
       rw [WithTop.untopA_eq_untop hne, WithTop.coe_untop (tau omega) hne]
       exact hbound omega
-
 
 /-- A nonnegative continuous local martingale whose deterministic-time
 expectations equal its initial expectation is a genuine martingale. -/
@@ -1313,7 +889,6 @@ theorem kazamakiHolder_factor
   field_simp
   nlinarith
 
-
 /-- On a probability space, a uniformly bounded `L^q` family for any
 `q > 1` is uniformly integrable in `L^1`. -/
 theorem uniformIntegrable_one_of_uniform_eLpNorm_gt_one
@@ -1368,7 +943,6 @@ theorem uniformIntegrable_one_of_uniform_eLpNorm_gt_one
           _ = ε := by field_simp
   · refine ⟨C, fun i ↦ ?_⟩
     exact (eLpNorm_le_eLpNorm_of_exponent_le hq.le (hf i)).trans (hC i)
-
 
 theorem integrable_rpow_doleansDade_and_integral_le_kazamaki
     {W : Type*} [MeasurableSpace W] {P : Measure W}
@@ -1477,7 +1051,6 @@ theorem integrable_rpow_doleansDade_and_integral_le_kazamaki
       · apply integral_congr_ae
         exact Filter.Eventually.of_forall hgs
 
-
 /-- A stopped exponential bound controls every smaller nonnegative
 exponential coefficient, with only an additive constant. -/
 theorem integrable_exp_mul_stoppedValue_of_bound
@@ -1528,7 +1101,6 @@ theorem integrable_exp_mul_stoppedValue_of_bound
         Measure.real, measure_univ, ENNReal.toReal_one, one_smul]
     _ ≤ 1 + C := add_le_add le_rfl hbound.2
 
-
 /-- A uniform integral bound on a common real power `q > 1` gives `L^1`
 uniform integrability for a nonnegative family. -/
 theorem uniformIntegrable_one_of_uniform_integral_rpow
@@ -1568,7 +1140,6 @@ theorem uniformIntegrable_one_of_uniform_integral_rpow
     exact ENNReal.ofReal_le_ofReal hrpow
   exact uniformIntegrable_one_of_uniform_eLpNorm_gt_one
     (ENNReal.ofReal q) (by simpa using hq) (by finiteness) hf D hD
-
 
 /-- A stopped exponential bound at a coefficient strong enough for the
 chosen Hölder pair gives uniform integrability of all bounded stopped values
@@ -1983,7 +1554,6 @@ theorem KazamakiCondition.martingale_stopAt_doleansDade_scaled
   · intro n omega
     exact (min_le_right _ _).trans (WithTop.coe_le_coe.mpr ht)
 
-
 /-- Pointwise interpolation identity between a stochastic exponential and
 its strict scaling. -/
 theorem doleansDade_scaled_factor
@@ -2276,7 +1846,6 @@ theorem NovikovCondition.integral_doleansDade_eq_one_of_le
   have hI1 : 1 ≤ I := ge_of_tendsto hlimit (Filter.Eventually.of_forall hineq)
   simpa only [I, E] using hI1
 
-
 /-- Novikov's condition promotes the stochastic exponential to a true
 martingale on the finite horizon. -/
 theorem NovikovCondition.martingale_stopAt_doleansDade
@@ -2406,34 +1975,5 @@ theorem NovikovCondition.uniformIntegrable_stoppedValue_doleansDade
     change E (min (tau i omega).untopA T) omega =
       E (tau i omega).untopA omega
     rw [min_eq_left hut]
-
-/-- Finite-horizon Novikov theorem: the Doléans exponential is a true
-martingale and its values at every bounded family of stopping times are
-uniformly integrable. -/
-theorem novikovCondition_doleansDadeExponential
-    {W I : Type*} [MeasurableSpace W] {P : Measure W} [IsProbabilityMeasure P]
-    {𝒱 : Filtration ℝ≥0 ‹MeasurableSpace W›} [SigmaFiniteFiltration P 𝒱]
-    [𝒱.IsRightContinuous]
-    {M bracket : ℝ≥0 → W → ℝ} {T : ℝ≥0}
-    (hN : NovikovCondition bracket P T)
-    (hlocalQV : HasLocalQuadraticVariationProcessInProbability M bracket 𝒱 P)
-    (hMcont : ∀ omega, Continuous (fun t => M t omega))
-    (hMadapt : StronglyAdapted 𝒱 M)
-    (hbracket : StronglyAdapted 𝒱 bracket)
-    (hbracketPath : ∀ omega,
-      Continuous (fun t => bracket t omega) ∧ Monotone (fun t => bracket t omega))
-    (hMzero : ∀ omega, M 0 omega = 0)
-    (hbracketZero : ∀ omega, bracket 0 omega = 0)
-    (tau : I → W → WithTop ℝ≥0)
-    (htau : ∀ i, IsStoppingTime 𝒱 (tau i))
-    (htauBound : ∀ i omega, tau i omega ≤ (T : WithTop ℝ≥0)) :
-    Martingale (fun t =>
-        doleansDadeExponential M bracket (min t T)) 𝒱 P ∧
-      UniformIntegrable (fun i =>
-        stoppedValue (doleansDadeExponential M bracket) (tau i)) 1 P :=
-  ⟨hN.martingale_stopAt_doleansDade hlocalQV hMcont hMadapt hbracket
-      hbracketPath hMzero hbracketZero,
-    hN.uniformIntegrable_stoppedValue_doleansDade hlocalQV hMcont hMadapt
-      hbracket hbracketPath hMzero hbracketZero tau htau htauBound⟩
 
 end StochasticCalculus

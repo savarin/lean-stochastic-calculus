@@ -358,18 +358,4 @@ theorem uniformIntegrable_quadraticCovariationApprox_of_memLp_four
       (quadraticVariationApprox_nonneg Y T (n + 1) omega))]
     exact norm_quadraticCovariationApprox_le_add X Y T (n + 1) omega
 
-/-- For two L4 martingales, a cross-variation limit in probability is an L1
-limit. This strengthens the bounded-martingale version without extra paths. -/
-theorem HasCrossVariationProcessInProbability.tendsto_eLpNorm_one_of_memLp_four
-    {W : Type*} [MeasurableSpace W] {P : Measure W} [IsProbabilityMeasure P]
-    {V : Filtration ℝ≥0 ‹MeasurableSpace W›} [SigmaFiniteFiltration P V]
-    {X Y C : ℝ≥0 → W → ℝ}
-    (h : HasCrossVariationProcessInProbability X Y C P)
-    (hX : Martingale X V P) (hY : Martingale Y V P)
-    (hX4 : ∀ t, MemLp (X t) 4 P) (hY4 : ∀ t, MemLp (Y t) 4 P) (T : ℝ≥0) :
-    Tendsto (fun n ↦ eLpNorm (quadraticCovariationApprox X Y T (n + 1) - C T) 1 P)
-      atTop (nhds 0) :=
-  tendsto_eLpNorm_one_of_tendstoInMeasure_of_uniformIntegrable_banach
-    (uniformIntegrable_quadraticCovariationApprox_of_memLp_four hX hY hX4 hY4 T) (h T)
-
 end StochasticCalculus

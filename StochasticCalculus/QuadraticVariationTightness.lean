@@ -135,35 +135,4 @@ variable {W : Type*} [NormedAddCommGroup W] [NormedSpace ℝ W]
   {P : Measure W} [IsGaussian P]
   {B X mu sigma : ℝ≥0 → W → ℝ}
 
-omit [CompleteSpace W] [BorelSpace W] in
-/-- The uniform quadratic sums of an Itô process are eventually tight in
-probability on every finite horizon.  This is the moment-free replacement
-for the unavailable uniform `L¹` estimate on the drift-plus-martingale
-quadratic sums. -/
-theorem IsItoProcess.quadraticVariationApprox_eventually_tight
-    (hX : IsItoProcess X mu sigma B P) (t : ℝ≥0) :
-    ∀ delta : ℝ, 0 < delta →
-      ∃ C : ℝ, 0 < C ∧ ∀ᶠ n in Filter.atTop,
-        P.real {omega |
-          C ≤ quadraticVariationApprox X t (n + 1) omega} < delta := by
-  have hq := quadraticVariation_itoProcess hX t
-  unfold HasQuadraticVariationInProbabilityAt at hq
-  have hlimitInt : Integrable (integratedDiffusionVariance sigma t) P := by
-    exact (integrable_predictableQuadraticVariation
-      hX.driver_stronglyMeasurable hX.diffusion t).congr
-        (predictableQuadraticVariation_diffusion_ae hX t)
-  have hcanonicalNonneg :
-      0 ≤ᵐ[P] predictableQuadraticVariation
-        hX.driver_stronglyMeasurable hX.diffusion t := by
-    filter_upwards with omega
-    unfold predictableQuadraticVariation
-    exact integral_nonneg fun s => sq_nonneg
-      ((hX.diffusion : ℝ≥0 × W → ℝ) (s, omega))
-  have hlimitNonneg : 0 ≤ᵐ[P] integratedDiffusionVariance sigma t := by
-    filter_upwards [predictableQuadraticVariation_diffusion_ae hX t,
-      hcanonicalNonneg] with omega heq hnonneg
-    rwa [heq] at hnonneg
-  exact hq.eventually_tight_of_integrable_nonnegative_limit
-    hlimitInt hlimitNonneg
-
 end StochasticCalculus

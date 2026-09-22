@@ -318,32 +318,4 @@ theorem GirsanovDensityData.martingale_stopAt_complexDoleans_of_density_le
     (le_min hst hsT) (min_le_right t T) hA
   simpa only [F, min_assoc, min_self] using heq
 
-/-- Girsanov's finite-dimensional conclusion follows from the original
-predictable contract plus a deterministic bound on its real density. -/
-theorem
-    GirsanovDensityData.isPreBrownianReal_girsanovShiftedBrownian_of_density_le_rightCont_natural
-    {W : Type*} [MeasurableSpace W] {P : Measure W} [IsProbabilityMeasure P]
-    {B theta M bracket : ℝ≥0 → W → ℝ} {T : ℝ≥0}
-    (hsm : ∀ t, StronglyMeasurable (B t))
-    (h : GirsanovDensityData P (Filtration.natural B hsm) M bracket T)
-    (hB : IsPreBrownianReal B P)
-    (htheta : IsStronglyPredictable (Filtration.natural B hsm) theta)
-    (hbracketTheta : ∀ t omega, bracket t omega =
-      ∫ s in Set.Ioc (0 : ℝ≥0) (min t T), (theta s omega) ^ 2
-        ∂nonnegativeLebesgueMeasure)
-    (hcross : HasCrossVariationProcessInProbability M B
-      (fun t omega ↦ -girsanovIntegratedDrift theta T t omega) P)
-    (R : ℝ≥0) (hR : ∀ s, s ≤ T → ∀ omega,
-      doleansDadeExponential M bracket s omega ≤ R) :
-    IsPreBrownianReal (girsanovShiftedBrownian B theta T)
-      (girsanovMeasure P M bracket T) := by
-  apply h.isPreBrownianReal_girsanovShiftedBrownian_of_complexDoleans_stop_rightCont_natural
-    hsm hB htheta
-  intro c
-  exact h.rightCont.martingale_stopAt_complexDoleans_of_density_le
-    hB hsm (martingale_brownian_rightCont_natural hB hsm)
-    (StochasticCalculus.IsStronglyPredictable.mono_filtration htheta
-      (Filtration.natural B hsm).le_rightCont)
-    hbracketTheta hcross R hR c
-
 end StochasticCalculus

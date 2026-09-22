@@ -4,8 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: The lean-ito contributors
 -/
 import StochasticCalculus.GBMLocalization
-import StochasticCalculus.GirsanovConstantOracle
-import StochasticCalculus.GirsanovRegression
 import StochasticCalculus.GirsanovConstantDrift
 import Mathlib.Probability.BrownianMotion.Basic
 import Mathlib.Probability.CDF
@@ -97,6 +95,56 @@ theorem measureReal_Ici_gaussianMean (c a : ℝ) :
     constructor <;> intro h <;> linarith
   rw [hpre, measureReal_Ici_standardGaussian]
 
+/-- A finite real measure is determined by its moment generating function
+when the comparison law is Gaussian. -/
+private theorem eq_gaussianReal_of_mgf_eq
+    (ν : Measure ℝ) [IsFiniteMeasure ν] (mean : ℝ) (variance : ℝ≥0)
+    (hmgf : mgf id ν = mgf id (gaussianReal mean variance)) :
+    ν = gaussianReal mean variance := by
+  have heqOn := eqOn_complexMGF_of_mgf hmgf.symm
+  have hcomplex : complexMGF id (gaussianReal mean variance) = complexMGF id ν := by
+    funext z
+    apply heqOn
+    simp only [integrableExpSet_id_gaussianReal, interior_univ, Set.mem_univ,
+      Set.ofPred_true]
+  simpa only [Measure.map_id] using
+    (Measure.ext_of_complexMGF_eq aemeasurable_id aemeasurable_id hcomplex).symm
+
+/-- Exponential tilting of a real Gaussian shifts its mean by
+`variance * c` and preserves its variance. -/
+theorem tilted_gaussianReal (mean : ℝ) (variance : ℝ≥0) (c : ℝ) :
+    (gaussianReal mean variance).tilted (fun x ↦ c * x) =
+      gaussianReal (mean + (variance : ℝ) * c) variance := by
+  let ν : Measure ℝ := (gaussianReal mean variance).tilted (fun x ↦ c * x)
+  have hint : Integrable (fun x : ℝ ↦ Real.exp (c * x))
+      (gaussianReal mean variance) := integrable_exp_mul_gaussianReal c
+  let _ : IsProbabilityMeasure ν := isProbabilityMeasure_tilted hint
+  apply eq_gaussianReal_of_mgf_eq ν (mean + (variance : ℝ) * c) variance
+  funext t
+  change (∫ x, Real.exp (t * x) ∂ν) = _
+  rw [show ν = (gaussianReal mean variance).tilted (fun x ↦ c * x) from rfl,
+    integral_exp_tilted]
+  have hnum := mgf_gaussianReal
+    (p := gaussianReal mean variance) (X := id) (μ := mean) (v := variance)
+    (by simp) (c + t)
+  have hden := mgf_gaussianReal
+    (p := gaussianReal mean variance) (X := id) (μ := mean) (v := variance)
+    (by simp) c
+  have htarget := mgf_gaussianReal
+    (p := gaussianReal (mean + (variance : ℝ) * c) variance)
+    (X := id) (μ := mean + (variance : ℝ) * c) (v := variance)
+    (by simp) t
+  rw [show (∫ x, Real.exp (((fun x ↦ c * x) + fun x ↦ t * x) x)
+      ∂gaussianReal mean variance) =
+        Real.exp (mean * (c + t) + (variance : ℝ) * (c + t) ^ 2 / 2) by
+      simpa [mgf, id_eq, add_mul] using hnum,
+    show (∫ x, Real.exp (c * x) ∂gaussianReal mean variance) =
+        Real.exp (mean * c + (variance : ℝ) * c ^ 2 / 2) by
+      simpa [mgf, id_eq] using hden,
+    div_eq_iff (Real.exp_ne_zero _), htarget, ← Real.exp_add]
+  congr 1
+  ring
+
 /-- Completing the square through the normalized Esscher transform: the exponential martingale
 density integrated over a measurable set equals the probability of that set under the shifted
 Gaussian law. -/
@@ -117,7 +165,7 @@ theorem setIntegral_exp_sub_half_sq_standardGaussian (c : ℝ) {s : Set ℝ}
         ∫ x in s, Real.exp (c * x - cgf id (gaussianReal 0 1) c) • (1 : ℝ)
           ∂gaussianReal 0 1 := by
     simpa only [id_eq] using h
-  rw [Girsanov.tilted_gaussianReal 0 1 c, hcgf] at h'
+  rw [tilted_gaussianReal 0 1 c, hcgf] at h'
   simp only [zero_add, NNReal.coe_one, one_mul] at h'
   simpa only [id_eq, zero_mul, zero_add, NNReal.coe_one, one_mul, smul_eq_mul,
     mul_one, setIntegral_one_eq_measureReal, one_smul] using h'.symm

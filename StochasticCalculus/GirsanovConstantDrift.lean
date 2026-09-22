@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: The lean-stochastic-calculus contributors
 -/
 import StochasticCalculus.GirsanovTheorem
-import StochasticCalculus.GirsanovRegression
 import StochasticCalculus.BrownianContinuousVersion
 
 /-!
@@ -19,8 +18,7 @@ conclusion is transported back to `B`, which agrees with the version almost
 surely at every fixed time.
 
 The main results are stated for the exact terminal density measure
-`girsanovMeasure P (-c · B_{· ∧ T}) (c² (· ∧ T)) T`, the shape that
-`girsanovMeasure_const_eq_oracle` compares with the Gaussian oracle.
+`girsanovMeasure P (-c · B_{· ∧ T}) (c² (· ∧ T)) T`.
 -/
 
 open MeasureTheory ProbabilityTheory
@@ -29,6 +27,25 @@ open scoped ENNReal NNReal
 noncomputable section
 
 namespace StochasticCalculus
+
+/-! ## The constant drift as a predictable integrand -/
+
+/-- The literal predictable drift specializes to the stopped linear drift. -/
+theorem girsanovIntegratedDrift_const {W : Type*} (c : ℝ) (T t : ℝ≥0) (omega : W) :
+    girsanovIntegratedDrift (fun _ _ ↦ c) T t omega = c * ((min t T : ℝ≥0) : ℝ) := by
+  have hmass : nonnegativeLebesgueMeasure.real (Set.Ioc (0 : ℝ≥0) (min t T)) =
+      ((min t T : ℝ≥0) : ℝ) := by
+    rw [measureReal_def, nonnegativeLebesgueMeasure_Ioc, NNReal.coe_zero,
+      sub_zero, ENNReal.toReal_ofReal (NNReal.coe_nonneg _)]
+  unfold girsanovIntegratedDrift
+  rw [setIntegral_const, hmass, smul_eq_mul, mul_comm]
+
+/-- The shifted driver at a constant drift is the driver plus the stopped linear drift. -/
+theorem girsanovShiftedBrownian_const {W : Type*} (B : ℝ≥0 → W → ℝ) (c : ℝ) (T : ℝ≥0) :
+    girsanovShiftedBrownian B (fun _ _ ↦ c) T =
+      fun t omega ↦ B t omega + c * ((min t T : ℝ≥0) : ℝ) := by
+  funext t omega
+  simp only [girsanovShiftedBrownian, girsanovIntegratedDrift_const]
 
 /-! ## The stopped scaled driver and its deterministic bracket -/
 
@@ -205,21 +222,6 @@ theorem integrable_girsanovDensity_const {W : Type*} [MeasurableSpace W]
     (continuous_continuousBrownianVersion B P) (continuousBrownianVersion_zero B P) c T).rightCont
   exact hdata.integrable.congr (girsanovDensity_continuousBrownianVersion_ae_eq hB c T)
 
-/-- The exact terminal density at a constant drift has expectation one. -/
-theorem integral_girsanovDensity_const {W : Type*} [MeasurableSpace W]
-    {P : Measure W} {B : ℝ≥0 → W → ℝ} (hB : IsBrownianReal B P)
-    (hsm : ∀ t, StronglyMeasurable (B t)) (c : ℝ) (T : ℝ≥0) :
-    ∫ omega, girsanovDensity (fun t omega ↦ -c * B (min t T) omega)
-      (fun t _ ↦ c ^ 2 * ((min t T : ℝ≥0) : ℝ)) T omega ∂P = 1 := by
-  let _ : IsProbabilityMeasure P :=
-    hB.toIsPreBrownianReal.isGaussianProcess.isProbabilityMeasure
-  have hdata := (girsanovDensityData_neg_mul_stopped
-    (isBrownianReal_continuousBrownianVersion hB).toIsPreBrownianReal
-    (stronglyMeasurable_continuousBrownianVersion P hsm)
-    (continuous_continuousBrownianVersion B P) (continuousBrownianVersion_zero B P) c T).rightCont
-  rw [← integral_congr_ae (girsanovDensity_continuousBrownianVersion_ae_eq hB c T)]
-  exact hdata.integral_eq_one
-
 /-- The exact terminal density measure at a constant drift is equivalent to `P`. -/
 theorem girsanovMeasure_const_mutuallyAbsolutelyContinuous {W : Type*} [MeasurableSpace W]
     {P : Measure W} {B : ℝ≥0 → W → ℝ} (hB : IsBrownianReal B P)
@@ -229,16 +231,5 @@ theorem girsanovMeasure_const_mutuallyAbsolutelyContinuous {W : Type*} [Measurab
       P ≪ girsanovMeasure P (fun t omega ↦ -c * B (min t T) omega)
         (fun t _ ↦ c ^ 2 * ((min t T : ℝ≥0) : ℝ)) T :=
   girsanovMeasure_mutuallyAbsolutelyContinuous P _ _ T (integrable_girsanovDensity_const hB hsm c T)
-
-/-- The exact terminal density measure at a constant drift is a probability measure. -/
-theorem isProbabilityMeasure_girsanovMeasure_const {W : Type*} [MeasurableSpace W]
-    {P : Measure W} {B : ℝ≥0 → W → ℝ} (hB : IsBrownianReal B P)
-    (hsm : ∀ t, StronglyMeasurable (B t)) (c : ℝ) (T : ℝ≥0) :
-    IsProbabilityMeasure (girsanovMeasure P (fun t omega ↦ -c * B (min t T) omega)
-      (fun t _ ↦ c ^ 2 * ((min t T : ℝ≥0) : ℝ)) T) := by
-  let _ : IsProbabilityMeasure P :=
-    hB.toIsPreBrownianReal.isGaussianProcess.isProbabilityMeasure
-  exact isProbabilityMeasure_girsanovMeasure _ _ T (integrable_girsanovDensity_const hB hsm c T)
-    (integral_girsanovDensity_const hB hsm c T)
 
 end StochasticCalculus

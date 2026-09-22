@@ -2,10 +2,8 @@ import StochasticCalculus.CameronMartin
 import StochasticCalculus.CameronMartinTheorem
 import StochasticCalculus.ElementaryIto
 import StochasticCalculus.FubiniLift
-import StochasticCalculus.GirsanovConstantOracle
 import StochasticCalculus.ItoConstruction
 import StochasticCalculus.ItoProcess
-import StochasticCalculus.ItoSDE
 import StochasticCalculus.IteratedIntegral
 import StochasticCalculus.PredictableDensity
 import StochasticCalculus.QuadraticVariation
@@ -42,6 +40,5 @@ import StochasticCalculus.GirsanovCrossVariation
 import StochasticCalculus.GirsanovExits
 import StochasticCalculus.GirsanovFiltered
 import StochasticCalculus.GirsanovLocalization
-import StochasticCalculus.GirsanovRegression
 import StochasticCalculus.GirsanovTheorem
 import StochasticCalculus.StoppedCrossVariation

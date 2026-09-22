@@ -25,7 +25,7 @@ it proves:
 - Integrability of the call payoff
 - Equality of the discounted expectation with the Black-Scholes formula
 
-The library contains 48 Lean source files (~78k lines) organized in six
+The library contains 44 Lean source files (~46k lines) organized in six
 stages. See [LIBRARY.md](LIBRARY.md) for per-file descriptions.
 
 ## Proof architecture

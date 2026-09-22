@@ -828,50 +828,6 @@ theorem norm_naturalItoProcess
   exact norm_naturalItoIntegral hB hsm hnat _
 
 omit [CompleteSpace W] [BorelSpace W] in
-/-- Fixed-time Itô isometry in polarized inner-product form. -/
-theorem inner_naturalItoProcess
-    (hB : IsPreBrownianReal B P) (hsm : ∀ t, StronglyMeasurable (B t))
-    {𝓕 : Filtration ℝ≥0 ‹MeasurableSpace W›}
-    (hnat : 𝓕 = Filtration.natural B hsm)
-    (U V : PredictableProcessL2 𝓕 P) (t : ℝ≥0) :
-    inner ℝ (naturalItoProcess hB hsm hnat U t)
-      (naturalItoProcess hB hsm hnat V t) =
-        inner ℝ (predictableTimeRestrict 𝓕 t U)
-          (predictableTimeRestrict 𝓕 t V) := by
-  exact inner_naturalItoIntegral hB hsm hnat _ _
-
-omit [CompleteSpace W] [BorelSpace W] in
-/-- Fixed-time Itô isometry as equality of second moments. The right side is the
-product-space integral of the cutoff `1_(0,t] U`. -/
-theorem integral_sq_naturalItoProcess
-    (hB : IsPreBrownianReal B P) (hsm : ∀ t, StronglyMeasurable (B t))
-    {𝓕 : Filtration ℝ≥0 ‹MeasurableSpace W›}
-    (hnat : 𝓕 = Filtration.natural B hsm)
-    (U : PredictableProcessL2 𝓕 P) (t : ℝ≥0) :
-    ∫ w, (naturalItoProcess hB hsm hnat U t w) ^ 2 ∂P =
-      ∫ p, ((predictableTimeRestrict 𝓕 t U : ℝ≥0 × W → ℝ) p) ^ 2
-        ∂(nonnegativeLebesgueMeasure.prod P) := by
-  calc
-    ∫ w, (naturalItoProcess hB hsm hnat U t w) ^ 2 ∂P =
-        inner ℝ (naturalItoProcess hB hsm hnat U t)
-          (naturalItoProcess hB hsm hnat U t) := by
-      rw [L2.inner_def]
-      apply integral_congr_ae
-      filter_upwards with w
-      simp [pow_two]
-    _ = inner ℝ (predictableTimeRestrict 𝓕 t U)
-        (predictableTimeRestrict 𝓕 t U) :=
-      inner_naturalItoProcess hB hsm hnat U U t
-    _ = ∫ p, ((predictableTimeRestrict 𝓕 t U : ℝ≥0 × W → ℝ) p) ^ 2
-        ∂(nonnegativeLebesgueMeasure.prod P) := by
-      change inner ℝ (predictableTimeRestrict 𝓕 t U : TimeProcessL2 P)
-        (predictableTimeRestrict 𝓕 t U : TimeProcessL2 P) = _
-      rw [L2.inner_def]
-      apply integral_congr_ae
-      filter_upwards with p
-      simp [pow_two]
-
-omit [CompleteSpace W] [BorelSpace W] in
 /-- A fixed-time value is bounded by the full predictable-process norm. -/
 theorem norm_naturalItoProcess_le
     (hB : IsPreBrownianReal B P) (hsm : ∀ t, StronglyMeasurable (B t))
@@ -881,15 +837,5 @@ theorem norm_naturalItoProcess_le
     ‖naturalItoProcess hB hsm hnat U t‖ ≤ ‖U‖ := by
   rw [norm_naturalItoProcess]
   exact norm_predictableTimeRestrict_le 𝓕 t U
-
-omit [CompleteSpace W] [BorelSpace W] in
-/-- Every fixed-time value is centered. -/
-theorem integral_naturalItoProcess
-    (hB : IsPreBrownianReal B P) (hsm : ∀ t, StronglyMeasurable (B t))
-    {𝓕 : Filtration ℝ≥0 ‹MeasurableSpace W›}
-    (hnat : 𝓕 = Filtration.natural B hsm)
-    (U : PredictableProcessL2 𝓕 P) (t : ℝ≥0) :
-    ∫ w, naturalItoProcess hB hsm hnat U t w ∂P = 0 := by
-  exact integral_naturalItoIntegral hB hsm hnat _
 
 end StochasticCalculus

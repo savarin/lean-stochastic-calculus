@@ -56,9 +56,7 @@ Per-file descriptions organized by dependency layer.
 
 | File | Description |
 |---|---|
-| GirsanovConstantOracle | Constant-drift Girsanov: Esscher tilt of Gaussians, MGF-based measure identification, stopped-drift pre-Brownian property |
 | ItoProcess | Natural Itô integral as a time-indexed L² process: predictable time restriction, representative selection, martingale property |
-| ItoSDE | Itô process SDE structure: X\_t = X\_0 + ∫μ ds + ∫σ dB with the constructed stochastic integral pinned as the representative |
 
 **Stage B** — Quadratic variation, depends on Stage A.
 
@@ -72,7 +70,7 @@ Per-file descriptions organized by dependency layer.
 
 | File | Description |
 |---|---|
-| ItoFormula | Itô's formula for Brownian motion: f(B\_t) = f(0) + ∫f' dB + ½∫f'' ds via Taylor partition sums, convergence in measure, and the no-pointwise-identity rule |
+| ItoFormula | Taylor partition sums along Brownian paths: Taylor remainder with uniform compact bounds, convergence of derivative-weighted increment sums, left Riemann sums, and quadratic-variation-controlled remainders along uniform partitions |
 | ItoMaximal | Doob's maximal inequality for Itô integrals: conditional Jensen for L² submartingales, grid-independent finite-time bounds |
 | QuadraticVariationTightness | Tail-transfer lemma: terminal QV convergence in measure implies uniform probability control for weighted bracket arguments |
 | QuadraticVariationGrid | Quadratic variation on a common rational grid: prefix sums, rescaling identity, coherent-process convergence along common refinements |
@@ -94,7 +92,7 @@ Per-file descriptions organized by dependency layer.
 | File | Description |
 |---|---|
 | GBMLocalization | Localization of linear SDE: dyadic sampled exits approximate bounded path-exit coefficient under original measure |
-| Girsanov | Girsanov change of measure: terminal density Z\_T from Doléans-Dade, Novikov normalization, shifted Brownian pre-Brownian property, PredictableGirsanovDensityData |
+| Girsanov | Girsanov change of measure: terminal density Z\_T from Doléans-Dade, Novikov normalization, shifted Brownian pre-Brownian property, bracket contract of a natural Itô modification |
 | GirsanovClosure | Common-grid closure: stochastic Taylor residual transport to rational times, martingale closure for exponential density |
 | GirsanovMoments | Moment consequences of Novikov: half-bracket exponential bounds both signs of stopped martingale, all polynomial moments |
 | MartingaleFourthMoment | Fourth-moment bounds for discrete martingale variation: quartic convexity inequality, second moment of quadratic sum bounded by terminal fourth moment |
@@ -112,7 +110,6 @@ Per-file descriptions organized by dependency layer.
 | GirsanovExits | Bounded path exits for the predictable Girsanov closure |
 | GirsanovTheorem | Predictable Girsanov theorem: Novikov UI removes bounded exits, characteristic functions identify the shifted measure |
 | GirsanovFiltered | Girsanov in an arbitrary Brownian filtration: adaptedness + independent increments suffice |
-| GirsanovRegression | Constant-coefficient Girsanov regression: exact identities for every real coefficient and finite horizon |
 | BrownianContinuousVersion | Version of a Brownian motion with every path continuous and starting at zero: one measurable null set replaced by the zero path, strongly measurable slices, almost-sure agreement at fixed times |
 | GirsanovConstantDrift | Constant-drift Girsanov through the predictable theorem: stopped scaled driver as the continuous martingale, deterministic bracket, Novikov automatic; equivalence and probability of the exact terminal density measure |
 | GirsanovItoData | Girsanov density data from a predictable L² integrand with a free bracket representative and almost-everywhere modification field; the constant integrand instantiates it on the continuous version of the driver |

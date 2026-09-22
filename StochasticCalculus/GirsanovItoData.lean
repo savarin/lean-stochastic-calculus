@@ -9,19 +9,20 @@ import StochasticCalculus.GirsanovConstantDrift
 /-!
 # Girsanov density data from a predictable `L²` integrand
 
-`PredictableGirsanovDensityData` packages the input of the Novikov density
+`ItoGirsanovDensityData` packages the input of the Novikov density
 construction for the natural Itô integral of a predictable `L²` integrand
-`U`.  Its bracket fields are stated pointwise for
+`U`.  An earlier packaging stated its bracket fields pointwise for
 `predictableQuadraticVariation hsm U`, which integrates the selected
-product-space representative of `U`.  That representative is fixed only up
-to a null set, so those fields cannot be established for any integrand.
+product-space representative of `U`; that representative is fixed only up
+to a null set, so those fields could not be established for any integrand,
+and the packaging was removed.
 
-`ItoGirsanovDensityData` states the same contract with a free bracket
-representative `A`, tied to `predictableQuadraticVariation hsm U` by an
-almost-everywhere modification field, exactly as the martingale `M` is tied
-to the natural Itô representative.  The passage to `GirsanovDensityData`
-survives the change because the quadratic-variation contract is a
-convergence in probability at fixed times.
+Here the bracket is a free representative `A`, tied to
+`predictableQuadraticVariation hsm U` by an almost-everywhere modification
+field, exactly as the martingale `M` is tied to the natural Itô
+representative.  The passage to `GirsanovDensityData` survives the change
+because the quadratic-variation contract is a convergence in probability at
+fixed times.
 
 The constant integrand on `(0, T]` instantiates the repaired contract on the
 continuous version of the driver: its natural Itô integral is the stopped
