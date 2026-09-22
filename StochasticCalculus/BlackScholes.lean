@@ -6,6 +6,7 @@ Authors: The lean-ito contributors
 import StochasticCalculus.GBMLocalization
 import StochasticCalculus.GirsanovConstantOracle
 import StochasticCalculus.GirsanovRegression
+import StochasticCalculus.GirsanovConstantDrift
 import Mathlib.Probability.BrownianMotion.Basic
 import Mathlib.Probability.CDF
 import Mathlib.Probability.Moments.Tilted
@@ -22,8 +23,9 @@ analytically to the Black–Scholes formula `S Φ(d₁) − K e^{−rT} Φ(d₂)
 
 **SDE route (Section 4).** The risk-neutral measure is constructed via the
 Girsanov density `Z_T`, the shifted driver is proved Brownian under the new
-measure, the discounted asset is a martingale, and the terminal payoff
-expectation is identified with the Gaussian calculation.
+measure by the predictable Girsanov theorem at the constant market price of
+risk (`GirsanovConstantDrift`), the discounted asset is a martingale, and the
+terminal payoff expectation is identified with the Gaussian calculation.
 -/
 
 open MeasureTheory ProbabilityTheory
@@ -366,33 +368,44 @@ def discountedStoppedAsset {W : Type*} (X : ℝ≥0 → W → ℝ)
     (rate : ℝ) (T t : ℝ≥0) (omega : W) : ℝ :=
   Real.exp (-rate * ((min t T : ℝ≥0) : ℝ)) * X (min t T) omega
 
-private theorem riskNeutralMeasure_eq_oracle
-    {W : Type*} [MeasurableSpace W] {P : Measure W}
-    {B : ℝ≥0 → W → ℝ} (hB : IsPreBrownianReal B P)
-    (drift rate volatility : ℝ) (T : ℝ≥0) :
+/-- The risk-neutral measure is the exact terminal density measure of the dynamic
+Girsanov theorem at the market price of risk. -/
+private theorem riskNeutralMeasure_eq_girsanovMeasure
+    {W : Type*} [MeasurableSpace W] (P : Measure W)
+    (B : ℝ≥0 → W → ℝ) (drift rate volatility : ℝ) (T : ℝ≥0) :
     riskNeutralMeasure P B drift rate volatility T =
-      Girsanov.constantGirsanovMeasure P B (marketPriceOfRisk drift rate volatility) T := by
-  simpa [riskNeutralMeasure, girsanovMeasure, girsanovDensity,
-    doleansDadeExponential, doleansDadeLog, min_self, div_eq_mul_inv, mul_comm, mul_left_comm]
-    using girsanovMeasure_const_eq_oracle hB (marketPriceOfRisk drift rate volatility) T
+      girsanovMeasure P
+        (fun t omega ↦ -(marketPriceOfRisk drift rate volatility) * B (min t T) omega)
+        (fun t _ ↦ (marketPriceOfRisk drift rate volatility) ^ 2 * ((min t T : ℝ≥0) : ℝ)) T := by
+  simp only [riskNeutralMeasure, girsanovMeasure, girsanovDensity, doleansDadeExponential,
+    doleansDadeLog, min_self]
+  congr 1
+  funext omega
+  congr 2
+  ring
 
 theorem riskNeutralMeasure_equivalent
     {W : Type*} [MeasurableSpace W] {P : Measure W}
-    {B : ℝ≥0 → W → ℝ} (hB : IsPreBrownianReal B P)
+    {B : ℝ≥0 → W → ℝ} (hB : IsBrownianReal B P)
+    (hsm : ∀ t, StronglyMeasurable (B t))
     (drift rate volatility : ℝ) (T : ℝ≥0) :
     riskNeutralMeasure P B drift rate volatility T ≪ P ∧
       P ≪ riskNeutralMeasure P B drift rate volatility T := by
-  rw [riskNeutralMeasure_eq_oracle hB]
-  exact Girsanov.constantGirsanovMeasure_mutuallyAbsolutelyContinuous hB _ T
+  rw [riskNeutralMeasure_eq_girsanovMeasure]
+  exact girsanovMeasure_const_mutuallyAbsolutelyContinuous hB hsm _ T
 
 theorem isPreBrownianReal_riskNeutralBrownian
     {W : Type*} [MeasurableSpace W] {P : Measure W}
-    {B : ℝ≥0 → W → ℝ} (hB : IsPreBrownianReal B P)
+    {B : ℝ≥0 → W → ℝ} (hB : IsBrownianReal B P)
+    (hsm : ∀ t, StronglyMeasurable (B t))
     (drift rate volatility : ℝ) (T : ℝ≥0) :
     IsPreBrownianReal (riskNeutralBrownian B drift rate volatility T)
       (riskNeutralMeasure P B drift rate volatility T) := by
-  rw [riskNeutralMeasure_eq_oracle hB]
-  exact Girsanov.isPreBrownianReal_horizonDriftShifted_constantGirsanovMeasure hB _ T
+  rw [riskNeutralMeasure_eq_girsanovMeasure]
+  have h := isPreBrownianReal_girsanovShiftedBrownian_const_dynamic hB hsm
+    (marketPriceOfRisk drift rate volatility) T
+  rw [girsanovShiftedBrownian_const] at h
+  exact h
 
 /-- Deterministic drift shifts leave the entire natural filtration unchanged. -/
 theorem natural_add_deterministic
@@ -437,12 +450,13 @@ theorem discounted_gbm_eq_exponential
 theorem isBrownianReal_riskNeutralBrownian
     {W : Type*} [MeasurableSpace W] {P : Measure W}
     {B : ℝ≥0 → W → ℝ} (hB : IsBrownianReal B P)
+    (hsm : ∀ t, StronglyMeasurable (B t))
     (drift rate volatility : ℝ) (T : ℝ≥0) :
     IsBrownianReal (riskNeutralBrownian B drift rate volatility T)
       (riskNeutralMeasure P B drift rate volatility T) := by
-  refine ⟨isPreBrownianReal_riskNeutralBrownian hB.toIsPreBrownianReal drift rate volatility T, ?_⟩
+  refine ⟨isPreBrownianReal_riskNeutralBrownian hB hsm drift rate volatility T, ?_⟩
   have hcont := hB.cont.filter_mono
-    (riskNeutralMeasure_equivalent hB.toIsPreBrownianReal drift rate volatility T).1.ae_le
+    (riskNeutralMeasure_equivalent hB hsm drift rate volatility T).1.ae_le
   filter_upwards [hcont] with omega homega
   unfold riskNeutralBrownian
   fun_prop
@@ -459,7 +473,7 @@ theorem martingale_discountedStoppedAsset
   let _ : IsProbabilityMeasure P := hB.isGaussianProcess.isProbabilityMeasure
   let Q := riskNeutralMeasure P B drift rate volatility T
   let WQ := riskNeutralBrownian B drift rate volatility T
-  have hW := isPreBrownianReal_riskNeutralBrownian hB.toIsPreBrownianReal drift rate volatility T
+  have hW := isPreBrownianReal_riskNeutralBrownian hB hsm drift rate volatility T
   let _ : IsProbabilityMeasure Q := hW.isGaussianProcess.isProbabilityMeasure
   have hWsm : ∀ t, StronglyMeasurable (WQ t) := fun t ↦ (hsm t).add stronglyMeasurable_const
   have hfil : Filtration.natural WQ hWsm = Filtration.natural B hsm :=
@@ -471,7 +485,7 @@ theorem martingale_discountedStoppedAsset
   have hsameP := (geometricBrownianMotion_unique_strong_solution hB hsm
     spot drift volatility).2 X hX
   have hsameQ := hsameP.filter_mono
-    (riskNeutralMeasure_equivalent hB.toIsPreBrownianReal drift rate volatility T).1.ae_le
+    (riskNeutralMeasure_equivalent hB hsm drift rate volatility T).1.ae_le
   apply hstop.congr
   · intro t
     have hm := (hX.adapted (min t T)).mono
@@ -516,8 +530,8 @@ theorem call_expectation_eq_blackScholes
   have hsameP := (geometricBrownianMotion_unique_strong_solution hB hsm
     spot drift volatility).2 X hX
   have hsameQ := hsameP.filter_mono
-    (riskNeutralMeasure_equivalent hB.toIsPreBrownianReal drift rate volatility T).1.ae_le
-  have hW := isPreBrownianReal_riskNeutralBrownian hB.toIsPreBrownianReal drift rate volatility T
+    (riskNeutralMeasure_equivalent hB hsm drift rate volatility T).1.ae_le
+  have hW := isPreBrownianReal_riskNeutralBrownian hB hsm drift rate volatility T
   rw [← BlackScholes.brownianCallPrice_eq_blackScholes hW hspot hstrike hsigma hT]
   congr 1
   apply integral_congr_ae
@@ -534,7 +548,7 @@ theorem integrable_callPayoff
     (hX : IsStrongLinearSDESolution X B P hsm spot drift volatility) (strike : ℝ) :
     Integrable (fun omega ↦ max (X T omega - strike) 0)
       (riskNeutralMeasure P B drift rate volatility T) := by
-  have hW := isPreBrownianReal_riskNeutralBrownian hB.toIsPreBrownianReal drift rate volatility T
+  have hW := isPreBrownianReal_riskNeutralBrownian hB hsm drift rate volatility T
   let _ := hW.isGaussianProcess.isProbabilityMeasure
   have hm := martingale_discountedStoppedAsset hB hsm (rate := rate) hsigma T hX
   have hXT : Integrable (X T) (riskNeutralMeasure P B drift rate volatility T) := by
@@ -562,8 +576,8 @@ theorem black_scholes
       Real.exp (-rate * (T : ℝ)) *
         (∫ omega, max (X T omega - strike) 0 ∂Q) =
         BlackScholes.blackScholesCall spot strike rate volatility (T : ℝ) := by
-  have hW := isBrownianReal_riskNeutralBrownian hB drift rate volatility T
-  have hQ := riskNeutralMeasure_equivalent hB.toIsPreBrownianReal drift rate volatility T
+  have hW := isBrownianReal_riskNeutralBrownian hB hsm drift rate volatility T
+  have hQ := riskNeutralMeasure_equivalent hB hsm drift rate volatility T
   exact ⟨hW.isGaussianProcess.isProbabilityMeasure, hQ.1, hQ.2, hW,
     martingale_discountedStoppedAsset hB hsm hsigma.ne' T hX,
     integrable_callPayoff hB hsm hsigma.ne' T hX strike,

@@ -35,6 +35,9 @@ import StochasticCalculus.MartingaleFourthMoment
 import StochasticCalculus.StoppedVariation
 import StochasticCalculus.ZeroBracket
 import StochasticCalculus.BlackScholes
+import StochasticCalculus.BrownianContinuousVersion
+import StochasticCalculus.GirsanovConstantDrift
+import StochasticCalculus.GirsanovItoData
 import StochasticCalculus.GirsanovCrossVariation
 import StochasticCalculus.GirsanovExits
 import StochasticCalculus.GirsanovFiltered

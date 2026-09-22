@@ -113,4 +113,7 @@ Per-file descriptions organized by dependency layer.
 | GirsanovTheorem | Predictable Girsanov theorem: Novikov UI removes bounded exits, characteristic functions identify the shifted measure |
 | GirsanovFiltered | Girsanov in an arbitrary Brownian filtration: adaptedness + independent increments suffice |
 | GirsanovRegression | Constant-coefficient Girsanov regression: exact identities for every real coefficient and finite horizon |
-| BlackScholes | Black-Scholes call pricing: Gaussian CDF calculation + SDE derivation via Girsanov measure change, merged from BlackScholes + BlackScholesSDE |
+| BrownianContinuousVersion | Version of a Brownian motion with every path continuous and starting at zero: one measurable null set replaced by the zero path, strongly measurable slices, almost-sure agreement at fixed times |
+| GirsanovConstantDrift | Constant-drift Girsanov through the predictable theorem: stopped scaled driver as the continuous martingale, deterministic bracket, Novikov automatic; equivalence and probability of the exact terminal density measure |
+| GirsanovItoData | Girsanov density data from a predictable L² integrand with a free bracket representative and almost-everywhere modification field; the constant integrand instantiates it on the continuous version of the driver |
+| BlackScholes | Black-Scholes call pricing: Gaussian CDF calculation + SDE derivation via the dynamic Girsanov measure change at the market price of risk, merged from BlackScholes + BlackScholesSDE |
