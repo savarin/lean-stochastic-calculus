@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2026 The lean-stochastic-calculus contributors. All rights reserved.
+Copyright (c) 2026 Ezzeri Esa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: The lean-stochastic-calculus contributors
+Authors: Ezzeri Esa
 -/
 import StochasticCalculus.ItoFormulaGeneral
 
@@ -49,6 +49,8 @@ noncomputable def generalItoMixedQuadraticCompletedStepApprox
       quadraticVariationBeforeStopApprox M t n
         (uniformPartitionTime t k j) omega)
 
+/-- With a continuous second derivative, the mixed quadratic approximation sum
+is almost everywhere strongly measurable. -/
 theorem aestronglyMeasurable_generalItoMixedQuadraticApprox
     {W : Type*} [MeasurableSpace W] {P : Measure W}
     (f : ℝ → ℝ → ℝ)
@@ -90,6 +92,9 @@ theorem aestronglyMeasurable_generalItoMixedQuadraticApprox
   filter_upwards with omega
   simp only [Finset.sum_apply]
 
+/-- If the second-derivative weights of the two grids differ by at most `K` on
+overlapping cells, the mixed quadratic sum and its completed-step version
+differ by at most `½ K` times the quadratic sum of `M`. -/
 theorem abs_generalItoMixedQuadraticApprox_sub_completedStep_le_of_blockWeight
     {W : Type*} [MeasurableSpace W]
     (f : ℝ → ℝ → ℝ) (Z M : ℝ≥0 → W → ℝ) (t : ℝ≥0)
@@ -158,6 +163,9 @@ theorem abs_generalItoMixedQuadraticApprox_sub_completedStep_le_of_blockWeight
     abs_of_nonneg (by norm_num : (0 : ℝ) ≤ 1 / 2)]
   exact mul_le_mul_of_nonneg_left hstep (by norm_num)
 
+/-- Along a path continuous on `[0, t]`, the gap between the mixed quadratic sum
+and its completed-step version is eventually at most `½ K` times the
+quadratic sum of `M`, for every positive `K`. -/
 theorem generalItoMixedQuadraticApprox_sub_completedStep_eventually_le_of_continuousPath
     {W : Type*} [MeasurableSpace W]
     (f : ℝ → ℝ → ℝ) (Z M : ℝ≥0 → W → ℝ)
@@ -222,6 +230,9 @@ theorem
   rw [hfine, hcoarse]
   exact hbound k n hk hn
 
+/-- Cauchy–Schwarz for uniform-partition increments: the sum of products of
+absolute increments is at most the square root of the product of the two
+quadratic sums. -/
 theorem sum_abs_uniformPartition_increment_mul_le_sqrt
     {W : Type*} [MeasurableSpace W]
     (A M : ℝ≥0 → W → ℝ) (t : ℝ≥0) (n : ℕ) (omega : W) :
@@ -241,6 +252,8 @@ theorem sum_abs_uniformPartition_increment_mul_le_sqrt
       (fun i => |M (uniformPartitionTime t n (i + 1)) omega -
         M (uniformPartitionTime t n i) omega|))
 
+/-- Adding a process `A` to `M` changes the mixed quadratic sum by at most `½ K`
+times the quadratic sum of `A` plus twice the Cauchy–Schwarz cross term. -/
 theorem abs_generalItoMixedQuadraticApprox_add_sub_le
     {W : Type*} [MeasurableSpace W]
     (f : ℝ → ℝ → ℝ) (Z A M : ℝ≥0 → W → ℝ)
@@ -387,6 +400,8 @@ theorem abs_generalItoMixedQuadraticApprox_add_sub_le
       gcongr
       exact sum_abs_uniformPartition_increment_mul_le_sqrt A M t n omega
 
+/-- Adding a process whose quadratic sums vanish almost surely does not change
+the limit in probability of the mixed quadratic sum. -/
 theorem generalItoMixedQuadraticApprox_add_sub_tendstoInMeasure_zero
     {W : Type*} [MeasurableSpace W] {P : Measure W} [IsFiniteMeasure P]
     (f : ℝ → ℝ → ℝ)
@@ -478,6 +493,8 @@ theorem generalItoMixedQuadraticApprox_add_sub_tendstoInMeasure_zero
     exact (Nat.le_add_right j 1).trans (Finset.mem_range.mp hj)
   · exact hupper
 
+/-- The difference of the integrals over `(z, b]` and `(z, a]` is the integral
+over `(a, b]`. -/
 theorem integral_Ioc_sub_integral_Ioc_eq_integral_Ioc
     {α : Type*} [LinearOrder α] [TopologicalSpace α] [OrderClosedTopology α]
     [MeasurableSpace α] [BorelSpace α]
@@ -495,6 +512,7 @@ theorem integral_Ioc_sub_integral_Ioc_eq_integral_Ioc
   rw [← hdiff]
   exact (setIntegral_sdiff measurableSet_Ioc (hq.mono_set hsmall) hsub).symm
 
+/-- Consecutive half-open intervals of a monotone sequence tile `(a 0, a N]`. -/
 theorem biUnion_Ioc_succ_eq_Ioc
     {α : Type*} [LinearOrder α] (a : ℕ → α) (ha : Monotone a) (N : ℕ) :
     (⋃ i ∈ Finset.range N, Ioc (a i) (a (i + 1))) = Ioc (a 0) (a N) := by
@@ -507,6 +525,8 @@ theorem biUnion_Ioc_succ_eq_Ioc
     exact Ioc_subset_Ioc (ha (Nat.zero_le i)) (ha (Nat.succ_le_iff.mpr hiN))
   · exact Ioc_subset_biUnion_Ioc N a
 
+/-- Consecutive half-open intervals of a monotone sequence are pairwise
+disjoint. -/
 theorem pairwise_disjoint_Ioc_succ
     {α : Type*} [LinearOrder α] (a : ℕ → α) (ha : Monotone a) (N : ℕ) :
     Set.Pairwise (↑(Finset.range N))
@@ -515,6 +535,9 @@ theorem pairwise_disjoint_Ioc_succ
   intro i hi j hj hij
   exact ha.pairwise_disjoint_on_Ioc_succ hij
 
+/-- A left-endpoint Riemann sum of a weight against a nonnegative integrable
+density differs from the weighted integral by at most the weight's
+oscillation on the cells times the total mass. -/
 theorem abs_uniformPartition_weighted_integral_sub_le
     {μ : Measure ℝ≥0} (q w : ℝ≥0 → ℝ) (t : ℝ≥0) (k : ℕ) (hk : 0 < k)
     (hq : IntegrableOn q (Ioc 0 t) μ)
@@ -616,6 +639,8 @@ theorem abs_uniformPartition_weighted_integral_sub_le
     _ = ∫ s in Ioc 0 t, K * q s ∂μ := hKq_partition.symm
     _ = K * ∫ s in Ioc 0 t, q s ∂μ := by rw [integral_const_mul]
 
+/-- Left-endpoint Riemann sums of a continuous weight against a nonnegative
+integrable density converge to the weighted integral. -/
 theorem uniformPartition_weighted_integral_tendsto
     {μ : Measure ℝ≥0} (q w : ℝ≥0 → ℝ) (t : ℝ≥0)
     (hq : IntegrableOn q (Ioc 0 t) μ)
@@ -701,6 +726,9 @@ theorem uniformPartition_weighted_integral_tendsto
   rw [Real.dist_eq]
   exact herr.trans_lt hKQ
 
+/-- Given the before-stop quadratic-variation limits of `M` and convergence of
+the bracket-step sums, the mixed quadratic sum converges in probability to
+the same limit. -/
 theorem generalItoMixedQuadratic_tendstoInMeasure_of_beforeStop
     {W : Type*} [MeasurableSpace W] {P : Measure W} [IsFiniteMeasure P]
     (f : ℝ → ℝ → ℝ)
@@ -810,6 +838,8 @@ theorem generalItoMixedQuadratic_tendstoInMeasure_of_beforeStop
     simpa only [F, Real.norm_eq_abs, mul_assoc,
       show (1 / 2 : ℝ) * (2 * epsilon) = epsilon by ring] using hraw
 
+/-- The bracket-step sums with weight `½ f''` converge in probability to the
+integral of `½ f''(s, Y_s) σ_s²` over `(0, t]`. -/
 theorem bracketStep_process_tendstoInMeasure
     {W : Type*} [MeasurableSpace W] {P : Measure W} [IsFiniteMeasure P]
     (f : ℝ → ℝ → ℝ)
@@ -926,6 +956,8 @@ noncomputable def generalItoQuadraticBracketIntegral
     ((1 / 2 : ℝ) * itoSpaceSecondDerivative f (s : ℝ) (Y s omega)) *
       (u (s, omega)) ^ 2 ∂nonnegativeLebesgueMeasure
 
+/-- The bracket integral with the uncurried diffusion coefficient equals the
+quadratic integral of the general Itô formula. -/
 theorem generalItoQuadraticBracketIntegral_uncurry_eq
     {W : Type*} [MeasurableSpace W]
     (f : ℝ → ℝ → ℝ) (Y sigma : ℝ≥0 → W → ℝ)
@@ -962,6 +994,9 @@ theorem generalItoQuadraticBracketIntegral_uncurry_eq
       funext r
       ring
 
+/-- For an Itô process with drift `mu`, diffusion `sigma` and stochastic part
+`J`, the quadratic term of the general Itô formula converges in probability
+to the diffusion-weighted integral, for positive `t`. -/
 theorem generalItoQuadratic_tendstoInMeasure_of_characteristics_of_pos
     {W : Type*} [MeasurableSpace W] {P : Measure W} [IsFiniteMeasure P]
     (X mu sigma J Y : ℝ≥0 → W → ℝ)
@@ -1075,6 +1110,9 @@ theorem generalItoQuadratic_tendstoInMeasure_of_characteristics_of_pos
   filter_upwards with omega
   exact generalItoQuadraticBracketIntegral_uncurry_eq f Y sigma t omega
 
+/-- The quadratic term of the general Itô formula converges in probability to
+the diffusion-weighted integral for an Itô process with given
+characteristics, at every time. -/
 theorem generalItoQuadratic_tendstoInMeasure_of_characteristics
     {W : Type*} [MeasurableSpace W] {P : Measure W} [IsFiniteMeasure P]
     (X mu sigma J Y : ℝ≥0 → W → ℝ)
@@ -1126,6 +1164,8 @@ theorem generalItoQuadratic_tendstoInMeasure_of_characteristics
       X mu sigma J Y hXmeas hJmeas hmuMeas hmuInt hmod hdecomp
         hbefore hσint f hsecond t ht
 
+/-- The quadratic sums of an Itô process with given characteristics converge in
+probability to the integrated square of the diffusion coefficient. -/
 theorem quadraticVariation_tendstoInMeasure_of_characteristics
     {W : Type*} [MeasurableSpace W] {P : Measure W} [IsFiniteMeasure P]
     (X mu sigma J : ℝ≥0 → W → ℝ)
@@ -1188,6 +1228,9 @@ theorem quadraticVariation_tendstoInMeasure_of_characteristics
   intro n
   exact (heq n).symm
 
+/-- The general Itô formula holds almost everywhere for an Itô process with
+given characteristics, with the stochastic term characterized as a limit in
+probability. -/
 theorem exists_ito_formula_of_characteristics
     {W : Type*} [MeasurableSpace W] {P : Measure W} [IsFiniteMeasure P]
     (X mu sigma J Y : ℝ≥0 → W → ℝ)

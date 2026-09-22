@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2026 The lean-stochastic-calculus contributors. All rights reserved.
+Copyright (c) 2026 Ezzeri Esa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: lean-stochastic-calculus contributors
+Authors: Ezzeri Esa
 -/
 import Mathlib.MeasureTheory.Function.L2Space
 import Mathlib.Tactic.Recall
@@ -23,18 +23,18 @@ functions, and `symmetrize` is the projection onto them.
 
 ## Main results
 
-* `Malliavin.symmetrize`, `Malliavin.symmetrizeₗ` — the operator on functions (as a function,
+* `symmetrize`, `symmetrizeₗ` — the operator on functions (as a function,
   and as an `ℝ`-linear map).
-* `Malliavin.isSymmetric_symmetrize` — `symmetrize n f` is a symmetric function;
-  `Malliavin.isSymmetric_of_swap` — symmetry can be checked on transpositions.
-* `Malliavin.symmetrize_of_isSymmetric` — symmetric functions are fixed points.
-* `Malliavin.symmetrize_symmetrize` — idempotence; `Malliavin.symmetrizeₗ_isProj` — `symmetrizeₗ`
-  is a projection onto the submodule `Malliavin.symmetricSubmodule` of symmetric functions.
-* `Malliavin.measurePreserving_comp_perm` — permuting coordinates preserves `μ^{⊗n}`.
-* `Malliavin.eLpNorm_symmetrize_le` — contraction: `‖f̃‖_p ≤ ‖f‖_p` for `1 ≤ p`.
-* `Malliavin.memLp_symmetrize` — `f ∈ Lᵖ(μ^{⊗n}) → f̃ ∈ Lᵖ(μ^{⊗n})`.
-* `Malliavin.permL` — the coordinate-permutation isometries of `Lp E p μ^{⊗n}`.
-* `Malliavin.symmetrizeL` — the operator as a continuous linear map
+* `StochasticCalculus.isSymmetric_symmetrize` — `symmetrize n f` is a symmetric function;
+  `StochasticCalculus.isSymmetric_of_swap` — symmetry can be checked on transpositions.
+* `StochasticCalculus.symmetrize_of_isSymmetric` — symmetric functions are fixed points.
+* `symmetrize_symmetrize` — idempotence; `symmetrizeₗ_isProj` — `symmetrizeₗ`
+  is a projection onto the submodule `StochasticCalculus.symmetricSubmodule` of symmetric functions.
+* `StochasticCalculus.measurePreserving_comp_perm` — permuting coordinates preserves `μ^{⊗n}`.
+* `StochasticCalculus.eLpNorm_symmetrize_le` — contraction: `‖f̃‖_p ≤ ‖f‖_p` for `1 ≤ p`.
+* `StochasticCalculus.memLp_symmetrize` — `f ∈ Lᵖ(μ^{⊗n}) → f̃ ∈ Lᵖ(μ^{⊗n})`.
+* `StochasticCalculus.permL` — the coordinate-permutation isometries of `Lp E p μ^{⊗n}`.
+* `StochasticCalculus.symmetrizeL` — the operator as a continuous linear map
   `Lp E p μ^{⊗n} →L[ℝ] Lp E p μ^{⊗n}`, with `‖symmetrizeL‖ ≤ 1` (`norm_symmetrizeL_le`),
   idempotent (`symmetrizeL_comp_symmetrizeL`), with fixed points exactly the a.e.-symmetric
   functions (`symmetrizeL_eq_self_iff`).

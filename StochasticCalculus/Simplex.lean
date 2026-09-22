@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2026 The lean-stochastic-calculus contributors. All rights reserved.
+Copyright (c) 2026 Ezzeri Esa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: lean-stochastic-calculus contributors
+Authors: Ezzeri Esa
 -/
 import StochasticCalculus.Symmetrization
 
@@ -22,19 +22,19 @@ which is what turns `E[Jₙ(f̃)²] = ‖f̃‖²_{L²(Δₙ)}` into `E[Iₙ(f)�
 
 ## Main results
 
-* `Malliavin.simplex`, `Malliavin.sortedBy`, `Malliavin.diagonal` — the sets involved.
-* `Malliavin.exists_strictMono_comp_of_injective`, `Malliavin.perm_eq_of_strictMono_comp` —
+* `simplex`, `sortedBy`, `diagonal` — the sets involved.
+* `exists_strictMono_comp_of_injective`, `perm_eq_of_strictMono_comp` —
   an injective tuple is sorted by exactly one permutation (via `Tuple.sort`).
-* `Malliavin.disjoint_sortedBy`, `Malliavin.iUnion_sortedBy_eq` — the tiling.
-* `Malliavin.measurableSet_simplex`, `Malliavin.measurableSet_sortedBy`,
-  `Malliavin.measurableSet_diagonal`.
-* `Malliavin.setIntegral_sortedBy` — every tile carries the same integral of a symmetric function.
-* `Malliavin.measure_diagonal_eq_zero` — the diagonal is `μ^{⊗n}`-null for `NullSingletonClass μ`.
-* `Malliavin.integral_eq_factorial_smul_setIntegral_simplex` — `∫ g = n! • ∫_{Δₙ} g` for
+* `StochasticCalculus.disjoint_sortedBy`, `StochasticCalculus.iUnion_sortedBy_eq` — the tiling.
+* `StochasticCalculus.measurableSet_simplex`, `StochasticCalculus.measurableSet_sortedBy`,
+  `StochasticCalculus.measurableSet_diagonal`.
+* `setIntegral_sortedBy` — every tile carries the same integral of a symmetric function.
+* `measure_diagonal_eq_zero` — the diagonal is `μ^{⊗n}`-null for `NullSingletonClass μ`.
+* `StochasticCalculus.integral_eq_factorial_smul_setIntegral_simplex` — `∫ g = n! • ∫_{Δₙ} g` for
   symmetric `g`;
-* `Malliavin.integral_eq_factorial_smul_setIntegral_symmetrize` — `∫ g = n! • ∫_{Δₙ} g̃` for any
+* `integral_eq_factorial_smul_setIntegral_symmetrize` — `∫ g = n! • ∫_{Δₙ} g̃` for any
   integrable `g`;
-  `Malliavin.integral_sq_norm_eq_factorial_smul` — its `L²` form `∫ ‖g‖² = n! • ∫_{Δₙ} ‖g‖²`.
+  `integral_sq_norm_eq_factorial_smul` — its `L²` form `∫ ‖g‖² = n! • ∫_{Δₙ} ‖g‖²`.
 -/
 
 open MeasureTheory Finset Set

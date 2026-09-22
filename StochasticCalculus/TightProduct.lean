@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2026 The lean-stochastic-calculus contributors. All rights reserved.
+Copyright (c) 2026 Ezzeri Esa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: The lean-stochastic-calculus contributors
+Authors: Ezzeri Esa
 -/
 import StochasticCalculus.QuadraticVariationTightness
 
@@ -370,10 +370,9 @@ theorem TendstoInMeasure.exists_strictMono_diagonal
     ring
 
 /-- A varying family of limits in a normed additive group admits a strictly
-increasing diagonal whose error tends to zero.  This is the value-generic
-version of `exists_strictMono_diagonal_sub`; in particular it can synchronize
-complex-valued two-scale approximations without splitting real and imaginary
-parts. -/
+increasing diagonal whose error tends to zero.  Being value-generic, it can
+synchronize complex-valued two-scale approximations without splitting real
+and imaginary parts. -/
 theorem TendstoInMeasure.exists_strictMono_diagonal_sub_normed
     [IsFiniteMeasure P] {E : Type*} [NormedAddCommGroup E]
     {F : ℕ → ℕ → Omega → E} {G : ℕ → Omega → E}

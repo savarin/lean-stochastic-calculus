@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2026 The lean-stochastic-calculus contributors. All rights reserved.
+Copyright (c) 2026 Ezzeri Esa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: The lean-stochastic-calculus contributors
+Authors: Ezzeri Esa
 -/
 import StochasticCalculus.CameronMartinTheorem
 import StochasticCalculus.IteratedIntegral
@@ -26,27 +26,27 @@ along the dense map `stepToLp` to the Wiener integral `wienerIntegral hB`.
 
 ## Main results
 
-* `Malliavin.dense_span_intervalIndicator`: density of interval indicators in `L²(ℝ≥0)`;
-* `Malliavin.wienerIntegral_intervalIndicator`: `J₁ (1_{(0, t]}) = B t`;
-* `Malliavin.inner_wienerIntegral`, `norm_wienerIntegral`: the Itô isometry;
-* `Malliavin.integral_wienerIntegral`: Wiener integrals are centered;
-* `Malliavin.IteratedIntegralFamily.IsBrownian`: the ordered-box compatibility required of
+* `StochasticCalculus.dense_span_intervalIndicator`: density of interval indicators in `L²(ℝ≥0)`;
+* `StochasticCalculus.wienerIntegral_intervalIndicator`: `J₁ (1_{(0, t]}) = B t`;
+* `StochasticCalculus.inner_wienerIntegral`, `norm_wienerIntegral`: the Itô isometry;
+* `StochasticCalculus.integral_wienerIntegral`: Wiener integrals are centered;
+* `StochasticCalculus.IteratedIntegralFamily.IsBrownian`: the ordered-box compatibility required of
   genuine iterated Itô integrals in addition to the Hilbert-space laws;
-* `Malliavin.wienerIntegralKernel_box`, `inner_wienerIntegralKernel`: the transported Wiener
+* `wienerIntegralKernel_box`, `inner_wienerIntegralKernel`: the transported Wiener
   integral satisfies the order-one Brownian box law, and `IsBrownian.integral_one_eq` shows that
   any Brownian-linked family must use this order-one operator;
-* `Malliavin.integral_odd_eq_zero`, `inner_incrementProductLp_wienerIntegral`,
+* `StochasticCalculus.integral_odd_eq_zero`, `inner_incrementProductLp_wienerIntegral`,
   `norm_sq_incrementProductLp`: odd moments vanish, products of disjoint increments are
   orthogonal to the first chaos, and the product on `(0, 1] × (1, 2]` is nonzero;
-* `Malliavin.IteratedIntegralFamily.IsBrownian.not_range_one_le_closure_span_unitIncrementLp`:
+* `IteratedIntegralFamily.IsBrownian.not_range_one_le_closure_span_unitIncrementLp`:
   a Brownian family never has its order-one range inside the closed span of the unit increments;
-* `Malliavin.hasGaussianLaw_wienerIntegral`, `map_wienerIntegral_eq_gaussianReal`: Wiener
+* `StochasticCalculus.hasGaussianLaw_wienerIntegral`, `map_wienerIntegral_eq_gaussianReal`: Wiener
   integrals are Gaussian with law `N(0, ‖f‖²)`;
-* `Malliavin.range_wienerIntegral`, `exists_ne_zero_orthogonal_firstChaos`: the range of the
+* `range_wienerIntegral`, `exists_ne_zero_orthogonal_firstChaos`: the range of the
   Wiener integral is the first chaos `closure (span {B t})`, which together with the constants
   is a proper subspace of `L²(P)`; hence orders zero and one of a Brownian family never exhaust
   `L²(P)` (`IsBrownian.not_top_le_closure_sup_zero_one`);
-* `Malliavin.IteratedIntegralFamily.box_zero`, `IsBrownian.of_pos`,
+* `StochasticCalculus.IteratedIntegralFamily.box_zero`, `IsBrownian.of_pos`,
   `IteratedIntegralFamily.norm_sq_integral_boxKernel`: the order-zero clause of the link holds for
   every family, and the Hilbert-space laws fix all ordered-box norms;
 * `IsBrownian.integral_two_boxKernel`: the Brownian link conditionally fixes the order-two box

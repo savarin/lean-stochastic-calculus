@@ -8,6 +8,7 @@ remains the authority for the transitive import closure and protected kernels.
 """
 
 import json
+import os
 import pathlib
 import re
 import subprocess
@@ -178,6 +179,18 @@ def main() -> None:
             fail(f"{name} uses non-permitted axioms: {sorted(unexpected)}")
         print(f"      {name}: {sorted(seen[name])}")
     print("[5/5] PASS: selected declarations use only permitted axioms")
+
+    comparator = os.environ.get("COMPARATOR")
+    exporter = os.environ.get("LEAN4EXPORT")
+    if comparator and exporter:
+        print("[6/6] Running the pinned Comparator (COMPARATOR and LEAN4EXPORT set) ...")
+        output = run("bash", "scripts/run_comparator.sh")
+        if "Your solution is okay" not in output:
+            fail("Comparator did not accept the Challenge/Solution pair")
+        print("      PASS: Comparator accepts the Challenge/Solution pair")
+    else:
+        print("[6/6] SKIPPED: set COMPARATOR and LEAN4EXPORT to run the pinned "
+              "Comparator; the preflight cannot see body mismatches without it")
     print("=== PREFLIGHT PASSED ===")
     print("Next release gate: protected Comparator/NanoDa run.")
 

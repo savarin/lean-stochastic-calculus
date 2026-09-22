@@ -55,7 +55,7 @@ echo "$OUTPUT" | tail -5
 
 echo "  Restoring original and rebuilding ..."
 
-if echo "$OUTPUT" | grep -q "^FAIL $THEOREM"; then
+if echo "$OUTPUT" | grep -qE "^FAIL $THEOREM|theorem statement do not match: '$THEOREM'"; then
   echo "PASS: comparator correctly rejected the mutated Challenge (statement mismatch)"
   exit 0
 else

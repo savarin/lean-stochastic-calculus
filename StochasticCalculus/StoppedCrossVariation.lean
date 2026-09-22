@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2026 The lean-stochastic-calculus contributors. All rights reserved.
+Copyright (c) 2026 Ezzeri Esa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: The lean-stochastic-calculus contributors
+Authors: Ezzeri Esa
 -/
 import StochasticCalculus.GirsanovCrossVariation
 
@@ -187,7 +187,8 @@ theorem tendstoInMeasure_quadraticCovariation_stop_sub_ceil
         (tendsto_uniformPartitionCeilTime tau T hbound omega))
   apply TendstoInMeasure.of_norm_sub_le_mul_of_eventually_tight hosc
     (fun n omega ↦ uniformPartitionMaxAbsIncrement_nonneg B T n omega)
-    ((uniformPartitionMaxAbsIncrement_preBrownianReal_tendstoInMeasure_zero hB T).eventually_tight_of_limit_tails
+    ((uniformPartitionMaxAbsIncrement_preBrownianReal_tendstoInMeasure_zero hB
+    T).eventually_tight_of_limit_tails
         (StronglyMeasurable.exists_measureReal_ge_lt_finite
           (show StronglyMeasurable (fun _ : W ↦ (0 : ℝ)) from stronglyMeasurable_const)))
   intro n omega

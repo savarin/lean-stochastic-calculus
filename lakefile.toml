@@ -1,7 +1,7 @@
 name = "lean-stochastic-calculus"
 version = "0.1.0"
 keywords = ["math"]
-defaultTargets = ["StochasticCalculus"]
+defaultTargets = ["StochasticCalculus", "BlackScholesChallenge", "BlackScholesSolution"]
 
 [leanOptions]
 weak.linter.mathlibStandardSet = true

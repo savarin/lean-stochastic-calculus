@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2026 The lean-stochastic-calculus contributors. All rights reserved.
+Copyright (c) 2026 Ezzeri Esa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: The lean-stochastic-calculus contributors
+Authors: Ezzeri Esa
 -/
 import StochasticCalculus.CameronMartin
 import Mathlib.MeasureTheory.Function.ConvergenceInDistribution
@@ -17,7 +17,7 @@ More precisely, if `h` belongs to the Cameron--Martin space, then the translated
 `exp (h(x) - ‖h‖² / 2)`
 
 with respect to the original Gaussian measure.  Here `h(x)` means the canonical `L²(μ)`
-representative supplied by the first-chaos construction in `Malliavin.CameronMartin`.
+representative supplied by the first-chaos construction in `StochasticCalculus.CameronMartin`.
 
 The analytic shift-versus-tilt step is `translated_eq_tilted`: both the translated and the
 tilted measure give every continuous linear functional `L` the Gaussian law with mean

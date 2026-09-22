@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2026 The lean-stochastic-calculus contributors. All rights reserved.
+Copyright (c) 2026 Ezzeri Esa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: The lean-stochastic-calculus contributors
+Authors: Ezzeri Esa
 -/
 import StochasticCalculus.QuadraticVariationElementary
 
@@ -11,9 +11,7 @@ import StochasticCalculus.QuadraticVariationElementary
 This file extends the exact elementary-integrand calculation to arbitrary
 predictable `L²` integrands.  Uniform `L¹` perturbation estimates for both
 the discrete quadratic sums and the canonical bracket allow a
-convergence-together argument.  A final change of variables identifies the
-canonical nonnegative-time bracket with the displayed diffusion variance of
-an `IsItoProcess`.
+convergence-together argument.
 -/
 
 open MeasureTheory ProbabilityTheory Filter Topology

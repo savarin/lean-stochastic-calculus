@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2026 The lean-stochastic-calculus contributors. All rights reserved.
+Copyright (c) 2026 Ezzeri Esa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: The lean-stochastic-calculus contributors
+Authors: Ezzeri Esa
 -/
 import StochasticCalculus.QuadraticVariationDensity
 import Mathlib.Analysis.Calculus.Deriv.Polynomial
@@ -527,15 +527,10 @@ theorem tendsto_subseq_uniformPartition_taylorRemainder_of_quadraticVariation
       (hrange _ (uniformPartitionTime_mem_Icc t hnpos hipos)) (hn i hi)
 
 /-!
-The source scaffold ended with a pointwise formula involving an opaque
-`itoIntegral`.  That endpoint is intentionally not retained here.  Brownian
-motion and stochastic-integral representatives are stable only up to null
-sets, and `no_pointwise_brownian_identity_rule` above formalizes the resulting
-obstruction.  The public endpoints in this file therefore use almost-everywhere
+Brownian motion and stochastic-integral representatives are stable only up
+to null sets.  The endpoints in this file therefore use almost-everywhere
 equality and characterize the stochastic term as the limit in probability of
-the Brownian left sums.  A subsequent integration layer identifies that limit
-with the natural `L²` Itô integral when the state integrand belongs to its
-domain.
+the Brownian left sums.
 -/
 
 end StochasticCalculus

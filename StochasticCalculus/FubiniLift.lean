@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2026 The lean-stochastic-calculus contributors. All rights reserved.
+Copyright (c) 2026 Ezzeri Esa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: The lean-stochastic-calculus contributors
+Authors: Ezzeri Esa
 -/
 import Mathlib.MeasureTheory.Function.L2Space
 import Mathlib.MeasureTheory.Function.SimpleFuncDenseLp
@@ -22,17 +22,17 @@ representatives is delicate, so we construct the map as an isometry: on the simp
 
 ## Main definitions
 
-* `Malliavin.fubiniLift`: the linear isometry `Lp (Lp ℝ 2 ν) 2 μ →ₗᵢ[ℝ] Lp ℝ 2 (ν.prod μ)`;
-* `Malliavin.tensorLp`: the simple tensor `(t, ω) ↦ g t · 1_A ω` in `L²(ν × μ)`.
+* `StochasticCalculus.fubiniLift`: the linear isometry `Lp (Lp ℝ 2 ν) 2 μ →ₗᵢ[ℝ] Lp ℝ 2 (ν.prod μ)`;
+* `StochasticCalculus.tensorLp`: the simple tensor `(t, ω) ↦ g t · 1_A ω` in `L²(ν × μ)`.
 
 ## Main results
 
-* `Malliavin.fubiniLift_indicatorLp`: `fubiniLift (1_A • g) = tensorLp A g`;
-* `Malliavin.inner_fubiniLift`, `norm_fubiniLift`: the lift is an isometry;
-* `Malliavin.inner_fubiniLift_tensorLp`: the weak Fubini identity
+* `StochasticCalculus.fubiniLift_indicatorLp`: `fubiniLift (1_A • g) = tensorLp A g`;
+* `StochasticCalculus.inner_fubiniLift`, `norm_fubiniLift`: the lift is an isometry;
+* `StochasticCalculus.inner_fubiniLift_tensorLp`: the weak Fubini identity
   `⟪fubiniLift U, g ⊗ 1_A⟫ = ∫ ω in A, ⟪g, U ω⟫ ∂μ`;
-* `Malliavin.fubiniLift_smulLp`: on rank-one elements, `fubiniLift (G • g) = g ⊗ G`;
-* `Malliavin.fubiniLift_surjective`, `fubiniEquiv`: for σ-finite measures the lift is onto, so
+* `StochasticCalculus.fubiniLift_smulLp`: on rank-one elements, `fubiniLift (G • g) = g ⊗ G`;
+* `fubiniLift_surjective`, `fubiniEquiv`: for σ-finite measures the lift is onto, so
   `L²(μ; L²(ν)) ≃ L²(ν × μ)` isometrically.
 -/
 

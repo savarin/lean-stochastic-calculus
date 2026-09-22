@@ -62,7 +62,10 @@ Per-file descriptions organized by dependency layer.
 
 | File | Description |
 |---|---|
-| QuadraticVariation | Quadratic variation ⟨B⟩\_t = t and ⟨X⟩\_t = ∫σ² ds: uniform-partition L² and in-probability convergence, stopped brackets, elementary diffusion brackets |
+| TendstoInMeasureAlgebra | Convergence in measure for real sequences: sums, fixed and constant multiples, comparison, without measurability side conditions |
+| UniformPartitionSums | IsBrownianMotion abbreviation, the uniform partition of [0,t], quadratic, fourth, cross and total variation sums with their identities and measurability, integrated drift |
+| QuadraticVariationContract | Quadratic variation in L² and in probability at a fixed time; closure under a.e. modification, zero-variation sums, time-constant multiples, stopping |
+| QuadraticVariation | Quadratic variation ⟨B⟩\_t = t in L² and in probability: stopped, time-changed and block versions, covariation of stopped and interval Brownian blocks |
 | QuadraticVariationElementary | Exact bracket for finite sums of adapted Brownian blocks: clipped-interval covariation, predictable bracket ∫σ² ds for finitely supported integrands |
 | QuadraticVariationDensity | Extension of exact bracket to all predictable L² integrands: uniform L¹ perturbation estimates, convergence-together, change of variables to displayed diffusion |
 
@@ -75,24 +78,42 @@ Per-file descriptions organized by dependency layer.
 | QuadraticVariationTightness | Tail-transfer lemma: terminal QV convergence in measure implies uniform probability control for weighted bracket arguments |
 | QuadraticVariationGrid | Quadratic variation on a common rational grid: prefix sums, rescaling identity, coherent-process convergence along common refinements |
 | TightProduct | Vanishing-error localization: a random error vanishing in measure stays negligible after multiplication by an eventually tight nonneg control |
-| ItoFormulaGeneral | General Itô formula f(t,X\_t): exact partition reduction into dt/dX/d⟨X⟩ sums plus remainder, unconditional formula for quadratic state functions of Itô processes |
+| ItoFormulaPartition | General Itô formula f(t,X\_t): exact partition reduction into dt/dX/d⟨X⟩ sums plus remainder, uniform Taylor bounds on rectangles, continuous modifications and their variation sums |
+| ItoFormulaGeneral | Continuous modifications of natural Itô processes: Doob's compact-time L² bound, fast-converging modification limits, existence of a continuous modification with before-stop quadratic variation |
 | WeightedBracketRiemann | Weighted bracket Riemann sums: continuous weights integrated against ⟨X⟩ via uniform half-open partitions, closing diffusion-weighted QV for natural Itô integrals |
 
 **Stage D** — Exponential martingales, depends on Stage C.
 
 | File | Description |
 |---|---|
-| DoleansDade | Doléans-Dade stochastic exponential: continuous local martingales, ε(M)\_t = exp(M\_t − ½⟨M⟩\_t), Itô cancellation, Brownian exponential martingale |
+| LocalMartingaleContract | Local martingales via Mathlib's Locally predicate and the quadratic-variation contracts in probability: fixed-time, before-stop, stopped, with pre-Brownian instances |
+| ContinuousExitTime | Continuous exit times: dyadic hitting times of a closed ball's complement, their limit as a stopping time, global exit sequences localizing a continuous process |
+| ElementaryMartingaleIntegral | Elementary martingale integrals on one interval: continuity, adaptedness, martingality, orthogonal increments, martingale property through L¹ and in-measure limits |
+| LocalizingStoppedProcess | Localized stopped processes behind Mathlib's local properties, the local quadratic-variation contract with a common localizer, bounds at continuous exits |
+| PartitionStoppingTime | Partition-valued stopping times: first grid index after a bounded rule, martingality of bounded stopped and localized processes, convergence through uniform approximation |
+| MartingaleLeftSum | Left sums against a martingale: finite elementary integrals, the uniformly adapted left-sum process, terminal L² bounds, double localization at continuous exits |
+| DoleansDadeExponential | Doléans-Dade exponential ε(M)\_t = exp(M\_t − ½⟨M⟩\_t): capped version, integral candidate, left-sum processes, Stieltjes bracket integral, Taylor expansion of the logarithm |
+| DoleansDadeMartingale | Martingality of the stochastic exponential: Itô expansion of exp on the compensated logarithm, left sums converge to the candidate, martingale at paired exits |
+| DoleansDade | Exponential martingales of centered Gaussian increments, the Brownian specialization in its natural filtration, and the exponential of a constant multiple of Brownian motion |
 | GeometricBrownianMotion | Geometric Brownian motion exp((μ−σ²/2)t + σB\_t): linear SDE identity via time-dependent Itô formula, L² uniqueness of strong solutions |
 | GBMGronwall | Integral Grönwall for localized moment profiles: nonneg integrable function controlled by its own time integral vanishes |
-| Novikov | Novikov's condition: exponential integrability E[exp(½⟨M⟩\_T)] < ∞ upgrades local martingale to true uniformly integrable martingale on [0,T] |
+| NovikovCondition | Novikov's condition E[exp(½⟨M⟩\_T)] < ∞, deterministic and earlier-time cases, deterministic stopping of martingales, uniform integrability on bounded intervals, nonnegative local martingales |
+| Novikov | Novikov's theorem: Kazamaki's condition, uniform integrability from uniform Lᵖ bounds, scaling trick, stopped stochastic exponential is a uniformly integrable martingale with expectation one |
 
 **Stage E** — Girsanov core, depends on Stages B–D.
 
 | File | Description |
 |---|---|
 | GBMLocalization | Localization of linear SDE: dyadic sampled exits approximate bounded path-exit coefficient under original measure |
-| Girsanov | Girsanov change of measure: terminal density Z\_T from Doléans-Dade, Novikov normalization, shifted Brownian pre-Brownian property, bracket contract of a natural Itô modification |
+| CrossVariationProcess | Cross-variation contract in probability, fixed-time convergence of pre-Brownian evaluations, closure of convergence in measure under continuous maps and complex scalars |
+| GirsanovMeasure | Terminal density Z\_T from Doléans-Dade, the measure Z\_T·P, integrated and regularised drift, shifted driver, GirsanovDensityData with its first consequences |
+| GirsanovMartingaleTransform | Banach-valued elementary and uniformly adapted martingale transforms, prefix and stopped cross-variation sums along common refinements |
+| GirsanovCommonRefinement | Block cross-variation sums, maximal complex step error along common refinements, martingale closure under in-measure limits with uniform integrability, fourth-moment block oscillation bounds |
+| GirsanovFourierIncrement | Brownian Fourier increments and their martingale property, the complex combination M + icB with bracket, the complex Doléans-Dade exponential, freezing-density tightness |
+| GirsanovComplexEuler | Capped complex Girsanov exponential and Euler processes, second-order residual bound, weighted bracket, quadratic, cross and higher-order residual sums |
+| GirsanovMeshControl | Fourth-variation and maximal-increment mesh controls, stopped mesh controls of the complex combination and its bracket, total-variation approximations of the drift |
+| GirsanovStoppedControl | Stopped density left maximum, stopped weight control, compensated square control, stopped variation control, higher-order vanishing and tight controls |
+| Girsanov | Girsanov theorem endpoint: Euler residual identity, integrability of the stopped complex Doléans-Dade combination, Fourier-increment martingale conditions, shifted driver pre-Brownian under Z\_T·P |
 | GirsanovClosure | Common-grid closure: stochastic Taylor residual transport to rational times, martingale closure for exponential density |
 | GirsanovMoments | Moment consequences of Novikov: half-bracket exponential bounds both signs of stopped martingale, all polynomial moments |
 | MartingaleFourthMoment | Fourth-moment bounds for discrete martingale variation: quartic convexity inequality, second moment of quadratic sum bounded by terminal fourth moment |
@@ -113,4 +134,4 @@ Per-file descriptions organized by dependency layer.
 | BrownianContinuousVersion | Version of a Brownian motion with every path continuous and starting at zero: one measurable null set replaced by the zero path, strongly measurable slices, almost-sure agreement at fixed times |
 | GirsanovConstantDrift | Constant-drift Girsanov through the predictable theorem: stopped scaled driver as the continuous martingale, deterministic bracket, Novikov automatic; equivalence and probability of the exact terminal density measure |
 | GirsanovItoData | Girsanov density data from a predictable L² integrand with a free bracket representative and almost-everywhere modification field; the constant integrand instantiates it on the continuous version of the driver |
-| BlackScholes | Black-Scholes call pricing: Gaussian CDF calculation + SDE derivation via the dynamic Girsanov measure change at the market price of risk, merged from BlackScholes + BlackScholesSDE |
+| BlackScholes | Black-Scholes call pricing: Gaussian CDF calculation + SDE derivation via the dynamic Girsanov measure change at the market price of risk |

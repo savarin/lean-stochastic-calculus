@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2026 The lean-stochastic-calculus contributors. All rights reserved.
+Copyright (c) 2026 Ezzeri Esa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: The lean-stochastic-calculus contributors
+Authors: Ezzeri Esa
 -/
 import StochasticCalculus.QuadraticVariation
 
@@ -30,6 +30,9 @@ variable {W : Type*} [NormedAddCommGroup W] [NormedSpace ℝ W]
   {B : ℝ≥0 → W → ℝ}
 
 omit [CompleteSpace W] [BorelSpace W] in
+/-- The natural Itô representative of a one-step elementary integrand is the
+coefficient times the stopped Brownian increment, almost surely at each
+time. -/
 theorem naturalItoProcessRepresentative_elementaryPredictable_ae_eq
     (hB : IsPreBrownianReal B P) (hsm : ∀ t, StronglyMeasurable (B t))
     {a b : ℝ≥0} (hab : a ≤ b)
@@ -65,6 +68,8 @@ theorem naturalItoProcessRepresentative_elementaryPredictable_ae_eq
     simp only [min_comm s b, min_eq_right has]
 
 omit [CompleteSpace W] [BorelSpace W] [SecondCountableTopology W] in
+/-- Covariation of two stopped Brownian blocks with `b ≤ c`: the sums converge
+in probability to `t ∧ b`. -/
 theorem tendstoInMeasure_stopped_brownian_stopped_brownian_covariation_of_le
     (hB : IsBrownianMotion B P) {b c : ℝ≥0} (hbc : b ≤ c) (t : ℝ≥0) :
     TendstoInMeasure P
@@ -112,6 +117,8 @@ theorem tendstoInMeasure_stopped_brownian_stopped_brownian_covariation_of_le
   ring
 
 omit [CompleteSpace W] [BorelSpace W] [SecondCountableTopology W] in
+/-- Covariation of two stopped Brownian blocks converges in probability to `t ∧
+b ∧ c`. -/
 theorem tendstoInMeasure_stopped_brownian_stopped_brownian_covariation
     (hB : IsBrownianMotion B P) (b c t : ℝ≥0) :
     TendstoInMeasure P
@@ -139,6 +146,8 @@ noncomputable def clippedIntervalCovariation
     (min t (min a d) : ℝ≥0) + (min t (min a c) : ℝ≥0)
 
 omit [CompleteSpace W] [BorelSpace W] [SecondCountableTopology W] in
+/-- Covariation of two Brownian interval increments converges in probability to
+the clipped interval covariation. -/
 theorem tendstoInMeasure_brownian_interval_interval_covariation
     (hB : IsBrownianMotion B P) {a b c d : ℝ≥0}
     (_hab : a ≤ b) (_hcd : c ≤ d) (t : ℝ≥0) :
@@ -189,6 +198,7 @@ theorem tendstoInMeasure_brownian_interval_interval_covariation
     dsimp only [q, clippedIntervalCovariation]
     ring
 
+/-- The clipped interval covariation is symmetric in its two intervals. -/
 theorem clippedIntervalCovariation_comm
     (a b c d t : ℝ≥0) :
     clippedIntervalCovariation a b c d t =
@@ -197,6 +207,8 @@ theorem clippedIntervalCovariation_comm
   simp only [min_comm]
   ring
 
+/-- The clipped interval covariation of an interval with itself is the clipped
+length `t ∧ b - t ∧ a`. -/
 theorem clippedIntervalCovariation_self
     {a b : ℝ≥0} (hab : a ≤ b) (t : ℝ≥0) :
     clippedIntervalCovariation a b a b t =
@@ -207,6 +219,9 @@ theorem clippedIntervalCovariation_self
   ring
 
 omit [CompleteSpace W] [BorelSpace W] [SecondCountableTopology W] in
+/-- Covariation of two Brownian interval increments weighted by measurable
+random coefficients converges in probability to the weighted clipped
+covariation. -/
 theorem tendstoInMeasure_random_brownian_interval_interval_covariation
     (hB : IsBrownianMotion B P) {a b c d : ℝ≥0}
     (hab : a ≤ b) (hcd : c ≤ d) (r q : W → ℝ)
@@ -235,6 +250,9 @@ theorem tendstoInMeasure_random_brownian_interval_interval_covariation
       hbase hXmeas hYmeas r q hrMeas hqMeas
 
 omit [CompleteSpace W] [BorelSpace W] [SecondCountableTopology W] in
+/-- The quadratic sums of a finite sum of randomly weighted Brownian interval
+increments converge in probability to the double sum of weighted clipped
+covariations. -/
 theorem quadraticVariation_finset_random_brownian_blocks
     {ι : Type*} [DecidableEq ι] (hB : IsBrownianMotion B P)
     (S : Finset ι) (a b : ι → ℝ≥0)
@@ -337,6 +355,8 @@ theorem quadraticVariation_finset_random_brownian_blocks
 
 omit [NormedAddCommGroup W] [NormedSpace ℝ W] [CompleteSpace W] [BorelSpace W]
     [SecondCountableTopology W] in
+/-- The natural Itô process of a formal finite combination is the corresponding
+combination of the natural Itô processes of its generators. -/
 theorem naturalItoProcess_elementaryFinsuppToPredictable
     (hB : IsPreBrownianReal B P) (hsm : ∀ t, StronglyMeasurable (B t))
     (v : ElementaryPredictableIndex (Filtration.natural B hsm) P →₀ ℝ)
@@ -355,6 +375,9 @@ theorem naturalItoProcess_elementaryFinsuppToPredictable
   simp only [map_smul, predictableTimeRestrictCLM_apply]
 
 omit [CompleteSpace W] [BorelSpace W] in
+/-- The natural Itô representative of a formal finite combination is the
+weighted sum of coefficients times stopped Brownian increments, almost
+surely at each time. -/
 theorem naturalItoProcessRepresentative_elementaryFinsuppToPredictable_ae_eq
     (hB : IsPreBrownianReal B P) (hsm : ∀ t, StronglyMeasurable (B t))
     (v : ElementaryPredictableIndex (Filtration.natural B hsm) P →₀ ℝ)
@@ -405,6 +428,9 @@ theorem naturalItoProcessRepresentative_elementaryFinsuppToPredictable_ae_eq
   exact htermω x hx
 
 omit [CompleteSpace W] [BorelSpace W] in
+/-- The natural Itô representative of a formal finite combination has quadratic
+variation in probability given by the double sum of weighted clipped
+covariations. -/
 theorem quadraticVariation_naturalItoProcessRepresentative_elementaryFinsupp
     (hB : IsBrownianMotion B P) (hsm : ∀ t, StronglyMeasurable (B t))
     (v : ElementaryPredictableIndex (Filtration.natural B hsm) P →₀ ℝ)
@@ -439,6 +465,7 @@ noncomputable def nnrealIicIndicator (u s : ℝ≥0) : ℝ :=
 noncomputable def nnrealIocIndicator (a b s : ℝ≥0) : ℝ :=
   (Set.Ioc a b).indicator (fun _ => (1 : ℝ)) s
 
+/-- The integral of the indicator of `[0, u]` over `(0, t]` is `t ∧ u`. -/
 theorem integral_nnrealIicIndicator (u t : ℝ≥0) :
     ∫ s in Set.Ioc (0 : ℝ≥0) t, nnrealIicIndicator u s
         ∂nonnegativeLebesgueMeasure = (min t u : ℝ≥0) := by
@@ -460,6 +487,8 @@ theorem integral_nnrealIicIndicator (u t : ℝ≥0) :
   simp only [NNReal.coe_min, NNReal.coe_zero, sub_zero, smul_eq_mul, mul_one,
     ENNReal.toReal_ofReal (by positivity : 0 ≤ (min t u : ℝ))]
 
+/-- The indicator of `(a, b]` is the difference of the indicators of `[0, b]`
+and `[0, a]`. -/
 theorem nnrealIocIndicator_eq_sub
     (a b : ℝ≥0) (hab : a ≤ b) (s : ℝ≥0) :
     nnrealIocIndicator a b s =
@@ -475,6 +504,8 @@ theorem nnrealIocIndicator_eq_sub
     · have hbs : b < s := lt_of_not_ge hsb
       simp [has, hsa, hsb]
 
+/-- The product of two `[0, ·]` indicators is the indicator of the smaller
+interval. -/
 theorem nnrealIicIndicator_mul (u v s : ℝ≥0) :
     nnrealIicIndicator u s * nnrealIicIndicator v s =
       nnrealIicIndicator (min u v) s := by
@@ -482,6 +513,8 @@ theorem nnrealIicIndicator_mul (u v s : ℝ≥0) :
   simp only [Set.indicator_apply, Set.mem_Iic]
   by_cases hsu : s ≤ u <;> by_cases hsv : s ≤ v <;> simp [hsu, hsv]
 
+/-- The integral over `(0, t]` of the product of two interval indicators is the
+clipped interval covariation. -/
 theorem integral_nnrealIocIndicator_mul
     {a b c d : ℝ≥0} (hab : a ≤ b) (hcd : c ≤ d) (t : ℝ≥0) :
     ∫ s in Set.Ioc (0 : ℝ≥0) t,
@@ -557,6 +590,7 @@ theorem integral_nnrealIocIndicator_mul
         integral_nnrealIicIndicator, integral_nnrealIicIndicator]
       rfl
 
+/-- The product of two interval indicators is integrable on `(0, t]`. -/
 theorem integrable_nnrealIocIndicator_mul
     (a b c d t : ℝ≥0) :
     Integrable (fun s =>
@@ -576,6 +610,8 @@ theorem integrable_nnrealIocIndicator_mul
   by_cases hab : s ∈ Set.Ioc a b <;> by_cases hcd : s ∈ Set.Ioc c d <;>
     simp [hab, hcd]
 
+/-- The integral over `(0, t]` of the square of a finite combination of interval
+indicators is the double sum of clipped covariations. -/
 theorem integral_sq_finset_nnrealIocIndicator
     {ι : Type*} [DecidableEq ι] (S : Finset ι)
     (a b : ι → ℝ≥0) (hinterval : ∀ i ∈ S, a i ≤ b i)
@@ -637,6 +673,8 @@ theorem integral_sq_finset_nnrealIocIndicator
 
 omit [NormedAddCommGroup W] [NormedSpace ℝ W] [CompleteSpace W] [BorelSpace W]
     [SecondCountableTopology W] in
+/-- A pointwise representative of the predictable realization of a formal finite
+combination, almost everywhere on the product space. -/
 theorem elementaryFinsuppToPredictable_coeFn
     (hsm : ∀ t, StronglyMeasurable (B t))
     (v : ElementaryPredictableIndex (Filtration.natural B hsm) P →₀ ℝ) :
@@ -707,6 +745,8 @@ noncomputable def predictableQuadraticVariation
     ∂nonnegativeLebesgueMeasure
 
 omit [CompleteSpace W] [BorelSpace W] in
+/-- The predictable bracket of a formal finite combination is, almost surely,
+the double sum of weighted clipped covariations. -/
 theorem predictableQuadraticVariation_elementaryFinsuppToPredictable
     (hsm : ∀ t, StronglyMeasurable (B t))
     (v : ElementaryPredictableIndex (Filtration.natural B hsm) P →₀ ℝ)
@@ -760,6 +800,8 @@ theorem predictableQuadraticVariation_elementaryFinsuppToPredictable
         (fun x => v x * (x.2.2 : W → ℝ) ω) t
 
 omit [CompleteSpace W] [BorelSpace W] in
+/-- The natural Itô representative of a formal finite combination has quadratic
+variation in probability equal to its predictable bracket. -/
 theorem quadraticVariation_naturalItoProcessRepresentative_elementaryFinsupp_bracket
     (hB : IsBrownianMotion B P) (hsm : ∀ t, StronglyMeasurable (B t))
     (v : ElementaryPredictableIndex (Filtration.natural B hsm) P →₀ ℝ)

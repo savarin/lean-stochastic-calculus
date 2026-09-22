@@ -20,17 +20,49 @@ classification:
   msc2020: ["91G20", "60H10", "60H05"]
 
 sources:
+  - title: "Black-Scholes pricing for strong solutions of the geometric Brownian SDE via the predictable Girsanov theorem"
+    authors:
+      - "Ezzeri Esa"
+    type: "original-proof"
+    id: "https://github.com/savarin/lean-stochastic-calculus"
+    location: "Lean proof in this repository; route in BLUEPRINT.md"
+    relationship: "other"
+    author_endorsement: "participated"
+    note: >-
+      The mathematics is the standard textbook route: uniqueness of the strong
+      solution, a Girsanov change of measure through the Doleans-Dade
+      exponential with Novikov's condition, the discounted asset as a
+      martingale under the new measure, and Gaussian evaluation of the call.
+      The Lean proof was constructed by agents (Codex for the 2026-09-07
+      library and boundary, Claude Fable 5.1 for the 2026-09-21 rerouting of
+      the measure change through the predictable Girsanov theorem) and is
+      checked by the Lean kernel; it has not been examined in depth by human
+      experts, and no claim of mathematical novelty is made.
   - title: "The Pricing of Options and Corporate Liabilities"
     authors:
       - "Fischer Black"
       - "Myron Scholes"
     type: "paper"
     id: "doi:10.1086/260062"
-    location: "Theorem statement and pricing formula"
+    location: "Section 3, the option-pricing formula"
     relationship: "background"
     author_endorsement: "not-contacted"
     note: >-
-      TODO: fill in source details.
+      The closed-form call price that the compared theorem reproduces. The
+      paper derives it from the replicating-portfolio partial differential
+      equation; the formalization instead prices under the risk-neutral
+      measure obtained by Girsanov's theorem.
+  - title: "Brownian Motion and Stochastic Calculus"
+    authors:
+      - "Ioannis Karatzas"
+      - "Steven E. Shreve"
+    type: "book"
+    id: "doi:10.1007/978-1-4612-0949-2"
+    location: "Section 3.5, the Girsanov theorem and Novikov's condition"
+    relationship: "background"
+    author_endorsement: "not-contacted"
+    note: >-
+      Standard reference for the change-of-measure route followed here.
 
 status:
   scope: >-
@@ -53,19 +85,46 @@ status:
 automation:
   methods:
     - method: "agent"
-      models: ["TODO"]
-      framework: "TODO"
+      models: ["OpenAI Codex"]
+      framework: "Codex"
       tool_setup: >-
-        TODO: describe tool setup.
+        On 2026-09-07 PDT, in the lean-pipeline/black-scholes-sde workspace,
+        an agent combined completed Girsanov, strong-GBM uniqueness and
+        Gaussian-evaluation workspaces, proved measure identification,
+        filtration invariance, discounted martingality for arbitrary strong
+        solutions, payoff integrability and the expectation identity, and
+        built the standalone boundary. Lean elaboration and full Lake builds
+        were the only oracle.
       cost:
-        wall_time: "TODO"
-        spend_usd: "TODO"
+        wall_time: "not tracked; the assembly session ran under a one-hour cap"
+        spend_usd: "subscription-based"
         hardware: "local machine"
       prompting_notes: >-
-        TODO: describe prompting approach.
-  spend_usd: "TODO"
+        The agent was given the blueprint of the route and the completed
+        component workspaces as references.
+    - method: "agent"
+      models: ["Claude Fable 5.1 (Anthropic)"]
+      framework: "Claude Code"
+      tool_setup: >-
+        On 2026-09-21 PDT the measure change was rerouted from the
+        constant-drift Gaussian oracle to the predictable Girsanov theorem,
+        the library was pruned to the declarations reachable from the Palomar
+        theorems using a kernel-environment reachability script, the two
+        largest files were split by topic, and the Solution was rewritten to
+        restate the Challenge bodies. Strict Lake builds, the boundary
+        preflight and the pinned Comparator were run after each step.
+      cost:
+        wall_time: "not tracked"
+        spend_usd: "subscription-based"
+        hardware: "local machine"
+      prompting_notes: >-
+        The agent was directed step by step by the author, with the review
+        checklist and the sibling submission repositories as references.
+  spend_usd: "subscription-based"
   notes: >-
-    TODO: describe automation process.
+    Every step is kernel-checked; the author's role was direction, review of
+    the boundary files and metadata, and the go-ahead for each change. No
+    proof text was written by hand.
 
 fidelity:
   divergences: >-
@@ -74,14 +133,22 @@ fidelity:
     to the library's IsStrongLinearSDESolution. The Challenge uses
     Mathlib's gaussianReal CDF for the Black-Scholes expression rather
     than the standard normal CDF symbol Phi. The formalization works in
-    the universe-polymorphic setting with Type u sample spaces.
+    the universe-polymorphic setting with Type u sample spaces. The
+    Brownian driver is assumed continuous only almost surely
+    (IsBrownianReal); the proof passes through a version with every path
+    continuous and transports the conclusion back.
 
 review:
   status: "agent-reviewed"
   reviewers:
     - "Ezzeri Esa"
+    - "Claude Fable 5.1 (Anthropic)"
   notes: >-
-    TODO: describe review process.
+    The Challenge was read by the author and checked field by field against
+    the library statement. An agent review on 2026-09-21 compared the
+    repository against the sibling submissions and Palomar's policy, ran the
+    pinned Comparator, and produced the checklist addressed in this release.
+    The proof library has not been examined in depth by human experts.
 
 alignment:
   namespace: "PalomarBlackScholes"
@@ -91,8 +158,11 @@ alignment:
       module: "BlackScholesSolution"
       status: "proved"
       note: >-
-        Proves risk-neutral pricing, martingale property, and closed-form
-        call valuation for any strong GBM SDE solution.
+        Proves equivalence and probability of the risk-neutral measure,
+        Brownianity of the shifted driver by the predictable Girsanov
+        theorem, the martingale property of the discounted stopped asset,
+        payoff integrability, and the closed-form call valuation for any
+        strong GBM SDE solution.
 
 acknowledgements: >-
   Mathlib contributors; leanprover/comparator and NanoDa maintainers.
