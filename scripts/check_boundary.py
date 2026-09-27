@@ -1,18 +1,17 @@
 #!/usr/bin/env python3
 """Audit the Palomar package before running Comparator.
 
-This checks the closed Comparator schema, direct Challenge imports, boundary
-size and holes, elaboration of both modules, metadata presence, and axioms.
+This checks the closed Comparator schema, Challenge imports, boundary size and
+holes, elaboration of both modules, basic metadata presence, and axioms.
 Comparator remains the authority for kernel-level type equality and Palomar
 remains the authority for the transitive import closure and protected kernels.
 """
 
+import argparse
 import json
-import os
 import pathlib
 import re
 import subprocess
-import sys
 import tempfile
 
 REQUIRED_KEYS = {
@@ -25,6 +24,7 @@ OPTIONAL_KEYS = {"definition_names", "enable_nanoda"}
 ALLOWED_IMPORT_ROOTS = ("Lean", "Mathlib")
 AXIOMS_RE = re.compile(r"'([^']+)' depends on axioms: \[(.*)\]")
 NO_AXIOMS_RE = re.compile(r"'([^']+)' does not depend on any axioms")
+STANDARD_AXIOMS = {"propext", "Quot.sound", "Classical.choice"}
 
 
 def fail(message: str) -> None:
@@ -62,10 +62,53 @@ def joined_lines(output: str) -> list[str]:
     return result
 
 
+def check_import_closure(module: str) -> int:
+    """Inspect the complete loaded import list, including indirect imports.
+
+    check_metadata.py separately checks these dependency checkouts and pins.
+    Palomar authenticates and rebuilds the sources in its protected job.
+    """
+    with tempfile.NamedTemporaryFile(
+        mode="w", suffix=".lean", prefix="_palomar_imports_",
+        dir=".", delete=False
+    ) as scratch:
+        scratch.write(f"import {module}\nopen Lean\n")
+        scratch.write('#eval show CoreM Unit from do\n'
+                      '  for name in (← getEnv).header.moduleNames do\n'
+                      '    IO.println s!"PALOMAR_IMPORT\\t{name}\\t{← findOLean name}"\n')
+        scratch_path = pathlib.Path(scratch.name)
+    try:
+        output = run("lake", "env", "lean", str(scratch_path))
+    finally:
+        scratch_path.unlink(missing_ok=True)
+    mathlib = json.loads(pathlib.Path(".lake/packages/mathlib/lake-manifest.json").read_text())
+    packages = {"mathlib"} | {p["name"] for p in mathlib["packages"]}
+    allowed = [(pathlib.Path(run("lean", "--print-prefix").strip()) / "lib/lean").resolve()]
+    allowed += [(pathlib.Path(".lake/packages") / p / ".lake/build/lib/lean").resolve()
+                for p in packages]
+    records = [line.split("\t") for line in output.splitlines()
+               if line.startswith("PALOMAR_IMPORT\t")]
+    if not records or not any(row[1] == module for row in records):
+        fail("Challenge import audit did not report the Challenge")
+    for _, name, filename in records:
+        if name == module:
+            continue
+        path = pathlib.Path(filename).resolve()
+        if not any(path.is_relative_to(root) for root in allowed):
+            fail(f"Challenge imports {name} from outside Lean/Mathlib's dependencies: {path}")
+    return len(records) - 1
+
+
 def main() -> None:
-    manifest_path = pathlib.Path(
-        sys.argv[1] if len(sys.argv) > 1 else "comparator-black-scholes.json"
-    )
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--comparator", action="store_true",
+                        help="also run the toolchain's Comparator and independent kernels")
+    parser.add_argument("--local", action="store_true",
+                        help="run Comparator without Linux sandboxing (e.g. on macOS)")
+    args = parser.parse_args()
+    if args.local and not args.comparator:
+        parser.error("--local requires --comparator")
+    manifest_path = pathlib.Path("comparator-black-scholes.json")
     if not manifest_path.is_file():
         fail(f"{manifest_path} not found")
     manifest = json.loads(manifest_path.read_text())
@@ -84,6 +127,8 @@ def main() -> None:
         fail("theorem_names must be a nonempty list")
     if len(theorems) != len(set(theorems)):
         fail("theorem_names contains duplicates")
+    if not set(manifest["permitted_axioms"]) <= STANDARD_AXIOMS:
+        fail("permitted_axioms exceeds Palomar's standard allowlist")
     if definitions:
         fail("this publication boundary must not use definition holes")
 
@@ -134,15 +179,19 @@ def main() -> None:
             fail(f"formalization.yaml is missing {field}")
 
     print("=== Palomar package preflight ===")
-    print(f"[1/5] PASS: closed Comparator schema; {len(theorems)} theorems, "
+    print(f"[1/6] PASS: closed Comparator schema; {len(theorems)} theorems, "
           "zero definition holes")
-    print(f"[2/5] PASS: {challenge}: {line_count} lines, {byte_count} bytes; "
+    print(f"[2/6] PASS: {challenge}: {line_count} lines, {byte_count} bytes; "
           "direct imports permitted")
-    print("[3/5] Building Challenge and Solution ...")
+    print("[3/6] Building Challenge and Solution ...")
     run("lake", "build", manifest["challenge_module"],
         manifest["solution_module"])
     print("      PASS: both modules build")
-    print("[4/5] PASS: v0.4 metadata has required publication fields")
+    import_count = check_import_closure(manifest["challenge_module"])
+    print(f"      PASS: all {import_count} transitive imports resolve inside "
+          "Lean or Mathlib's pinned dependency set")
+    print("[4/6] PASS: basic v0.4 metadata presence checks; "
+          "run check_metadata.py for Palomar's validator")
 
     all_names = theorems + definitions
     with tempfile.NamedTemporaryFile(
@@ -178,21 +227,24 @@ def main() -> None:
         if unexpected:
             fail(f"{name} uses non-permitted axioms: {sorted(unexpected)}")
         print(f"      {name}: {sorted(seen[name])}")
-    print("[5/5] PASS: selected declarations use only permitted axioms")
+    print("[5/6] PASS: selected declarations use only permitted axioms")
 
-    comparator = os.environ.get("COMPARATOR")
-    exporter = os.environ.get("LEAN4EXPORT")
-    if comparator and exporter:
-        print("[6/6] Running the pinned Comparator (COMPARATOR and LEAN4EXPORT set) ...")
-        output = run("bash", "scripts/run_comparator.sh")
+    if args.comparator:
+        print("[6/6] Running the toolchain's Comparator and independent kernels ...",
+              flush=True)
+        command = ["bash", "scripts/run_comparator.sh"]
+        if args.local:
+            command.append("--local")
+        output = run(*command)
+        print(output.rstrip())
         if "Your solution is okay" not in output:
             fail("Comparator did not accept the Challenge/Solution pair")
         print("      PASS: Comparator accepts the Challenge/Solution pair")
     else:
-        print("[6/6] SKIPPED: set COMPARATOR and LEAN4EXPORT to run the pinned "
-              "Comparator; the preflight cannot see body mismatches without it")
+        print("[6/6] SKIPPED: pass --comparator (and --local on macOS); "
+              "the preflight cannot see body mismatches without it")
     print("=== PREFLIGHT PASSED ===")
-    print("Next release gate: protected Comparator/NanoDa run.")
+    print("Palomar's protected verification and review remain separate.")
 
 
 if __name__ == "__main__":

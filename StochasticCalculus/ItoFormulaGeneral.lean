@@ -64,7 +64,6 @@ theorem IsContinuousProcessModification.naturalIto_compact_maximal_sq_ineq
     obtain ⟨s, hst, hs⟩ := homega
     obtain ⟨n, hn⟩ := exists_lt_dyadicPartitionSqMax_of_continuous
       Y t omega hcontinuous hst hs
-    change omega ∈ D
     simp only [D, Set.mem_iUnion]
     refine ⟨n, ?_⟩
     change (ε : ℝ) ≤ dyadicPartitionSqMax R t n omega

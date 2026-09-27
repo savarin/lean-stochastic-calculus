@@ -714,8 +714,8 @@ theorem stronglyMeasurable_integratedDrift
   apply integral_congr_ae
   exact Filter.Eventually.of_forall fun s => by
     by_cases hs : s ∈ S
-    · simp only [S, Set.indicator_of_mem hs, if_pos hs]
-    · simp only [S, Set.indicator_of_notMem hs, if_neg hs]
+    · simp only [S, Set.indicator_of_mem hs, ite_eq_left hs]
+    · simp only [S, Set.indicator_of_notMem hs, ite_eq_right hs]
 
 omit [NormedAddCommGroup W] [NormedSpace ℝ W] in
 /-- Every uniform-partition quadratic-variation sum of the drift component

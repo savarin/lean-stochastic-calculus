@@ -36,7 +36,7 @@ variable {W : Type*} [NormedAddCommGroup W] [NormedSpace ℝ W]
 omit [NormedAddCommGroup W] [NormedSpace ℝ W] [CompleteSpace W] [BorelSpace W]
     [SecondCountableTopology W] [IsGaussian P] in
 /-- Chronologically disjoint elementary predictable terms are orthogonal in product `L²`. -/
-theorem inner_elementaryPredictable_eq_zero_of_le
+theorem inner_elementaryPredictable_eq_zero_of_le [SFinite P]
     (𝓕 : Filtration ℝ≥0 ‹MeasurableSpace W›) {a b c d : ℝ≥0} (hbc : b ≤ c)
     (Z : lpMeas ℝ ℝ (𝓕 a) 2 P) (Y : lpMeas ℝ ℝ (𝓕 c) 2 P) :
     inner ℝ (elementaryPredictable 𝓕 a b Z) (elementaryPredictable 𝓕 c d Y) = 0 := by
@@ -292,7 +292,7 @@ omit [NormedAddCommGroup W] [NormedSpace ℝ W] [CompleteSpace W] [BorelSpace W]
     [SecondCountableTopology W] [IsGaussian P] in
 /-- The cross-inner-product identity for chronologically disjoint constructed elementary
 Brownian values. -/
-theorem inner_elementaryBrownianValue_eq_inner_elementaryPredictable_of_le
+theorem inner_elementaryBrownianValue_eq_inner_elementaryPredictable_of_le [SFinite P]
     (hB : IsPreBrownianReal B P) (hsm : ∀ t, StronglyMeasurable (B t))
     {𝓕 : Filtration ℝ≥0 ‹MeasurableSpace W›}
     (hnat : 𝓕 = Filtration.natural B hsm)

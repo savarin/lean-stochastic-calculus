@@ -258,7 +258,7 @@ theorem uniformPartition_rightEndpoint_blocks_sum_one
     exact mul_div_cancel_right₀ t hk0
   have hzero : uniformPartitionTime t k 0 = 0 := by
     simp only [uniformPartitionTime, Nat.cast_zero, mul_zero, zero_div]
-  simp only [F, htop, hzero, hrt, if_true, not_le.mpr hr0, if_false,
+  simp only [F, htop, hzero, hrt, ite_true, not_le.mpr hr0, ite_false,
     sub_zero]
 
 omit [MeasurableSpace W] in

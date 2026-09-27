@@ -340,20 +340,13 @@ theorem eLpNorm_cappedComplexGirsanovEulerProcess_le_of_memLp_terminal
     rw [Real.toNNReal_of_nonneg
       (mul_nonneg (abs_nonneg c) CH.coe_nonneg)]
     exact mul_le_mul_of_nonneg_left (hHbound s omega) (abs_nonneg c)
-  have hinitialMeas : AEStronglyMeasurable (H 0) P :=
-    ((hH 0).mono (V.le 0)).aestronglyMeasurable
   have hinitial : eLpNorm (H 0) 2 P ≤ CH := by
     calc
       eLpNorm (H 0) 2 P ≤
           P Set.univ ^ (2 : ℝ≥0∞).toReal⁻¹ * ENNReal.ofReal (CH : ℝ) :=
-        eLpNorm_le_of_ae_bound
+        eLpNorm_le_of_ae_bound ((hH 0).mono (V.le 0)).aestronglyMeasurable
           (Filter.Eventually.of_forall fun omega => hHbound 0 omega)
       _ = CH := by simp
-  have htransformMeas : AEStronglyMeasurable
-      (uniformAdaptedTwoMartingaleSmulProcess
-        N B H J T (n + 1) t) P :=
-    ((martingale_uniformAdaptedTwoMartingaleSmulProcess
-      hN hBmart hH hJ CH CK hHbound hJbound T (n + 1)).integrable t).1
   rw [congrFun
     (cappedComplexGirsanovEulerProcess_eq
       N M bracket B C c R T (n + 1)) t]
@@ -366,7 +359,7 @@ theorem eLpNorm_cappedComplexGirsanovEulerProcess_le_of_memLp_terminal
           eLpNorm
             (uniformAdaptedTwoMartingaleSmulProcess
               N B H J T (n + 1) t) 2 P :=
-      eLpNorm_add_le hinitialMeas htransformMeas (by norm_num)
+      eLpNorm_add_le (by norm_num)
     _ ≤ CH +
           (2 * CH * eLpNorm (N T - N 0) 2 P +
             2 * CK * eLpNorm (B T - B 0) 2 P) :=

@@ -806,7 +806,7 @@ theorem complexTotalVariationApprox_stop_le_of_cell_bound
         have hpartial := hinc i hi
         rw [hmin _ hrightU, hmin _ hleftU,
           min_eq_left haright, min_eq_right hleft] at hpartial
-        rw [min_eq_left haright, min_eq_right hleft, if_pos hicross]
+        rw [min_eq_left haright, min_eq_right hleft, ite_eq_left hicross]
         exact hpartial.trans
           (le_add_of_nonneg_left
             (norm_nonneg (Q (uniformPartitionTime U n (i + 1)) omega -
@@ -1022,7 +1022,7 @@ theorem totalVariationApprox_neg_regularizedGirsanovIntegratedDrift_le
       ∫ r in Set.Icc (0 : ℝ) (T : ℝ), |theta r.toNNReal omega| := by
   by_cases hzero : bracket T omega = 0
   · unfold totalVariationApprox regularizedGirsanovIntegratedDrift
-    simp only [hzero, if_pos, neg_zero, sub_self, abs_zero,
+    simp only [hzero, ite_eq_left, neg_zero, sub_self, abs_zero,
       Finset.sum_const_zero]
     exact integral_nonneg_of_ae
       (Filter.Eventually.of_forall fun _ => abs_nonneg _)
@@ -1069,7 +1069,7 @@ theorem totalVariationApprox_neg_regularizedGirsanovIntegratedDrift_le
             (fun t omega => -girsanovIntegratedDrift theta T t omega)
             T (n + 1) omega := by
         unfold totalVariationApprox regularizedGirsanovIntegratedDrift
-        simp only [hzero, if_false]
+        simp only [hzero, ite_false]
       _ = totalVariationApprox (girsanovIntegratedDrift theta T)
           T (n + 1) omega :=
         totalVariationApprox_neg_process
@@ -1098,7 +1098,7 @@ theorem totalVariationApprox_neg_regularizedGirsanovIntegratedDrift_le_of_le
       ∫ r in Set.Icc (0 : ℝ) (U : ℝ), |theta r.toNNReal omega| := by
   by_cases hzero : bracket T omega = 0
   · unfold totalVariationApprox regularizedGirsanovIntegratedDrift
-    simp only [hzero, if_pos, neg_zero, sub_self, abs_zero,
+    simp only [hzero, ite_eq_left, neg_zero, sub_self, abs_zero,
       Finset.sum_const_zero]
     exact integral_nonneg_of_ae
       (Filter.Eventually.of_forall fun _ => abs_nonneg _)
@@ -1156,7 +1156,7 @@ theorem totalVariationApprox_neg_regularizedGirsanovIntegratedDrift_le_of_le
             (fun t omega => -girsanovIntegratedDrift theta T t omega)
             U (n + 1) omega := by
         unfold totalVariationApprox regularizedGirsanovIntegratedDrift
-        simp only [hzero, if_false]
+        simp only [hzero, ite_false]
       _ = totalVariationApprox (girsanovIntegratedDrift theta T)
           U (n + 1) omega :=
         totalVariationApprox_neg_process

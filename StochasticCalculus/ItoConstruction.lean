@@ -78,7 +78,7 @@ theorem elementaryBrownianValue_split
 omit [NormedAddCommGroup W] [NormedSpace ℝ W] [CompleteSpace W] [BorelSpace W]
     [SecondCountableTopology W] [IsGaussian P] in
 /-- An elementary predictable process splits at an intermediate time. -/
-theorem elementaryPredictable_split
+theorem elementaryPredictable_split [SFinite P]
     (𝓕 : Filtration ℝ≥0 ‹MeasurableSpace W›)
     {a c b : ℝ≥0} (hac : a ≤ c) (hcb : c ≤ b)
     (Z : lpMeas ℝ ℝ (𝓕 a) 2 P) :
@@ -201,7 +201,7 @@ abbrev ElementaryPredictableIndex
 
 /-- The predictable-process realization of one formal elementary generator. -/
 noncomputable def elementaryPredictableGenerator
-    (𝓕 : Filtration ℝ≥0 ‹MeasurableSpace W›) (P : Measure W) :
+    (𝓕 : Filtration ℝ≥0 ‹MeasurableSpace W›) (P : Measure W) [SFinite P] :
     ElementaryPredictableIndex 𝓕 P → PredictableProcessL2 𝓕 P :=
   fun x ↦ elementaryPredictable 𝓕 x.1 x.2.1.1 x.2.2
 
@@ -215,7 +215,7 @@ noncomputable def elementaryBrownianGenerator
 
 /-- Formal finite combinations realized as predictable processes. -/
 noncomputable def elementaryFinsuppToPredictable
-    (𝓕 : Filtration ℝ≥0 ‹MeasurableSpace W›) (P : Measure W) :
+    (𝓕 : Filtration ℝ≥0 ‹MeasurableSpace W›) (P : Measure W) [SFinite P] :
     (ElementaryPredictableIndex 𝓕 P →₀ ℝ) →ₗ[ℝ] PredictableProcessL2 𝓕 P :=
   Finsupp.linearCombination ℝ (elementaryPredictableGenerator 𝓕 P)
 
@@ -231,7 +231,7 @@ omit [NormedAddCommGroup W] [NormedSpace ℝ W] [CompleteSpace W] [BorelSpace W]
     [SecondCountableTopology W] in
 /-- The predictable realization of a single formal generator. -/
 theorem elementaryFinsuppToPredictable_single
-    (𝓕 : Filtration ℝ≥0 ‹MeasurableSpace W›) (P : Measure W)
+    (𝓕 : Filtration ℝ≥0 ‹MeasurableSpace W›) (P : Measure W) [SFinite P]
     (x : ElementaryPredictableIndex 𝓕 P) (c : ℝ) :
     elementaryFinsuppToPredictable 𝓕 P (Finsupp.single x c) =
       c • elementaryPredictableGenerator 𝓕 P x :=
@@ -320,12 +320,14 @@ theorem denseRange_elementaryFinsuppToPredictable
 
 /-- The natural-filtration Itô integral, obtained by norm-controlled extension from formal
 elementary combinations. -/
-noncomputable def naturalItoIntegral
+noncomputable def naturalItoIntegral {W : Type*} [MeasurableSpace W]
+    {P : Measure W} {B : ℝ≥0 → W → ℝ}
     (hB : IsPreBrownianReal B P) (hsm : ∀ t, StronglyMeasurable (B t))
     {𝓕 : Filtration ℝ≥0 ‹MeasurableSpace W›}
     (hnat : 𝓕 = Filtration.natural B hsm) :
-    PredictableProcessL2 𝓕 P →L[ℝ] RandomL2 P :=
-  (elementaryFinsuppToBrownian hB hsm hnat).extendOfNorm
+    PredictableProcessL2 𝓕 P →L[ℝ] RandomL2 P := by
+  letI := (hB.hasLaw_eval 0).isProbabilityMeasure
+  exact (elementaryFinsuppToBrownian hB hsm hnat).extendOfNorm
     (elementaryFinsuppToPredictable 𝓕 P)
 
 omit [CompleteSpace W] [BorelSpace W] in

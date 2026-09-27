@@ -286,7 +286,7 @@ theorem elementaryPredictable_adaptedIndicator
     by_cases hw : p.2 ∈ F <;> simp [ht, hw]
 
 omit [CompleteSpace W] [BorelSpace W] [SecondCountableTopology W] in
-lemma inner_elementaryPredictable_adaptedIndicator
+lemma inner_elementaryPredictable_adaptedIndicator [SFinite P]
     (𝓕 : Filtration ℝ≥0 ‹MeasurableSpace W›) (a b : ℝ≥0)
     {F : Set W} (hF : MeasurableSet[𝓕 a] F)
     (g : PredictableProcessL2 𝓕 P) :
@@ -314,7 +314,7 @@ lemma inner_elementaryPredictable_adaptedIndicator
   exact integral_indicator (measurableSet_Ioc.prod (𝓕.le a F hF))
 
 /-- The algebraic span of all one-step adapted predictable processes. -/
-def elementaryPredictableSpan
+def elementaryPredictableSpan [SFinite P]
     (𝓕 : Filtration ℝ≥0 ‹MeasurableSpace W›) :
     Submodule ℝ (PredictableProcessL2 𝓕 P) :=
   Submodule.span ℝ {U | ∃ a b : ℝ≥0,
@@ -323,7 +323,7 @@ def elementaryPredictableSpan
 
 omit [NormedAddCommGroup W] [NormedSpace ℝ W] [CompleteSpace W] [BorelSpace W]
     [SecondCountableTopology W] [IsGaussian P] in
-lemma elementaryPredictable_mem_span
+lemma elementaryPredictable_mem_span [SFinite P]
     (𝓕 : Filtration ℝ≥0 (inferInstance : MeasurableSpace W)) (a b : ℝ≥0)
     (hab : a ≤ b)
     (Z : lpMeas ℝ ℝ (𝓕 a) 2 P) :

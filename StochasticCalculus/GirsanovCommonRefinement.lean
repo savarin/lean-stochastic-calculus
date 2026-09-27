@@ -789,14 +789,13 @@ theorem uniformStopped_product_decomposition_pos
   simpa only [Nat.sub_add_cancel hn'] using
     uniformStopped_product_decomposition X Y T (n - 1) t omega
 
-/-- A measurable Banach-valued `L¹`-norm limit of integrable functions is
+/-- A Banach-valued `L¹`-norm limit of integrable functions is
 integrable. -/
 theorem integrable_of_tendsto_eLpNorm_one_sub_banach
     {W E : Type*} [MeasurableSpace W]
     [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
     {P : Measure W} {f : ℕ → W → E} {g : W → E}
     (hf : ∀ n, Integrable (f n) P)
-    (hg : AEStronglyMeasurable g P)
     (hconv : Filter.Tendsto (fun n ↦ eLpNorm (g - f n) 1 P)
       Filter.atTop (nhds 0)) :
     Integrable g P := by
@@ -805,8 +804,7 @@ theorem integrable_of_tendsto_eLpNorm_one_sub_banach
     (tendsto_order.1 hconv).2 1 (by simp)
   rcases hlt.exists with ⟨n, hn⟩
   have hdiff : Integrable (g - f n) P :=
-    memLp_one_iff_integrable.mp
-      ⟨hg.sub (hf n).1, hn.trans (by simp)⟩
+    memLp_one_iff_integrable.mp (hn.trans (by simp))
   simpa only [sub_add_cancel] using hdiff.add (hf n)
 
 /-- A strongly adapted pointwise-in-time `L¹`-norm limit of Banach-valued
@@ -825,12 +823,10 @@ theorem martingale_of_tendsto_eLpNorm_one_banach
   have hYint : ∀ t, Integrable (Y t) P := fun t ↦
     integrable_of_tendsto_eLpNorm_one_sub_banach
       (fun n ↦ (hX n).integrable t)
-      ((hYadapt t).mono (V.le t)).aestronglyMeasurable (hconv t)
+      (hconv t)
   refine ⟨hYadapt, ?_⟩
   intro s t hst
-  rw [← sub_ae_eq_zero, ← eLpNorm_eq_zero_iff
-    ((stronglyMeasurable_condExp.mono (V.le s)).sub
-      ((hYadapt s).mono (V.le s))).aestronglyMeasurable one_ne_zero]
+  rw [← sub_ae_eq_zero, ← eLpNorm_eq_zero_iff one_ne_zero]
   apply le_antisymm
   · have hconvS : Filter.Tendsto (fun n ↦ eLpNorm (X n s - Y s) 1 P)
         Filter.atTop (nhds 0) := by
@@ -857,11 +853,7 @@ theorem martingale_of_tendsto_eLpNorm_one_banach
         eLpNorm_congr_ae hdecomp
       _ ≤ eLpNorm (P[Y t - X n t | V s]) 1 P +
             eLpNorm (X n s - Y s) 1 P :=
-        eLpNorm_add_le
-          (integrable_condExp (μ := P) (m := V s)
-          (f := Y t - X n t)).1
-          ((((hX n).stronglyMeasurable s).mono
-            (V.le s)).aestronglyMeasurable.sub (hYint s).1) le_rfl
+        eLpNorm_add_le le_rfl
       _ ≤ eLpNorm (Y t - X n t) 1 P + eLpNorm (X n s - Y s) 1 P :=
         add_le_add (eLpNorm_condExp_le_eLpNorm _ le_rfl) le_rfl
   · exact zero_le
@@ -878,7 +870,7 @@ theorem tendsto_eLpNorm_one_of_tendstoInMeasure_of_uniformIntegrable_banach
     Tendsto (fun n ↦ eLpNorm (X n - Y) 1 P) atTop (nhds 0) := by
   have hYmem : MemLp Y 1 P := hUI.memLp_of_tendstoInMeasure hconv
   exact tendsto_Lp_finite_of_tendstoInMeasure le_rfl ENNReal.one_ne_top
-    (fun n ↦ (hUI.memLp n).1) hYmem hUI.unifIntegrable hconv
+    (fun n ↦ (hUI.memLp n).aestronglyMeasurable) hYmem hUI.unifIntegrable hconv
 
 /-- Banach-valued Vitali closure for martingales: convergence in measure
 plus uniform integrability at every time gives the `L¹` convergence required
@@ -915,18 +907,14 @@ theorem UniformIntegrable.mono_norm_banach
     (hg : ∀ i, AEStronglyMeasurable (g i) P)
     (hgf : ∀ i omega, ‖g i omega‖ ≤ ‖f i omega‖) :
     UniformIntegrable g p P := by
-  refine ⟨hg, ?_, ?_⟩
+  refine ⟨unifIntegrable_iff.2 ?_, ?_⟩
   · intro epsilon hepsilon
-    obtain ⟨delta, hdelta, hbound⟩ := hf.2.1 hepsilon
-    refine ⟨delta, hdelta, fun i s hs hPs ↦ ?_⟩
-    apply (eLpNorm_mono fun omega ↦ ?_).trans (hbound i s hs hPs)
-    by_cases homega : omega ∈ s
-    · simp only [Set.indicator_of_mem homega]
-      exact hgf i omega
-    · simp only [Set.indicator_of_notMem homega, norm_zero]
-      exact le_rfl
-  · obtain ⟨C, hC⟩ := hf.2.2
-    exact ⟨C, fun i ↦ (eLpNorm_mono (hgf i)).trans (hC i)⟩
+    obtain ⟨delta, hdelta, hbound⟩ := unifIntegrable_iff.1 hf.1 epsilon hepsilon
+    refine ⟨delta, hdelta, fun i s hPs ↦ ?_⟩
+    exact (eLpNorm_mono ((hg i).mono_measure Measure.restrict_le_self) (hgf i)).trans
+      (hbound i s hPs)
+  · obtain ⟨C, hC⟩ := hf.2
+    exact ⟨C, fun i ↦ (eLpNorm_mono (hg i) (hgf i)).trans (hC i)⟩
 
 /-- Uniform integrability is preserved when restricting to an arbitrary
 reindexed subfamily. -/
@@ -935,11 +923,8 @@ theorem UniformIntegrable.comp_index
     {P : Measure W} {f : I → W → E} {p : ℝ≥0∞}
     (hf : UniformIntegrable f p P) (g : J → I) :
     UniformIntegrable (fun j => f (g j)) p P := by
-  refine ⟨fun j => hf.1 (g j), ?_, ?_⟩
-  · intro epsilon hepsilon
-    obtain ⟨delta, hdelta, hbound⟩ := hf.2.1 hepsilon
-    exact ⟨delta, hdelta, fun j => hbound (g j)⟩
-  · obtain ⟨C, hC⟩ := hf.2.2
+  refine ⟨UnifIntegrable.comp g hf.1, ?_⟩
+  · obtain ⟨C, hC⟩ := hf.2
     exact ⟨C, fun j => hC (g j)⟩
 
 /-- The sum of two uniformly integrable Banach-valued families is uniformly
@@ -950,13 +935,13 @@ theorem UniformIntegrable.add_banach
     (hf : UniformIntegrable f p P) (hg : UniformIntegrable g p P)
     (hp : 1 ≤ p) :
     UniformIntegrable (fun i omega => f i omega + g i omega) p P := by
-  refine ⟨fun i => (hf.1 i).add (hg.1 i), ?_, ?_⟩
+  refine ⟨?_, ?_⟩
   · change UnifIntegrable (f + g) p P
-    exact hf.2.1.add hg.2.1 hp hf.1 hg.1
-  · obtain ⟨Cf, hCf⟩ := hf.2.2
-    obtain ⟨Cg, hCg⟩ := hg.2.2
+    exact hf.1.add hg.1 hp
+  · obtain ⟨Cf, hCf⟩ := hf.2
+    obtain ⟨Cg, hCg⟩ := hg.2
     refine ⟨Cf + Cg, fun i => ?_⟩
-    exact (eLpNorm_add_le (hf.1 i) (hg.1 i) hp).trans
+    exact (eLpNorm_add_le hp).trans
       (add_le_add (hCf i) (hCg i))
 
 /-- A fixed natural multiple of a uniformly integrable Banach-valued family
@@ -969,9 +954,9 @@ theorem UniformIntegrable.nsmul_banach
   induction n with
   | zero =>
       simp only [zero_nsmul]
-      refine ⟨fun _ => aestronglyMeasurable_const, ?_, ⟨0, fun _ => by simp⟩⟩
+      refine ⟨unifIntegrable_iff.2 ?_, ⟨0, fun _ => by simp⟩⟩
       intro epsilon hepsilon
-      exact ⟨1, one_pos, fun _ _ _ _ => by simp⟩
+      exact ⟨1, one_pos, fun _ _ _ => by simp⟩
   | succ n hn =>
       simpa only [Nat.succ_eq_add_one, add_nsmul, one_nsmul] using
         UniformIntegrable.add_banach hn hf hp
@@ -1030,7 +1015,6 @@ theorem Martingale.rightCont_of_tendstoInMeasure_of_uniformIntegrable_banach
       (fun n => ∫ omega in A, X (u n) omega ∂P) atTop
       (nhds (∫ omega in A, X s omega ∂P)) :=
     tendsto_setIntegral_of_L1' (X s)
-      (hX.integrable s).aestronglyMeasurable
       (Filter.Eventually.of_forall fun n => hX.integrable (u n)) hL1 A
   have hIntegralEq (n : ℕ) :
       (∫ omega in A, X (u n) omega ∂P) =
@@ -1104,7 +1088,7 @@ theorem Martingale.rightCont_of_tendstoInMeasure_of_locally_bounded_banach
       hUI (hstoch s u hu)
   have hIntegral : Tendsto (fun n ↦ ∫ omega in A, X (u n) omega ∂P)
       atTop (nhds (∫ omega in A, X s omega ∂P)) :=
-    tendsto_setIntegral_of_L1' (X s) (hX.integrable s).aestronglyMeasurable
+    tendsto_setIntegral_of_L1' (X s)
       (Filter.Eventually.of_forall fun n ↦ hX.integrable (u n)) hL1 A
   have hIntegralEq (n : ℕ) :
       (∫ omega in A, X (u n) omega ∂P) = ∫ omega in A, X t omega ∂P := by

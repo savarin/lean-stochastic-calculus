@@ -1,9 +1,10 @@
 # lean-stochastic-calculus
 
 Black-Scholes option pricing from first principles, formalized in Lean 4
-against Mathlib. The proof builds the Itô integral, derives the Girsanov
-change-of-measure theorem, and uses it to price European call options
-under the risk-neutral measure. Prepared for submission to
+against Mathlib. The library builds the Itô integral and proves the general
+predictable (dynamic) Girsanov theorem. The Black-Scholes proof applies that
+theorem at a constant drift to price European call options under the
+risk-neutral measure. Prepared for submission to
 [Palomar](https://palomar-registry.org).
 
 ## Main result
@@ -39,10 +40,19 @@ Itô integral construction
          │
   Doléans-Dade exponential ── Novikov condition
          │
-  Girsanov change of measure
+  General predictable Girsanov theorem
+         │
+  Constant-drift instance θ = (μ − r) / σ
          │
   Black-Scholes pricing
 ```
+
+Here “dynamic” describes the general theorem: it allows a drift that varies
+with time and the random path, subject to its stated conditions. Black-Scholes
+needs the constant drift above, for which the proof supplies those conditions
+directly. The constructor that would supply them for arbitrary integrands
+remains deferred. [BLUEPRINT.md](BLUEPRINT.md) explains each step and names
+the Lean lemmas used.
 
 ## Trust boundary
 
@@ -59,57 +69,79 @@ its code mapping are in [BLUEPRINT.md](BLUEPRINT.md).
 
 ## Build and verify
 
-Lean and Mathlib v4.33.0 are pinned.
+Lean and Mathlib **v4.35.0-rc3** are pinned. This is a release candidate.
 
 ```bash
 lake exe cache get
 lake build StochasticCalculus BlackScholesSolution --iofail
 lake build BlackScholesChallenge
 python3 scripts/check_boundary.py
+lake env lean scripts/check_girsanov_route.lean
 ```
 
 The library and the Solution build with `--iofail`, which rejects any
 stray informational output. The Challenge is built separately because its
 one deliberate `sorry` is reported as a warning.
 
-Comparator smoke test and negative control (require the pinned Comparator
-and lean4export binaries; on macOS point `FAKE_LANDRUN` at the
-Comparator's `scripts/fake-landrun.sh`):
+Lean 4.35 bundles Comparator, the matching exporter, and independent proof
+checkers. The scripts use those tools directly; no separate Comparator or
+lean4export installation is needed. On Linux with `bubblewrap` available:
 
 ```bash
-COMPARATOR=<path> LEAN4EXPORT=<path> bash scripts/run_comparator.sh
-COMPARATOR=<path> LEAN4EXPORT=<path> bash scripts/negative_control.sh
+python3 scripts/check_boundary.py --comparator
+bash scripts/negative_control.sh
 ```
 
-Palomar runs its own pinned Comparator, Landrun sandbox, and NanoDa
-kernel independently; `enable_nanoda` is set to `false` in the local
-config because the NanoDa binary is not distributed.
+On macOS, append `--local` to each command. This explicitly runs without
+the Linux sandbox. The scripts enable the bundled NanoDa and con-ron
+checkers in a temporary configuration, alongside Lean's own kernel. The
+negative control requires a passing baseline, changes the statement,
+checks that Comparator rejects it, then restores and rebuilds the original.
+
+To validate metadata and packaging with Palomar's pinned validator
+(Python 3.11 or later):
+
+```bash
+python3 -m venv .lake/checks-venv
+.lake/checks-venv/bin/python -m pip install -r scripts/requirements-checks.txt
+git clone https://github.com/PalomarRegistry/PalomarSubmission.git .lake/palomar-submission
+git -C .lake/palomar-submission checkout --detach a59f25bd8a66bf6faf3a4f4260d412989c0185ea
+.lake/checks-venv/bin/python scripts/check_metadata.py
+```
+
+Palomar independently reruns its protected checks on the submitted commit.
+The local checks do not constitute Palomar acceptance. The validator pin
+records the rules checked here; reassess it if submission is delayed.
 
 ## Verification
 
-On 2026-09-21 the pinned Comparator (leanprover/comparator at
-`8d84e67`, 2026-08-25, with lean4export built for Lean v4.33.0) accepted
-the Challenge/Solution pair: "Lean default kernel accepts the solution".
-The negative control, run the same day with the same binaries, requires
-the unmodified baseline to pass, then mutates the Challenge (dropping the
-absolute-continuity clauses), confirms the mutated boundary still
-elaborates, and verifies that the Comparator rejects specifically the
-named theorem. `check_boundary.py` validates the closed Comparator
-schema, verifies Mathlib-only imports, checks the deliberate sorry count,
-confirms each selected declaration is present in the Challenge, and
-audits that all declarations use only the permitted axioms.
+The Lean 4.35 verification results, exact versions, commands, and limits
+are recorded in [VERIFICATION.md](VERIFICATION.md). Earlier results from
+Lean 4.33 do not establish that the upgraded project passes.
+
+GitHub CI checks the strict build, publication boundary, dynamic Girsanov
+dependency, metadata, and packaging. The full local Comparator and
+negative-control results are recorded separately; Palomar performs the
+protected verification after submission.
 
 ## Production and review
 
 The proof library was written by agents and is checked by the Lean
 kernel: Codex built the library and the boundary on 2026-09-07 in the
 `lean-pipeline/black-scholes-sde` workspace, and Claude Fable 5.1 rerouted
-the measure change through the predictable Girsanov theorem, pruned the
-library to the declarations the theorems use, and split the largest files
-on 2026-09-21. The author directed the work, read the Challenge and the
-metadata, and approved each change; the library has not been examined in
+the measure change through the predictable Girsanov theorem, pruned unused
+parts of the library, and split the largest files
+on 2026-09-21. Codex upgraded the project to Lean and Mathlib 4.35 and
+updated the submission checks on 2026-09-27. The author directed the work,
+read the Challenge and the metadata, and approved the earlier changes;
+the current upgrade awaits review. The library has not been examined in
 depth by human experts. Details, including model names and cost notes, are
 in `formalization.yaml`.
+
+The mathematics follows a standard route to the established Black-Scholes
+formula. The metadata identifies the original paper as the source of the
+result and explains the different proof route; no mathematical novelty is
+claimed.
 
 ## License
 

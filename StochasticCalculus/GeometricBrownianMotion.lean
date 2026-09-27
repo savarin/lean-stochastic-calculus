@@ -987,7 +987,7 @@ theorem quadraticVariationBeforeStop_brownian_tendstoInMeasure
       apply Finset.sum_congr rfl
       intro i hi
       have hi1 : i + 1 ≤ n + 1 := Finset.mem_range.mp hi
-      rw [if_pos ((uniformPartitionTime_mem_Icc_of_le t
+      rw [ite_eq_left ((uniformPartitionTime_mem_Icc_of_le t
         (Nat.zero_lt_succ n) hi1).2.trans hta)]
     · filter_upwards with omega
       rw [min_eq_left hta]

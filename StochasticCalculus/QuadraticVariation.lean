@@ -62,10 +62,7 @@ theorem quadraticVariation_brownian_after_time_inProbability
     HasQuadraticVariationInProbabilityAt
       (fun s omega ↦ B s omega - B (min s a) omega) P t
       (fun _ ↦ (t - a : ℝ≥0)) := by
-  apply (quadraticVariation_brownian_after_time hB a t).to_inProbability
-  intro s
-  exact (hB.toIsPreBrownianReal.aemeasurable s).aestronglyMeasurable.sub
-    (hB.toIsPreBrownianReal.aemeasurable (min s a)).aestronglyMeasurable
+  exact (quadraticVariation_brownian_after_time hB a t).to_inProbability
 
 omit [NormedAddCommGroup W] [NormedSpace ℝ W] in
 /-- The Brownian increment accumulated on a deterministic interval `[a, b]`
@@ -129,10 +126,7 @@ theorem quadraticVariation_brownian_interval_inProbability
     HasQuadraticVariationInProbabilityAt
       (fun s omega ↦ B (min s b) omega - B (min s a) omega) P t
       (fun _ ↦ (min t b - min t a : ℝ≥0)) := by
-  apply (quadraticVariation_brownian_interval hB hab t).to_inProbability
-  intro s
-  exact (hB.toIsPreBrownianReal.aemeasurable (min s b)).aestronglyMeasurable.sub
-    (hB.toIsPreBrownianReal.aemeasurable (min s a)).aestronglyMeasurable
+  exact (quadraticVariation_brownian_interval hB hab t).to_inProbability
 
 omit [NormedAddCommGroup W] [NormedSpace ℝ W] in
 /-- A Brownian interval block multiplied by a measurable random variable that
@@ -530,9 +524,7 @@ theorem quadraticVariation_stopped_preBrownianReal_inProbability
     (hB : IsPreBrownianReal B P) (a t : ℝ≥0) :
     HasQuadraticVariationInProbabilityAt
       (fun s ω => B (min s a) ω) P t (fun _ => (min t a : ℝ≥0)) := by
-  apply (quadraticVariation_stopped_preBrownianReal hB a t).to_inProbability
-  intro s
-  exact (hB.aemeasurable (min s a)).aestronglyMeasurable
+  exact (quadraticVariation_stopped_preBrownianReal hB a t).to_inProbability
 
 omit [NormedAddCommGroup W] [NormedSpace ℝ W] in
 /-- Brownian specialization of the stopped bracket convergence in probability. -/
@@ -672,32 +664,7 @@ probability, matching the carrier used for general Itô processes. -/
 theorem quadraticVariation_brownianMotion_inProbability
     (hB : IsBrownianMotion B P) (t : ℝ≥0) :
     HasQuadraticVariationInProbabilityAt B P t (fun _ => (t : ℝ)) := by
-  unfold HasQuadraticVariationInProbabilityAt
-  apply tendstoInMeasure_of_tendsto_eLpNorm (p := 2) (by norm_num)
-  · intro n
-    unfold quadraticVariationApprox
-    have hs := Finset.aestronglyMeasurable_sum (Finset.range (n + 1))
-      (fun i _hi => (((hB.toIsPreBrownianReal.aemeasurable
-        (uniformPartitionTime t (n + 1) (i + 1))).sub
-        (hB.toIsPreBrownianReal.aemeasurable
-          (uniformPartitionTime t (n + 1) i))).pow_const 2).aestronglyMeasurable)
-    have hfun :
-        (fun ω => ∑ i ∈ Finset.range (n + 1),
-          (B (uniformPartitionTime t (n + 1) (i + 1)) ω -
-            B (uniformPartitionTime t (n + 1) i) ω) ^ 2) =
-        ∑ i ∈ Finset.range (n + 1), fun ω =>
-          (B (uniformPartitionTime t (n + 1) (i + 1)) ω -
-            B (uniformPartitionTime t (n + 1) i) ω) ^ 2 := by
-      funext ω
-      simp only [Finset.sum_apply]
-    rw [hfun]
-    exact hs
-  · exact aestronglyMeasurable_const
-  · have h := quadraticVariation_brownianMotion hB t
-    unfold HasQuadraticVariationAt at h
-    convert h using 1
-    funext n
-    congr 1
+  exact (quadraticVariation_brownianMotion hB t).to_inProbability
 
 omit [NormedAddCommGroup W] [NormedSpace ℝ W] in
 /-- The uniform-partition quadratic variation calculation only uses the
@@ -724,8 +691,7 @@ every deterministic time, independently of its choice of path version. -/
 theorem quadraticVariation_preBrownianReal_inProbability
     (hB : IsPreBrownianReal B P) (t : ℝ≥0) :
     HasQuadraticVariationInProbabilityAt B P t (fun _ ↦ (t : ℝ)) := by
-  apply (quadraticVariation_preBrownianReal hB t).to_inProbability
-  exact fun s ↦ (hB.aemeasurable s).aestronglyMeasurable
+  exact (quadraticVariation_preBrownianReal hB t).to_inProbability
 
 omit [NormedAddCommGroup W] [NormedSpace ℝ W] in
 /-- The stopped Brownian block and the Brownian increment accumulated after

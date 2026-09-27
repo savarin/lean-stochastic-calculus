@@ -105,7 +105,8 @@ theorem norm_predictableTimeRestrict_le
           (U : ℝ≥0 × W → ℝ)) 2 (nonnegativeLebesgueMeasure.prod P) :=
       eLpNorm_congr_ae (predictableTimeRestrict_coeFn 𝓕 t U)
     _ ≤ eLpNorm (U : ℝ≥0 × W → ℝ) 2
-        (nonnegativeLebesgueMeasure.prod P) := eLpNorm_indicator_le _
+        (nonnegativeLebesgueMeasure.prod P) :=
+      eLpNorm_indicator_le _ (measurableSet_Ioc.prod MeasurableSet.univ)
 
 omit [NormedAddCommGroup W] [NormedSpace ℝ W] [CompleteSpace W] [BorelSpace W]
     [SecondCountableTopology W] [IsGaussian P] in
@@ -359,7 +360,7 @@ theorem predictableTimeSliceCLM_apply
 omit [NormedAddCommGroup W] [NormedSpace ℝ W] [CompleteSpace W] [BorelSpace W]
     [SecondCountableTopology W] [IsGaussian P] in
 /-- Cutting an elementary process to `(s,t]` intersects its time interval with that slice. -/
-theorem predictableTimeSlice_elementaryPredictable
+theorem predictableTimeSlice_elementaryPredictable [SFinite P]
     (𝓕 : Filtration ℝ≥0 ‹MeasurableSpace W›) {s t : ℝ≥0} (hst : s ≤ t)
     (a b : ℝ≥0) (Z : lpMeas ℝ ℝ (𝓕 a) 2 P) :
     predictableTimeSlice 𝓕 s t (elementaryPredictable 𝓕 a b Z) =
@@ -393,7 +394,7 @@ theorem predictableTimeSlice_elementaryPredictable
         intro hi
         exact (not_lt_of_ge hps.1.2)
           (lt_of_le_of_lt (le_max_right a s) hi.1)
-      rw [if_neg hi]
+      rw [ite_eq_right hi]
     · rw [Set.indicator_of_notMem hps, sub_zero, hU]
       have hsx : s < p.1 := by
         by_contra hx
@@ -407,9 +408,9 @@ theorem predictableTimeSlice_elementaryPredictable
           exact ⟨lt_of_le_of_lt (le_max_left a s) hp.1,
             hp.2.trans (min_le_left b t)⟩
       by_cases hpab : p.1 ∈ Set.Ioc a b
-      · rw [if_pos hpab, if_pos (hi.mp hpab)]
+      · rw [ite_eq_left hpab, ite_eq_left (hi.mp hpab)]
         rfl
-      · rw [if_neg hpab, if_neg (mt hi.mpr hpab)]
+      · rw [ite_eq_right hpab, ite_eq_right (mt hi.mpr hpab)]
   · have hps : p ∉ predictableTimeFrame (W := W) s := by
       intro hp
       apply hpt
@@ -421,12 +422,12 @@ theorem predictableTimeSlice_elementaryPredictable
           (lt_of_le_of_lt (le_max_right a s) hi.1),
         hi.2.trans (min_le_right b t)⟩, Set.mem_univ _⟩
     rw [Set.indicator_of_notMem hpt, Set.indicator_of_notMem hps, sub_zero]
-    rw [if_neg hi]
+    rw [ite_eq_right hi]
 
 omit [NormedAddCommGroup W] [NormedSpace ℝ W] [CompleteSpace W] [BorelSpace W]
     [SecondCountableTopology W] [IsGaussian P] in
 /-- Stopping an elementary process at `t` shortens its right endpoint to `min b t`. -/
-theorem predictableTimeRestrict_elementaryPredictable
+theorem predictableTimeRestrict_elementaryPredictable [SFinite P]
     (𝓕 : Filtration ℝ≥0 ‹MeasurableSpace W›) (t a b : ℝ≥0)
     (Z : lpMeas ℝ ℝ (𝓕 a) 2 P) :
     predictableTimeRestrict 𝓕 t (elementaryPredictable 𝓕 a b Z) =
@@ -451,20 +452,20 @@ theorem predictableTimeRestrict_elementaryPredictable
       · intro hp
         exact ⟨hp.1, hp.2.trans (min_le_left b t)⟩
     by_cases hpab : p.1 ∈ Set.Ioc a b
-    · rw [if_pos hpab, if_pos (hi.mp hpab)]
-    · rw [if_neg hpab, if_neg (mt hi.mpr hpab)]
+    · rw [ite_eq_left hpab, ite_eq_left (hi.mp hpab)]
+    · rw [ite_eq_right hpab, ite_eq_right (mt hi.mpr hpab)]
   · rw [Set.indicator_of_notMem hpt]
     have hi : p.1 ∉ Set.Ioc a (b ⊓ t) := by
       intro hi
       apply hpt
       exact ⟨⟨lt_of_le_of_lt (zero_le : (0 : ℝ≥0) ≤ a) hi.1,
         hi.2.trans (min_le_right b t)⟩, Set.mem_univ _⟩
-    rw [if_neg hi]
+    rw [ite_eq_right hi]
 
 omit [NormedAddCommGroup W] [NormedSpace ℝ W] [CompleteSpace W] [BorelSpace W]
     [SecondCountableTopology W] [IsGaussian P] in
 /-- An elementary predictable process on an empty ordered interval is zero. -/
-theorem elementaryPredictable_eq_zero_of_le
+theorem elementaryPredictable_eq_zero_of_le [SFinite P]
     (𝓕 : Filtration ℝ≥0 ‹MeasurableSpace W›) {a b : ℝ≥0} (hba : b ≤ a)
     (Z : lpMeas ℝ ℝ (𝓕 a) 2 P) :
     elementaryPredictable 𝓕 a b Z = 0 := by

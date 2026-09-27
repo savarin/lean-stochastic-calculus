@@ -97,13 +97,15 @@ theorem uniformIntegrable_one_of_uniform_eLpNorm_gt_one
     dsimp only [a]
     rw [sub_pos, div_lt_one (by positivity)]
     exact hqReal
-  refine ⟨hf, ?_, ?_⟩
-  · intro ε hε
+  refine ⟨unifIntegrable_iff'.2 ?_, ?_⟩
+  · intro ε₀ hε₀
+    obtain ⟨ε, _, hε, hεlt⟩ := ENNReal.lt_iff_exists_real_btwn.1 hε₀
+    have hε : 0 < ε := ENNReal.ofReal_pos.1 hε
     let d : ℝ := (ε / ((C : ℝ) + 1)) ^ (1 / a)
     have hbase : 0 < ε / ((C : ℝ) + 1) := div_pos hε (by positivity)
     have hd : 0 < d := Real.rpow_pos_of_pos hbase _
-    refine ⟨d, hd, fun i s hs hPs ↦ ?_⟩
-    rw [eLpNorm_indicator_eq_eLpNorm_restrict hs]
+    refine ⟨ENNReal.ofReal d, ENNReal.ofReal_pos.2 hd, fun i s _hs hPs ↦ ?_⟩
+    apply le_trans ?_ hεlt.le
     calc
       eLpNorm (f i) 1 (P.restrict s) ≤
           eLpNorm (f i) q (P.restrict s) *
@@ -133,7 +135,7 @@ theorem uniformIntegrable_one_of_uniform_eLpNorm_gt_one
             exact mul_le_mul_of_nonneg_right (le_add_of_nonneg_right zero_le_one) hbase.le
           _ = ε := by field_simp
   · refine ⟨C, fun i ↦ ?_⟩
-    exact (eLpNorm_le_eLpNorm_of_exponent_le hq.le (hf i)).trans (hC i)
+    exact (eLpNorm_le_eLpNorm_of_exponent_le hq.le).trans (hC i)
 
 theorem integrable_rpow_doleansDade_and_integral_le_kazamaki
     {W : Type*} [MeasurableSpace W] {P : Measure W}
@@ -663,18 +665,14 @@ lemma UniformIntegrable.mono_norm
     (hg : ∀ i, AEStronglyMeasurable (g i) P)
     (hgf : ∀ i omega, ‖g i omega‖ ≤ ‖f i omega‖) :
     UniformIntegrable g p P := by
-  refine ⟨hg, ?_, ?_⟩
+  refine ⟨unifIntegrable_iff.2 ?_, ?_⟩
   · intro epsilon hepsilon
-    obtain ⟨delta, hdelta, hbound⟩ := hf.2.1 hepsilon
-    refine ⟨delta, hdelta, fun i s hs hPs => ?_⟩
-    apply (eLpNorm_mono fun omega => ?_).trans (hbound i s hs hPs)
-    by_cases homega : omega ∈ s
-    · simp only [Set.indicator_of_mem homega]
-      exact hgf i omega
-    · simp only [Set.indicator_of_notMem homega, norm_zero]
-      exact le_rfl
-  · obtain ⟨C, hC⟩ := hf.2.2
-    exact ⟨C, fun i => (eLpNorm_mono (hgf i)).trans (hC i)⟩
+    obtain ⟨delta, hdelta, hbound⟩ := unifIntegrable_iff.1 hf.1 epsilon hepsilon
+    refine ⟨delta, hdelta, fun i s hPs => ?_⟩
+    exact (eLpNorm_mono ((hg i).mono_measure Measure.restrict_le_self) (hgf i)).trans
+      (hbound i s hPs)
+  · obtain ⟨C, hC⟩ := hf.2
+    exact ⟨C, fun i => (eLpNorm_mono (hg i) (hgf i)).trans (hC i)⟩
 
 /-- A local martingale is genuine through `T` if its values at the canonical
 localizing stopping times, truncated at each `t ≤ T`, form a uniformly
@@ -1082,7 +1080,7 @@ theorem NovikovCondition.martingale_stopAt_doleansDade
       funext t omega
       unfold N localizingStoppedProcess stoppedProcess
       simp only [Set.indicator_apply]
-      rw [if_pos]
+      rw [ite_eq_left]
       · apply congrArg (fun u => E u omega)
         rw [← WithTop.coe_min, WithTop.untopA_eq_untop WithTop.coe_ne_top,
           WithTop.untop_coe]

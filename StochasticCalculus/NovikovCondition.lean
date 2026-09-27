@@ -496,11 +496,9 @@ theorem Martingale.uniformIntegrable_stoppedValue_of_bounded
     apply (WithTop.tendsto_untopA hne).comp
     exact tendsto_uniformPartitionCeilStoppingTime
       (tau i) T (hle i) omega⟩⟩
-  refine ⟨fun i => hLimits.1 (g i), ?_, ?_⟩
-  · intro epsilon hepsilon
-    rcases hLimits.2.1 hepsilon with ⟨delta, hdelta, hbound⟩
-    exact ⟨delta, hdelta, fun i s hs hPs => hbound (g i) s hs hPs⟩
-  · rcases hLimits.2.2 with ⟨C, hC⟩
+  change UniformIntegrable ((fun f : Limits => f.1) ∘ g) 1 P
+  refine ⟨UnifIntegrable.comp g hLimits.1, ?_⟩
+  · rcases hLimits.2 with ⟨C, hC⟩
     exact ⟨C, fun i => hC (g i)⟩
 
 theorem novikovKazamaki_stoppedValue_factor
@@ -708,7 +706,7 @@ theorem IsLocalMartingale.martingale_of_nonneg_of_integral_eq_zero
     have hbound : ∀ omega, tau omega ≤ (t : WithTop ℝ≥0) := by
       intro omega
       by_cases hmem : omega ∈ Aᶜ
-      · simp only [tau, Set.piecewise, hmem, if_pos]
+      · simp only [tau, Set.piecewise, hmem, ite_eq_left]
         exact_mod_cast hst
       · simp only [tau, Set.piecewise, hmem]
         exact le_rfl
@@ -766,7 +764,7 @@ theorem IsLocalMartingale.martingale_of_nonneg_of_integral_eq_zero
     have hsigmaBound : ∀ omega, sigma omega ≤ (t : WithTop ℝ≥0) := by
       intro omega
       by_cases hmem : omega ∈ A
-      · simp only [sigma, Set.piecewise, hmem, if_pos]
+      · simp only [sigma, Set.piecewise, hmem, ite_eq_left]
         exact_mod_cast hst
       · simp only [sigma, Set.piecewise, hmem]
         exact le_rfl

@@ -419,13 +419,13 @@ theorem
       rfl
     _ ≤ eLpNorm (fun omega => (Fre omega : ℂ)) 2 P +
           eLpNorm (fun omega => (Fim omega : ℂ) * Complex.I) 2 P :=
-      eLpNorm_add_le hcastRe hcastIm (by norm_num)
+      eLpNorm_add_le (by norm_num)
     _ = eLpNorm Fre 2 P + eLpNorm Fim 2 P := by
       congr 1
-      · apply eLpNorm_congr_norm_ae
+      · apply eLpNorm_congr_norm_ae hcastRe hRemeas
         filter_upwards with omega
         exact Complex.norm_real (Fre omega)
-      · apply eLpNorm_congr_norm_ae
+      · apply eLpNorm_congr_norm_ae hcastIm hImmeas
         filter_upwards with omega
         rw [Complex.norm_mul, Complex.norm_real, Complex.norm_I, mul_one]
     _ ≤ K * eLpNorm (M T - M 0) 2 P +
@@ -475,18 +475,12 @@ theorem
     uniformAdaptedMartingaleSmulProcess M H T (n + 1) T
   let D : W → ℂ :=
     uniformAdaptedMartingaleSmulProcess N K T (n + 1) T
-  have hAmeas : AEStronglyMeasurable A P :=
-    ((martingale_uniformAdaptedMartingaleSmulProcess
-      hM hH CH hHbound T (n + 1)).integrable T).1
-  have hDmeas : AEStronglyMeasurable D P :=
-    ((martingale_uniformAdaptedMartingaleSmulProcess
-      hN hK CK hKbound T (n + 1)).integrable T).1
   calc
     eLpNorm
         (uniformAdaptedTwoMartingaleSmulProcess M N H K T (n + 1) T)
           2 P = eLpNorm (A + D) 2 P := by rfl
     _ ≤ eLpNorm A 2 P + eLpNorm D 2 P :=
-      eLpNorm_add_le hAmeas hDmeas (by norm_num)
+      eLpNorm_add_le (by norm_num)
     _ ≤ 2 * CH * eLpNorm (M T - M 0) 2 P +
           2 * CK * eLpNorm (N T - N 0) 2 P := by
       exact add_le_add

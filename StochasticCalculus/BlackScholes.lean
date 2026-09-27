@@ -126,14 +126,14 @@ theorem tilted_gaussianReal (mean : ℝ) (variance : ℝ≥0) (c : ℝ) :
     integral_exp_tilted]
   have hnum := mgf_gaussianReal
     (p := gaussianReal mean variance) (X := id) (μ := mean) (v := variance)
-    (by simp) (c + t)
+    HasLaw.id (c + t)
   have hden := mgf_gaussianReal
     (p := gaussianReal mean variance) (X := id) (μ := mean) (v := variance)
-    (by simp) c
+    HasLaw.id c
   have htarget := mgf_gaussianReal
     (p := gaussianReal (mean + (variance : ℝ) * c) variance)
     (X := id) (μ := mean + (variance : ℝ) * c) (v := variance)
-    (by simp) t
+    HasLaw.id t
   rw [show (∫ x, Real.exp (((fun x ↦ c * x) + fun x ↦ t * x) x)
       ∂gaussianReal mean variance) =
         Real.exp (mean * (c + t) + (variance : ℝ) * (c + t) ^ 2 / 2) by

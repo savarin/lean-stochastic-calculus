@@ -108,7 +108,7 @@ theorem
     (h : ∀ U, U ≤ Horizon → TendstoInMeasure P
       (fun n ↦ quadraticCovariationApprox X Y U (n + 1)) atTop (C U))
     (hX : Martingale X V P) (hY : Martingale Y V P)
-    (hC : StronglyAdapted V C) (hCzero : C 0 = 0)
+    (hCzero : C 0 = 0)
     (hX4 : ∀ t, MemLp (X t) 4 P) (hY4 : ∀ t, MemLp (Y t) 4 P)
     (T : ℝ≥0) (hTH : T ≤ Horizon) {k j : ℕ} (hk : 0 < k) (hjk : j ≤ k)
     {Aset : Set W}
@@ -142,21 +142,6 @@ theorem
     · exact martingale_uniformAdaptedMartingaleSmulProcess_of_memLp_two
         hX hY.stronglyAdapted (fun t ↦ (hX4 t).mono_exponent (by norm_num))
         (fun t ↦ (hY4 t).mono_exponent (by norm_num)) T (k * (n + 1))
-  have hFmeas (t : ℝ≥0) : AEStronglyMeasurable (F t) P := by
-    have hXt : AEStronglyMeasurable (X (min t T)) P :=
-      (((hX.stronglyMeasurable (min t T)).mono
-        (V.mono (min_le_left _ _))).mono (V.le t)).aestronglyMeasurable
-    have hYt : AEStronglyMeasurable (Y (min t T)) P :=
-      (((hY.stronglyMeasurable (min t T)).mono
-        (V.mono (min_le_left _ _))).mono (V.le t)).aestronglyMeasurable
-    have hX0 : AEStronglyMeasurable (X 0) P :=
-      (((hX.stronglyMeasurable 0).mono
-        (V.mono bot_le)).mono (V.le t)).aestronglyMeasurable
-    have hY0 : AEStronglyMeasurable (Y 0) P :=
-      (((hY.stronglyMeasurable 0).mono
-        (V.mono bot_le)).mono (V.le t)).aestronglyMeasurable
-    exact ((hXt.mul hYt).sub (hX0.mul hY0)).sub
-      ((hC t).mono (V.le t)).aestronglyMeasurable
   have hconvF (r : ℝ≥0) (hrT : r ≤ T)
       (hcov : Tendsto (fun n ↦ eLpNorm
         (uniformStoppedCovariationApprox X Y T (k * (n + 1)) r - C r) 1 P)
@@ -164,23 +149,21 @@ theorem
       Tendsto (fun n ↦ eLpNorm (S n r - F r) 1 P) atTop (nhds 0) := by
     apply (tendsto_congr' ?_).2 hcov
     filter_upwards with n
-    apply eLpNorm_congr_norm_ae
+    rw [eLpNorm_sub_comm (uniformStoppedCovariationApprox X Y T (k * (n + 1)) r)
+      (C r) 1 P]
+    apply eLpNorm_congr_ae
     filter_upwards with omega
     have hnpos : 0 < k * (n + 1) := Nat.mul_pos hk (Nat.zero_lt_succ n)
     have hprod := uniformStopped_product_decomposition_pos
       X Y T (k * (n + 1)) hnpos r omega
-    change ‖S n r omega - F r omega‖ =
-      ‖uniformStoppedCovariationApprox X Y T (k * (n + 1)) r omega -
-        C r omega‖
-    have heq : S n r omega - F r omega =
+    change S n r omega - F r omega =
         C r omega -
-          uniformStoppedCovariationApprox X Y T (k * (n + 1)) r omega := by
-      dsimp only [S, F]
-      simp only [Pi.add_apply]
-      rw [min_eq_left hrT] at hprod
-      rw [min_eq_left hrT]
-      linarith
-    rw [heq, norm_sub_rev]
+          uniformStoppedCovariationApprox X Y T (k * (n + 1)) r omega
+    dsimp only [S, F]
+    simp only [Pi.add_apply]
+    rw [min_eq_left hrT] at hprod
+    rw [min_eq_left hrT]
+    linarith
   have hconvA : Tendsto (fun n ↦ eLpNorm (S n a - F a) 1 P)
       atTop (nhds 0) := by
     apply hconvF a haT
@@ -205,9 +188,9 @@ theorem
       atTop (nhds 0) := by
     apply hconvF T le_rfl
     simpa only [hTk] using hcovT0
-  have hIntA := tendsto_setIntegral_of_L1' (F a) (hFmeas a)
+  have hIntA := tendsto_setIntegral_of_L1' (F a)
     (Filter.Eventually.of_forall fun n ↦ (hS n).integrable a) hconvA Aset
-  have hIntT := tendsto_setIntegral_of_L1' (F T) (hFmeas T)
+  have hIntT := tendsto_setIntegral_of_L1' (F T)
     (Filter.Eventually.of_forall fun n ↦ (hS n).integrable T) hconvT Aset
   have hseq : (fun n ↦ ∫ omega in Aset, S n a omega ∂P) =
       fun n ↦ ∫ omega in Aset, S n T omega ∂P := by
@@ -264,7 +247,7 @@ theorem martingale_uniformGrid_product_compensator_of_memLp_four
       field_simp
     have hrat :=
       HasCrossVariationProcessInProbability.setIntegral_stoppedProduct_sub_eq_rational_of_memLp_four
-        h hX hY hC hCzero hX4 hY4 (u (i + 1)) (huT (i + 1)) hk hjk
+        h hX hY hCzero hX4 hY4 (u (i + 1)) (huT (i + 1)) hk hjk
         (Aset := A) (by rw [htime]; exact hA)
     simpa only [htime] using hrat
 
@@ -338,7 +321,7 @@ theorem Martingale.measure_random_index_norm_ge_le
         (Finset.range (N + 1)).sup' Finset.nonempty_range_add_one
           (fun i ↦ ‖M i omega‖)} ≤ eLpNorm (M N) 1 P := by
     refine hmax.trans ?_
-    rw [eLpNorm_one_eq_lintegral_enorm,
+    rw [eLpNorm_one_eq_lintegral_enorm (hM.integrable N).aestronglyMeasurable,
       ← ofReal_integral_norm_eq_lintegral_enorm (hM.integrable N)]
     exact ENNReal.ofReal_le_ofReal (setIntegral_le_integral (hM.integrable N).norm
       (Filter.Eventually.of_forall fun omega ↦ norm_nonneg (M N omega)))

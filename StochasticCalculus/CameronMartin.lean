@@ -7,7 +7,7 @@ import Mathlib.MeasureTheory.Function.Holder
 import Mathlib.MeasureTheory.Measure.LogLikelihoodRatio
 import Mathlib.Probability.Distributions.Gaussian.Fernique
 import Mathlib.Probability.Moments.CovarianceBilinDual
-import Mathlib.Tactic.Recall
+import Lean.Elab.Recall
 
 /-!
 # The Cameron--Martin space of a Gaussian measure
@@ -303,7 +303,7 @@ theorem integrable_smul_centeredId (f : Lp ℝ 2 μ) :
   change Integrable (((fun x ↦ f x) • centeredId μ)) μ
   have h_one :
       MemLp ((fun x ↦ f x) • centeredId μ) 1 μ :=
-    (memLp_centeredId μ).smul (Lp.memLp f)
+    (Lp.memLp f).smul (memLp_centeredId μ)
   have h_integrable : Integrable (((fun x ↦ f x) • centeredId μ)) μ :=
     memLp_one_iff_integrable.mp h_one
   exact h_integrable

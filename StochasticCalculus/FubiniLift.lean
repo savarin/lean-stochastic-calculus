@@ -7,7 +7,7 @@ import Mathlib.MeasureTheory.Function.L2Space
 import Mathlib.MeasureTheory.Function.SimpleFuncDenseLp
 import Mathlib.MeasureTheory.Integral.Prod
 import Mathlib.Analysis.Normed.Operator.Extend
-import Mathlib.Tactic.Recall
+import Lean.Elab.Recall
 
 /-!
 # The Fubini lift `L²(μ; L²(ν)) → L²(ν × μ)`
@@ -47,13 +47,14 @@ recall MeasureTheory.integral_prod_mul {α : Type u_1} {β : Type u_2} [Measurab
     ∫ z, f z.1 * g z.2 ∂μ.prod ν = (∫ x, f x ∂μ) * ∫ y, g y ∂ν
 
 recall MeasureTheory.Integrable.mul_prod {α : Type u_1} {β : Type u_2} [MeasurableSpace α]
-    [MeasurableSpace β] {μ : Measure α} {ν : Measure β} {L : Type u_3} [NormedRing L] {f : α → L}
-    {g : β → L} (hf : Integrable f μ) (hg : Integrable g ν) :
+    [MeasurableSpace β] {μ : Measure α} {ν : Measure β} [SFinite ν] {L : Type u_3}
+    [NormedRing L] {f : α → L} {g : β → L} (hf : Integrable f μ) (hg : Integrable g ν) :
     Integrable (fun z : α × β ↦ f z.1 * g z.2) (μ.prod ν)
 
 recall MeasureTheory.tendsto_measure_iInter_atTop {α : Type u_1} {ι : Type u_2}
-    {m : MeasurableSpace α} {μ : Measure α} [Preorder ι] [(atTop : Filter ι).IsCountablyGenerated]
-    {s : ι → Set α} (hs : ∀ i, NullMeasurableSet (s i) μ) (hm : Antitone s)
+    {m : MeasurableSpace α} {μ : Measure α} {s : ι → Set α} [Preorder ι]
+    [(atTop : Filter ι).IsCountablyGenerated]
+    (hs : ∀ i, NullMeasurableSet (s i) μ) (hm : Antitone s)
     (hf : ∃ i, μ (s i) ≠ ∞) : Tendsto (μ ∘ s) atTop (𝓝 (μ (⋂ n, s n)))
 
 recall MeasurableSpace.induction_on_inter {α : Type u_1} {m : MeasurableSpace α}
@@ -70,6 +71,7 @@ namespace StochasticCalculus
 section Generic
 
 variable {Ω T : Type*} [MeasurableSpace Ω] [MeasurableSpace T] {μ : Measure Ω} {ν : Measure T}
+  [SFinite μ]
 
 /-- Finite-measure measurable sets. -/
 abbrev FiniteMeasurableSet (μ : Measure Ω) := {A : Set Ω // MeasurableSet A ∧ μ A ≠ ∞}
@@ -82,7 +84,8 @@ theorem memLp_tensor (A : FiniteMeasurableSet μ) (g : Lp ℝ 2 ν) :
   have hg : MemLp (g : T → ℝ) 2 ν := Lp.memLp g
   have hA : MemLp (A.1.indicator (1 : Ω → ℝ)) 2 μ :=
     memLp_indicator_const 2 A.2.1 (1 : ℝ) (Or.inr A.2.2)
-  refine (memLp_two_iff_integrable_sq (hg.1.comp_fst.mul hA.1.comp_snd)).mpr ?_
+  refine (memLp_two_iff_integrable_sq
+    (hg.aestronglyMeasurable.comp_fst.mul hA.aestronglyMeasurable.comp_snd)).mpr ?_
   refine (hg.integrable_sq.mul_prod hA.integrable_sq).congr ?_
   filter_upwards with p
   simp only [Pi.mul_apply]
@@ -101,6 +104,7 @@ theorem coeFn_tensorLp (A : FiniteMeasurableSet μ) (g : Lp ℝ 2 ν) :
 noncomputable def indicatorLp (A : FiniteMeasurableSet μ) (g : Lp ℝ 2 ν) : Lp (Lp ℝ 2 ν) 2 μ :=
   indicatorConstLp 2 A.2.1 A.2.2 g
 
+omit [SFinite μ] in
 /-- Gram matrix of the `L²(ν)`-valued indicators: `⟪1_A • g, 1_{A'} • g'⟫ = μ (A ∩ A') ⟪g, g'⟫`. -/
 theorem inner_indicatorLp (A A' : FiniteMeasurableSet μ) (g g' : Lp ℝ 2 ν) :
     ⟪indicatorLp A g, indicatorLp A' g'⟫_ℝ = μ.real (A.1 ∩ A'.1) * ⟪g, g'⟫_ℝ := by
@@ -120,6 +124,7 @@ noncomputable def tensorStepToProd :
     (FiniteMeasurableSet μ × Lp ℝ 2 ν →₀ ℝ) →ₗ[ℝ] Lp ℝ 2 (ν.prod μ) :=
   Finsupp.linearCombination ℝ fun x ↦ tensorLp x.1 x.2
 
+omit [SFinite μ] in
 theorem tensorStepToLp_single (x : FiniteMeasurableSet μ × Lp ℝ 2 ν) (c : ℝ) :
     tensorStepToLp (Finsupp.single x c) = c • indicatorLp x.1 x.2 :=
   Finsupp.linearCombination_single _ _ _
@@ -128,6 +133,7 @@ theorem tensorStepToProd_single (x : FiniteMeasurableSet μ × Lp ℝ 2 ν) (c :
     tensorStepToProd (Finsupp.single x c) = c • tensorLp x.1 x.2 :=
   Finsupp.linearCombination_single _ _ _
 
+omit [SFinite μ] in
 /-- Simple tensors have dense span in `L²(μ; L²(ν))`. -/
 theorem denseRange_tensorStepToLp : DenseRange (tensorStepToLp (μ := μ) (ν := ν)) := by
   change Dense (Set.range tensorStepToLp)
@@ -145,7 +151,7 @@ theorem denseRange_tensorStepToLp : DenseRange (tensorStepToLp (μ := μ) (ν :=
     exact Submodule.add_mem _ hf hg
   · exact Submodule.isClosed_topologicalClosure _
 
-variable [SFinite μ] [SFinite ν]
+variable [SFinite ν]
 
 /-- Gram matrix of the simple tensors: `⟪g ⊗ 1_A, g' ⊗ 1_{A'}⟫ = μ (A ∩ A') ⟪g, g'⟫`. -/
 theorem inner_tensorLp (A A' : FiniteMeasurableSet μ) (g g' : Lp ℝ 2 ν) :
@@ -245,6 +251,7 @@ this extends `fubiniLift_indicatorLp` from indicators to all of `L²(μ)` by `Lp
 section RankOne
 
 variable {Ω T : Type*} [MeasurableSpace Ω] [MeasurableSpace T] {μ : Measure Ω} {ν : Measure T}
+  [SFinite μ]
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 
@@ -252,12 +259,14 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 noncomputable def smulLp (e : E) : Lp ℝ 2 μ →L[ℝ] Lp E 2 μ :=
   (ContinuousLinearMap.toSpanSingleton ℝ e).compLpL 2 μ
 
+omit [SFinite μ] in
 theorem coeFn_smulLp (e : E) (G : Lp ℝ 2 μ) :
     (smulLp e G : Ω → E) =ᵐ[μ] fun ω ↦ G ω • e := by
   filter_upwards [(ContinuousLinearMap.toSpanSingleton ℝ e).coeFn_compLpL (p := 2) (μ := μ) G]
     with ω hω
   rw [smulLp, hω, ContinuousLinearMap.toSpanSingleton_apply]
 
+omit [SFinite μ] in
 theorem smulLp_indicatorConstLp (e : E) {A : Set Ω} (hA : MeasurableSet A)
     (hμA : μ A ≠ ∞) (c : ℝ) :
     smulLp e (indicatorConstLp 2 hA hμA c) = indicatorConstLp 2 hA hμA (c • e) := by
@@ -310,7 +319,7 @@ theorem tensor_smul (g : Lp ℝ 2 ν) (c : ℝ) (G : Lp ℝ 2 μ) :
   ring
 
 /-- Inner products of simple tensors factor into the two component inner products. -/
-theorem inner_tensor [SFinite μ] [SFinite ν]
+theorem inner_tensor [SFinite ν]
     (g g' : Lp ℝ 2 ν) (G G' : Lp ℝ 2 μ) :
     inner ℝ (tensor g G) (tensor g' G') = inner ℝ g g' * inner ℝ G G' := by
   rw [L2.inner_def, L2.inner_def, L2.inner_def]
@@ -326,7 +335,7 @@ theorem inner_tensor [SFinite μ] [SFinite ν]
       integral_prod_mul (fun t ↦ g' t * g t) (fun w ↦ G' w * G w)
 
 /-- `‖g ⊗ G‖ = ‖g‖ * ‖G‖`. -/
-theorem norm_tensor [SFinite μ] [SFinite ν] (g : Lp ℝ 2 ν) (G : Lp ℝ 2 μ) :
+theorem norm_tensor [SFinite ν] (g : Lp ℝ 2 ν) (G : Lp ℝ 2 μ) :
     ‖tensor g G‖ = ‖g‖ * ‖G‖ := by
   have h := inner_tensor g g G G
   rw [real_inner_self_eq_norm_sq, real_inner_self_eq_norm_sq, real_inner_self_eq_norm_sq,
@@ -334,7 +343,7 @@ theorem norm_tensor [SFinite μ] [SFinite ν] (g : Lp ℝ 2 ν) (G : Lp ℝ 2 μ
   exact (sq_eq_sq₀ (norm_nonneg _) (by positivity)).mp h
 
 /-- `G ↦ g ⊗ G` as a continuous linear map. -/
-noncomputable def tensorL [SFinite μ] [SFinite ν] (g : Lp ℝ 2 ν) :
+noncomputable def tensorL [SFinite ν] (g : Lp ℝ 2 ν) :
     Lp ℝ 2 μ →L[ℝ] Lp ℝ 2 (ν.prod μ) :=
   LinearMap.mkContinuous
     { toFun := tensor g
@@ -343,11 +352,11 @@ noncomputable def tensorL [SFinite μ] [SFinite ν] (g : Lp ℝ 2 ν) :
       change ‖tensor g G‖ ≤ ‖g‖ * ‖G‖
       rw [norm_tensor]
 
-theorem tensorL_apply [SFinite μ] [SFinite ν] (g : Lp ℝ 2 ν) (G : Lp ℝ 2 μ) :
+theorem tensorL_apply [SFinite ν] (g : Lp ℝ 2 ν) (G : Lp ℝ 2 μ) :
     tensorL g G = tensor g G := rfl
 
 /-- **The Fubini lift on rank-one elements**: `fubiniLift (G • g) = g ⊗ G`. -/
-theorem fubiniLift_smulLp [SFinite μ] [SFinite ν] (g : Lp ℝ 2 ν) (G : Lp ℝ 2 μ) :
+theorem fubiniLift_smulLp [SFinite ν] (g : Lp ℝ 2 ν) (G : Lp ℝ 2 μ) :
     fubiniLift (smulLp g G) = tensor g G := by
   refine Lp.induction ENNReal.ofNat_ne_top
     (fun G : Lp ℝ 2 μ ↦ fubiniLift (smulLp g G) = tensor g G) ?_ ?_ ?_ G
@@ -761,7 +770,7 @@ section Compat
 variable {Ω T : Type*} [MeasurableSpace Ω] [MeasurableSpace T] {μ : Measure Ω} {ν : Measure T}
   [SFinite μ] [SFinite ν]
 
-omit [SFinite μ] [SFinite ν] in
+omit [SFinite ν] in
 /-- A bounded measurable function of `ω`, viewed on `T × Ω`. -/
 theorem aestronglyMeasurable_comp_snd {G : Ω → ℝ} (hG : AEStronglyMeasurable G μ) :
     AEStronglyMeasurable (fun p : T × Ω ↦ G p.2) (ν.prod μ) :=

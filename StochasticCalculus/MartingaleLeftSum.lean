@@ -220,7 +220,7 @@ theorem localizingStoppedProcess_localizingStoppedProcess
         min (tau omega) (sigma omega)} := by
       change (⊥ : WithTop ℝ≥0) < min (tau omega) (sigma omega)
       exact lt_min htau hsigma
-    rw [if_pos htauMem, if_pos hsigmaMem, if_pos hminMem]
+    rw [ite_eq_left htauMem, ite_eq_left hsigmaMem, ite_eq_left hminMem]
   · have htauMem : omega ∈ {omega | (⊥ : WithTop ℝ≥0) < tau omega} := htau
     have hsigmaMem : omega ∉ {omega | (⊥ : WithTop ℝ≥0) < sigma omega} :=
       hsigma
@@ -228,19 +228,19 @@ theorem localizingStoppedProcess_localizingStoppedProcess
         min (tau omega) (sigma omega)} := by
       simpa only [Set.mem_ofPred_eq, lt_min_iff] using
         (not_and_of_not_right ((⊥ : WithTop ℝ≥0) < tau omega) hsigma)
-    rw [if_pos htauMem, if_neg hsigmaMem, if_neg hminMem]
+    rw [ite_eq_left htauMem, ite_eq_right hsigmaMem, ite_eq_right hminMem]
   · have htauMem : omega ∉ {omega | (⊥ : WithTop ℝ≥0) < tau omega} := htau
     have hminMem : omega ∉ {omega | (⊥ : WithTop ℝ≥0) <
         min (tau omega) (sigma omega)} := by
       simpa only [Set.mem_ofPred_eq, lt_min_iff] using
         (not_and_of_not_left ((⊥ : WithTop ℝ≥0) < sigma omega) htau)
-    rw [if_neg htauMem, if_neg hminMem]
+    rw [ite_eq_right htauMem, ite_eq_right hminMem]
   · have htauMem : omega ∉ {omega | (⊥ : WithTop ℝ≥0) < tau omega} := htau
     have hminMem : omega ∉ {omega | (⊥ : WithTop ℝ≥0) <
         min (tau omega) (sigma omega)} := by
       simpa only [Set.mem_ofPred_eq, lt_min_iff] using
         (not_and_of_not_left ((⊥ : WithTop ℝ≥0) < sigma omega) htau)
-    rw [if_neg htauMem, if_neg hminMem]
+    rw [ite_eq_right htauMem, ite_eq_right hminMem]
 
 /-- Two-stage bounded localization can be diagonalized without assuming the
 false global stability of martingales under arbitrary unbounded stopping.
@@ -485,7 +485,7 @@ theorem integral_sq_uniformAdaptedMartingaleLeftSumProcess_terminal
           M (uniformPartitionTime T (n + 1) i)) 2 P :=
       (hM2 _).sub (hM2 _)
     have hmeas : AEStronglyMeasurable (f i) P := by
-      exact ((hH _).mono (𝓥.le _)).aestronglyMeasurable.mul hDelta.1
+      exact ((hH _).mono (𝓥.le _)).aestronglyMeasurable.mul hDelta.aestronglyMeasurable
     refine hDelta.of_le_mul (c := K) hmeas ?_
     filter_upwards with omega
     simp only [f, Pi.sub_apply, Real.norm_eq_abs, abs_mul]
@@ -537,7 +537,7 @@ theorem integral_sq_uniformAdaptedMartingaleLeftSumProcess_terminal_le
     exact (hM2 _).sub (hM2 _)
   have hf2 (i : ℕ) : MemLp (f i) 2 P := by
     have hmeas : AEStronglyMeasurable (f i) P :=
-      ((hH _).mono (𝓥.le _)).aestronglyMeasurable.mul (hd2 i).1
+      ((hH _).mono (𝓥.le _)).aestronglyMeasurable.mul (hd2 i).aestronglyMeasurable
     refine (hd2 i).of_le_mul (c := K) hmeas ?_
     filter_upwards with omega
     simp only [f, Real.norm_eq_abs, abs_mul]
@@ -641,7 +641,7 @@ theorem eLpNorm_uniformAdaptedMartingaleLeftSumProcess_terminal_le
           M (uniformPartitionTime T (n + 1) i)) 2 P :=
       (hM2 _).sub (hM2 _)
     have hmeas : AEStronglyMeasurable (f i) P :=
-      ((hH _).mono (𝓥.le _)).aestronglyMeasurable.mul hDelta.1
+      ((hH _).mono (𝓥.le _)).aestronglyMeasurable.mul hDelta.aestronglyMeasurable
     refine hDelta.of_le_mul (c := K) hmeas ?_
     filter_upwards with omega
     simp only [f, Pi.sub_apply, Real.norm_eq_abs, abs_mul]
@@ -659,8 +659,8 @@ theorem eLpNorm_uniformAdaptedMartingaleLeftSumProcess_terminal_le
     filter_upwards with omega
     rw [uniformAdaptedMartingaleLeftSumProcess_terminal]
   have hdelta2 : MemLp (M T - M 0) 2 P := (hM2 T).sub (hM2 0)
-  rw [← ENNReal.toReal_le_toReal hprocess2.2.ne
-    (ENNReal.mul_ne_top ENNReal.coe_ne_top hdelta2.2.ne)]
+  rw [← ENNReal.toReal_le_toReal hprocess2.eLpNorm_ne_top
+    (ENNReal.mul_ne_top ENNReal.coe_ne_top hdelta2.eLpNorm_ne_top)]
   simp only [ENNReal.toReal_mul, ENNReal.coe_toReal]
   apply (sq_le_sq₀ ENNReal.toReal_nonneg
     (mul_nonneg K.coe_nonneg ENNReal.toReal_nonneg)).mp

@@ -229,7 +229,7 @@ theorem tendsto_completeCauchySeqLimit
     {f : ℕ → β} (hf : CauchySeq f) :
     Tendsto f Filter.atTop (nhds (completeCauchySeqLimit f)) := by
   classical
-  rw [completeCauchySeqLimit, dif_pos hf]
+  rw [completeCauchySeqLimit, dite_eq_left hf]
   exact Classical.choose_spec (cauchySeq_tendsto_of_complete hf)
 
 /-- The canonical pointwise limit of a uniformly Cauchy sequence of

@@ -357,7 +357,7 @@ omit [NormedAddCommGroup W] [NormedSpace ℝ W] [CompleteSpace W] [BorelSpace W]
     [SecondCountableTopology W] in
 /-- The natural Itô process of a formal finite combination is the corresponding
 combination of the natural Itô processes of its generators. -/
-theorem naturalItoProcess_elementaryFinsuppToPredictable
+theorem naturalItoProcess_elementaryFinsuppToPredictable [SFinite P]
     (hB : IsPreBrownianReal B P) (hsm : ∀ t, StronglyMeasurable (B t))
     (v : ElementaryPredictableIndex (Filtration.natural B hsm) P →₀ ℝ)
     (s : ℝ≥0) :
@@ -675,7 +675,7 @@ omit [NormedAddCommGroup W] [NormedSpace ℝ W] [CompleteSpace W] [BorelSpace W]
     [SecondCountableTopology W] in
 /-- A pointwise representative of the predictable realization of a formal finite
 combination, almost everywhere on the product space. -/
-theorem elementaryFinsuppToPredictable_coeFn
+theorem elementaryFinsuppToPredictable_coeFn [SFinite P]
     (hsm : ∀ t, StronglyMeasurable (B t))
     (v : ElementaryPredictableIndex (Filtration.natural B hsm) P →₀ ℝ) :
     (elementaryFinsuppToPredictable (Filtration.natural B hsm) P v :

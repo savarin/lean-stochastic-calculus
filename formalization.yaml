@@ -6,7 +6,9 @@ project:
   description: >-
     Formal proof that every strong solution of the geometric Brownian motion
     SDE is priced by the Black-Scholes formula under the Girsanov
-    risk-neutral measure. The discounted stopped asset is a martingale
+    risk-neutral measure. The change of measure uses the constant-drift
+    case of the general predictable (dynamic) Girsanov theorem.
+    The discounted stopped asset is a martingale
     under one fixed terminal measure, and the call-payoff expectation
     equals the closed-form Black-Scholes expression.
   authors:
@@ -20,38 +22,25 @@ classification:
   msc2020: ["91G20", "60H10", "60H05"]
 
 sources:
-  - title: "Black-Scholes pricing for strong solutions of the geometric Brownian SDE via the predictable Girsanov theorem"
-    authors:
-      - "Ezzeri Esa"
-    type: "original-proof"
-    id: "https://github.com/savarin/lean-stochastic-calculus"
-    location: "Lean proof in this repository; route in BLUEPRINT.md"
-    relationship: "other"
-    author_endorsement: "participated"
-    note: >-
-      The mathematics is the standard textbook route: uniqueness of the strong
-      solution, a Girsanov change of measure through the Doleans-Dade
-      exponential with Novikov's condition, the discounted asset as a
-      martingale under the new measure, and Gaussian evaluation of the call.
-      The Lean proof was constructed by agents (Codex for the 2026-09-07
-      library and boundary, Claude Fable 5.1 for the 2026-09-21 rerouting of
-      the measure change through the predictable Girsanov theorem) and is
-      checked by the Lean kernel; it has not been examined in depth by human
-      experts, and no claim of mathematical novelty is made.
   - title: "The Pricing of Options and Corporate Liabilities"
     authors:
       - "Fischer Black"
       - "Myron Scholes"
     type: "paper"
     id: "doi:10.1086/260062"
-    location: "Section 3, the option-pricing formula"
-    relationship: "background"
+    location: "Page 644, equation (13), the European call-pricing formula"
+    relationship: "independently-proves"
     author_endorsement: "not-contacted"
     note: >-
       The closed-form call price that the compared theorem reproduces. The
       paper derives it from the replicating-portfolio partial differential
       equation; the formalization instead prices under the risk-neutral
-      measure obtained by Girsanov's theorem.
+      measure obtained by Girsanov's theorem. This is a source-based
+      formalization of a known result, not the first presentation of a
+      theorem or a claim of a new mathematical proof method. The compared
+      theorem establishes the discounted-expectation formula and its
+      measure-change prerequisites; it does not formalize the paper's
+      replication argument or its corporate-liability applications.
   - title: "Brownian Motion and Stochastic Calculus"
     authors:
       - "Ioannis Karatzas"
@@ -62,7 +51,12 @@ sources:
     relationship: "background"
     author_endorsement: "not-contacted"
     note: >-
-      Standard reference for the change-of-measure route followed here.
+      Background for the standard change-of-measure route: the
+      Doleans-Dade exponential, Novikov's condition and Girsanov's theorem.
+      The Lean development implements that route in its own martingale
+      and quadratic-variation framework; it is not a line-by-line
+      translation of this book. BLUEPRINT.md maps the actual proof route
+      to the code.
 
 status:
   scope: >-
@@ -108,8 +102,7 @@ automation:
       tool_setup: >-
         On 2026-09-21 PDT the measure change was rerouted from the
         constant-drift Gaussian oracle to the predictable Girsanov theorem,
-        the library was pruned to the declarations reachable from the Palomar
-        theorems using a kernel-environment reachability script, the two
+        a kernel-environment reachability script guided the library cleanup, the two
         largest files were split by topic, and the Solution was rewritten to
         restate the Challenge bodies. Strict Lake builds, the boundary
         preflight and the pinned Comparator were run after each step.
@@ -120,6 +113,25 @@ automation:
       prompting_notes: >-
         The agent was directed step by step by the author, with the review
         checklist and the sibling submission repositories as references.
+    - method: "agent"
+      models: ["OpenAI Codex"]
+      framework: "Codex"
+      tool_setup: >-
+        On 2026-09-27 PDT an agent upgraded Lean and Mathlib together to
+        v4.35.0-rc3, repaired proofs affected by library changes, corrected
+        source attribution, and updated the checking scripts. Validation
+        used strict Lake builds, the bundled Comparator and proof checkers,
+        a deliberately altered Challenge, and a proof-dependency audit.
+        The Challenge and Solution source files were preserved unchanged.
+      cost:
+        wall_time: "not tracked"
+        spend_usd: "subscription-based"
+        hardware: "local machine"
+      prompting_notes: >-
+        The author requested preparation for Black-Scholes submission
+        through the dynamic Girsanov theorem, with the fully general
+        integrand constructor deferred and changes left for review before
+        committing.
   spend_usd: "subscription-based"
   notes: >-
     Every step is kernel-checked; the author's role was direction, review of
@@ -136,18 +148,24 @@ fidelity:
     the universe-polymorphic setting with Type u sample spaces. The
     Brownian driver is assumed continuous only almost surely
     (IsBrownianReal); the proof passes through a version with every path
-    continuous and transports the conclusion back.
+    continuous and transports the conclusion back. Black-Scholes uses the
+    constant-drift instance of the proved predictable Girsanov theorem.
+    Constructing its input data for arbitrary integrands remains deferred
+    and is not needed for the submitted statement.
 
 review:
   status: "agent-reviewed"
   reviewers:
     - "Ezzeri Esa"
     - "Claude Fable 5.1 (Anthropic)"
+    - "OpenAI Codex"
   notes: >-
     The Challenge was read by the author and checked field by field against
     the library statement. An agent review on 2026-09-21 compared the
     repository against the sibling submissions and Palomar's policy, ran the
     pinned Comparator, and produced the checklist addressed in this release.
+    An agent performed the upgrade and local checks recorded in
+    VERIFICATION.md on 2026-09-27; these are not a Palomar review.
     The proof library has not been examined in depth by human experts.
 
 alignment:

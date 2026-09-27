@@ -220,19 +220,13 @@ theorem GirsanovDensityData.setIntegral_complexDoleans_rational_of_density_le
       R (fun s hs ↦ hR s (hs.trans hUT)) c
   let F : ℕ → ℝ≥0 → W → ℂ := fun n ↦
     complexGirsanovEulerProcess M M bracket B C c U (q n + 1)
-  have hEa : Integrable (E a) P :=
-    by simpa only [E, min_eq_left (haU.trans hUT)] using
-      hdata.integrable_stopAt_complexDoleans_combination hBmart.stronglyAdapted hC c a
-  have hEU : Integrable (E U) P :=
-    by simpa only [E, min_eq_left hUT] using
-      hdata.integrable_stopAt_complexDoleans_combination hBmart.stronglyAdapted hC c U
   have hLa := tendsto_eLpNorm_one_of_tendstoInMeasure_of_uniformIntegrable_banach
     (StochasticCalculus.UniformIntegrable.comp_index (hUI a) q) hpa
   have hLU := tendsto_eLpNorm_one_of_tendstoInMeasure_of_uniformIntegrable_banach
     (StochasticCalculus.UniformIntegrable.comp_index (hUI U) q) hpU
-  have hIa := tendsto_setIntegral_of_L1' (E a) hEa.aestronglyMeasurable
+  have hIa := tendsto_setIntegral_of_L1' (E a)
     (Filter.Eventually.of_forall fun n ↦ (hmart (q n)).integrable a) hLa A
-  have hIU := tendsto_setIntegral_of_L1' (E U) hEU.aestronglyMeasurable
+  have hIU := tendsto_setIntegral_of_L1' (E U)
     (Filter.Eventually.of_forall fun n ↦ (hmart (q n)).integrable U) hLU A
   have heq (n : ℕ) : (∫ omega in A, F n a omega ∂P) =
       ∫ omega in A, F n U omega ∂P :=
@@ -293,7 +287,7 @@ theorem GirsanovDensityData.martingale_stopAt_complexDoleans_of_density_le
       (hdata.uniformIntegrable_stopAt_complexDoleans_combination
         hBmart.stronglyAdapted hC c) a
     have hLp := tendsto_eLpNorm_one_of_tendstoInMeasure_of_uniformIntegrable_banach hUI hp
-    exact tendsto_setIntegral_of_L1' (F r) (hFint r).aestronglyMeasurable
+    exact tendsto_setIntegral_of_L1' (F r)
       (Filter.Eventually.of_forall fun n ↦ hFint (a n)) hLp A
   have hrat (U : ℝ≥0) (hUT : U ≤ T) {k j : ℕ}
       (hk : 0 < k) (hj : 0 < j) (hjk : j ≤ k) {A : Set W}

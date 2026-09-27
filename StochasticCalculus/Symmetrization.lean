@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ezzeri Esa
 -/
 import Mathlib.MeasureTheory.Function.L2Space
-import Mathlib.Tactic.Recall
+import Lean.Elab.Recall
 
 /-!
 # Rung 1 (`symm`): the symmetrization operator
@@ -232,7 +232,7 @@ theorem eLpNorm_symmetrize_le {n : ℕ} {f : (Fin n → T) → E}
       ≤ ‖(n.factorial : ℝ)⁻¹‖ₑ *
         ∑ σ : Equiv.Perm (Fin n), eLpNorm (f ∘ fun t : Fin n → T => t ∘ σ) p ν := by
         gcongr
-        exact eLpNorm_sum_le (fun σ _ => aestronglyMeasurable_comp_perm hf σ) hp
+        exact eLpNorm_sum_le hp
     _ = ‖(n.factorial : ℝ)⁻¹‖ₑ * ∑ _σ : Equiv.Perm (Fin n), eLpNorm f p ν := by
         congr 1
         exact Finset.sum_congr rfl fun σ _ =>

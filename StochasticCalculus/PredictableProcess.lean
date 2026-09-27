@@ -171,9 +171,9 @@ recall ProbabilityTheory.IndepFun.integral_mul_eq_mul_integral
 
 recall MeasureTheory.Measure.QuasiMeasurePreserving.ae_eq_comp
     {α : Type u_2} {β : Type u_3} {δ : Type u_4}
-    {m0 : MeasurableSpace α} [MeasurableSpace β]
-    {μ : Measure α} {ν : Measure β} {f : α → β} {g g' : β → δ}
-    (hf : Measure.QuasiMeasurePreserving f μ ν) (h : g =ᵐ[ν] g') :
+    {m0 : MeasurableSpace α} {mβ : MeasurableSpace β}
+    {μ : Measure α} {ν : Measure β} {f : α → β}
+    (hf : Measure.QuasiMeasurePreserving f μ ν) {g g' : β → δ} (h : g =ᵐ[ν] g') :
     g ∘ f =ᵐ[μ] g' ∘ f
 
 noncomputable section
@@ -331,7 +331,7 @@ noncomputable def iocIndicator (a b : ℝ≥0) :
 
 /-- The predictable `L²` class represented by `(t, ω) ↦ 1_(a,b](t) Z(ω)` for an
 `𝓕_a`-measurable square-integrable coefficient `Z`. -/
-noncomputable def elementaryPredictable
+noncomputable def elementaryPredictable [SFinite P]
     (𝓕 : Filtration ℝ≥0 ‹MeasurableSpace W›) (a b : ℝ≥0)
     (Z : lpMeas ℝ ℝ (𝓕 a) 2 P) : PredictableProcessL2 𝓕 P := by
   let hZ : AEStronglyMeasurable[𝓕 a] (Z : W → ℝ) P :=
@@ -363,7 +363,7 @@ omit [NormedAddCommGroup W] [NormedSpace ℝ W] [CompleteSpace W] [BorelSpace W]
     [SecondCountableTopology W] [IsGaussian P] in
 /-- Forgetting predictability, an elementary process is the product-space tensor
 `1_(a,b] ⊗ Z`. -/
-theorem elementaryPredictable_coeLp
+theorem elementaryPredictable_coeLp [SFinite P]
     (𝓕 : Filtration ℝ≥0 ‹MeasurableSpace W›) (a b : ℝ≥0)
     (Z : lpMeas ℝ ℝ (𝓕 a) 2 P) :
     (elementaryPredictable 𝓕 a b Z : TimeProcessL2 P) =
@@ -372,7 +372,7 @@ theorem elementaryPredictable_coeLp
 omit [NormedAddCommGroup W] [NormedSpace ℝ W] [CompleteSpace W] [BorelSpace W]
     [SecondCountableTopology W] [IsGaussian P] in
 /-- A pointwise representative of an elementary predictable process. -/
-theorem elementaryPredictable_coeFn
+theorem elementaryPredictable_coeFn [SFinite P]
     (𝓕 : Filtration ℝ≥0 ‹MeasurableSpace W›) (a b : ℝ≥0)
     (Z : lpMeas ℝ ℝ (𝓕 a) 2 P) :
     (elementaryPredictable 𝓕 a b Z : ℝ≥0 × W → ℝ) =ᵐ[

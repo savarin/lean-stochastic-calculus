@@ -22,3 +22,17 @@ jobs:
         run: lake build BlackScholesChallenge
       - name: Check Palomar package boundary
         run: python3 scripts/check_boundary.py
+      - name: Check the dynamic Girsanov proof route
+        run: lake env lean scripts/check_girsanov_route.lean
+      - name: Get the pinned Palomar metadata validator
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          repository: PalomarRegistry/PalomarSubmission
+          ref: a59f25bd8a66bf6faf3a4f4260d412989c0185ea
+          path: .lake/palomar-submission
+          persist-credentials: false
+      - name: Check metadata and packaging
+        run: |
+          python3 -m venv .lake/checks-venv
+          .lake/checks-venv/bin/python -m pip install -r scripts/requirements-checks.txt
+          .lake/checks-venv/bin/python scripts/check_metadata.py

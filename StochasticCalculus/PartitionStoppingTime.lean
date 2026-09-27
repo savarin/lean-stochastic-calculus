@@ -604,7 +604,6 @@ theorem uniform_approximation_in_measure_of_eLpNorm
     {W : Type*} [MeasurableSpace W] {P : Measure W}
     {f : ℕ → W → ℝ} {fm : ℕ → ℕ → W → ℝ}
     {V : ℕ → ℝ≥0∞}
-    (hmeas : ∀ m n, AEStronglyMeasurable (f n - fm m n) P)
     (hV : Tendsto V Filter.atTop (nhds 0))
     (hbound : ∀ m n, eLpNorm (f n - fm m n) 2 P ≤ V m) :
     ∀ epsilon : ℝ, 0 < epsilon →
@@ -630,7 +629,7 @@ theorem uniform_approximation_in_measure_of_eLpNorm
   have hVsquare : V m ^ (2 : ℝ) ≤ V m :=
     ENNReal.rpow_le_self_of_le_one hVone (by norm_num)
   have hmarkov := MeasureTheory.mul_meas_ge_le_pow_eLpNorm'
-    (p := (2 : ℝ≥0∞)) P (by norm_num) (by norm_num) (hmeas m n) e
+    (p := (2 : ℝ≥0∞)) (f := f n - fm m n) P (by norm_num) (by norm_num) e
   have he_ne : e ^ (2 : ℝ) ≠ 0 :=
     (ENNReal.rpow_pos he (by finiteness)).ne'
   have he_top : e ^ (2 : ℝ) ≠ ∞ := by

@@ -257,7 +257,7 @@ theorem antitone_dyadicHittingTimeNNReal
             norm_num
             ring
       · have hhn : hn = 2 ^ m := by
-          simp only [hn, hittingBtwn, if_neg hex]
+          simp only [hn, hittingBtwn, ite_eq_right hex]
         change (uniformPartitionTime T (2 ^ (m + 1)) hs :
             WithTop ℝ≥0) ≤
           (uniformPartitionTime T (2 ^ m) hn : WithTop ℝ≥0)
@@ -476,7 +476,7 @@ theorem continuousExitTime_eq_terminal_of_norm_lt
     rw [show hittingBtwn (uniformPartitionSample Z T (2 ^ n))
         (outsideClosedBall R) 0 (2 ^ n) omega = 2 ^ n by
       unfold hittingBtwn
-      rw [if_neg hnone]]
+      rw [ite_eq_right hnone]]
     change (uniformPartitionTime T (2 ^ n) (2 ^ n) : WithTop ℝ≥0) = T
     apply WithTop.coe_eq_coe.mpr
     unfold uniformPartitionTime

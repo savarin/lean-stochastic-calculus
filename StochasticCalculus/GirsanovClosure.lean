@@ -554,7 +554,7 @@ theorem GirsanovDensityData.regularizedGirsanovIntegratedDrift_mono_time_ae_eq
   rw [hreg]
   unfold regularizedGirsanovIntegratedDrift
   by_cases hUzero : bracket U omega = 0
-  · rw [if_pos hUzero]
+  · rw [ite_eq_left hUzero]
     have hnonneg : 0 ≤ bracket t omega := by
       rw [← hdata.bracket_zero omega]
       exact (hdata.continuous_monotone_bracket omega).2 bot_le
@@ -563,7 +563,7 @@ theorem GirsanovDensityData.regularizedGirsanovIntegratedDrift_mono_time_ae_eq
     have htz : bracket t omega = 0 := by rw [hUzero] at hle; exact le_antisymm hle hnonneg
     have hdrift := hzero htz
     linarith
-  · rw [if_neg hUzero]
+  · rw [ite_eq_right hUzero]
     unfold girsanovIntegratedDrift
     rw [min_eq_left htU, min_eq_left (htU.trans hUT)]
 

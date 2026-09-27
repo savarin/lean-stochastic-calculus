@@ -943,7 +943,7 @@ theorem
   have hN0 : MemLp (N 0) 2 P :=
     martingale_memLp_of_le hNmart bot_le one_le_two hNT
   have hfinite : R * eLpNorm (N T - N 0) 2 P ≠ ∞ :=
-    ENNReal.mul_ne_top ENNReal.coe_ne_top (hNT.sub hN0).2.ne
+    ENNReal.mul_ne_top ENNReal.coe_ne_top (hNT.sub hN0).eLpNorm_ne_top
   apply uniformIntegrable_one_of_uniform_eLpNorm_two (C := C)
   · intro n
     exact (((martingale_doubleExit_localized_cappedDoleansDadeLeftSumProcess

@@ -50,7 +50,7 @@ theorem integral_gaussianNormalizedExponential
     ∫ omega, Real.exp (X omega - (1 / 2 : ℝ) * (v : ℝ)) ∂P = 1 := by
   have hmgf : ∫ omega, Real.exp (X omega) ∂P =
       Real.exp ((v : ℝ) / 2) := by
-    have h := mgf_gaussianReal hX.map_eq 1
+    have h := mgf_gaussianReal hX 1
     simpa [mgf] using h
   have heq : (fun omega =>
       Real.exp (X omega - (1 / 2 : ℝ) * (v : ℝ))) =

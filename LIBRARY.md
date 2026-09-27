@@ -2,6 +2,13 @@
 
 Per-file descriptions organized by dependency layer.
 
+For the Black-Scholes measure change, `BlackScholes.lean` calls
+`GirsanovConstantDrift.lean`, which applies the general predictable (dynamic)
+theorem in `GirsanovTheorem.lean`. `BrownianContinuousVersion.lean` supplies
+the continuous driver needed to construct the theorem's input data.
+See [BLUEPRINT.md](BLUEPRINT.md) for the proof route and the deferred
+constructor's scope.
+
 ### Shared foundation
 
 **Layer 0** — no internal dependencies, only Mathlib.
@@ -130,8 +137,8 @@ Per-file descriptions organized by dependency layer.
 | GirsanovLocalization | Polynomial moment control from terminally stopped brackets, enabling bounded-density closure |
 | GirsanovExits | Bounded path exits for the predictable Girsanov closure |
 | GirsanovTheorem | Predictable Girsanov theorem: Novikov UI removes bounded exits, characteristic functions identify the shifted measure |
-| GirsanovFiltered | Girsanov in an arbitrary Brownian filtration: adaptedness + independent increments suffice |
+| GirsanovFiltered | Girsanov in an arbitrary Brownian filtration: adaptedness + independent increments suffice; retained for future constructor work, unused by Black-Scholes |
 | BrownianContinuousVersion | Version of a Brownian motion with every path continuous and starting at zero: one measurable null set replaced by the zero path, strongly measurable slices, almost-sure agreement at fixed times |
 | GirsanovConstantDrift | Constant-drift Girsanov through the predictable theorem: stopped scaled driver as the continuous martingale, deterministic bracket, Novikov automatic; equivalence and probability of the exact terminal density measure |
-| GirsanovItoData | Girsanov density data from a predictable L² integrand with a free bracket representative and almost-everywhere modification field; the constant integrand instantiates it on the continuous version of the driver |
+| GirsanovItoData | Adapter from supplied Itô-integral and bracket data, with an almost-everywhere modification field and a constant-integrand example; retained for future constructor work, unused by Black-Scholes |
 | BlackScholes | Black-Scholes call pricing: Gaussian CDF calculation + SDE derivation via the dynamic Girsanov measure change at the market price of risk |

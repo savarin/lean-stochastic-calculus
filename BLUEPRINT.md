@@ -1,5 +1,11 @@
 # Black–Scholes pricing via the predictable Girsanov theorem
 
+The predictable Girsanov theorem is the general, dynamic theorem in this
+library: its drift may depend on time and the random path, under the
+conditions stated in the theorem. Black-Scholes applies its constant-drift
+case. The steps below construct the required input data, apply the general
+theorem, and use the resulting change of measure to evaluate the option price.
+
 ## Target
 
 `PalomarBlackScholes.black_scholes` (`BlackScholesChallenge.lean`): for a
@@ -101,6 +107,24 @@ integral, so the Challenge imports only Mathlib.
 | 7 | `call_expectation_eq_blackScholes`, `integrable_callPayoff` | `BlackScholes.lean` |
 | all | `StochasticCalculus.BlackScholes.black_scholes` | `BlackScholes.lean` |
 
+## Deferred constructor and proof-dependency check
+
+The fully general constructor would build the martingale, bracket and other
+input data from a predictable integrand under the required conditions.
+That work remains deferred. Step 3 supplies the data directly for the constant
+drift needed here, on the arbitrary measurable sample space of the Challenge.
+The existing `GirsanovItoData.lean` adapter assumes additional Gaussian
+sample-space structure; it and `GirsanovFiltered.lean` are retained for future
+constructor work and are not used by the Black-Scholes proof.
+
+Run `lake env lean scripts/check_girsanov_route.lean` to follow the dependencies
+of the completed proof. It requires the general predictable Girsanov theorem,
+the constant-drift bridge and the continuous Brownian version to occur in that
+proof, and rejects a dependency on the old Gaussian measure-change shortcut.
+The results on Lean 4.35 are recorded in [VERIFICATION.md](VERIFICATION.md).
+The Gaussian calculations in steps 6 and 7 remain part of the proof after the
+change of measure has been established.
+
 ## Code mapping
 
 Every Challenge definition is restated with the same body in
@@ -146,7 +170,10 @@ The library originates in the `lean-pipeline/black-scholes-sde` workspace
 (commit `e5a7803`, proof built 2026-09-07 with Codex), consolidated into
 this repository on 2026-09-17. On 2026-09-21 the measure change was
 rerouted from a constant-drift Gaussian oracle to the predictable Girsanov
-theorem, the library was pruned to the declarations reachable from the two
-Palomar theorems, and the two largest files were split by topic
-(Claude Fable 5.1 with Claude Code). The Challenge statement is unchanged
-across these steps.
+theorem, a proof-dependency audit guided the library cleanup, and the two
+largest files were split by topic (Claude Fable 5.1 with Claude Code).
+The Challenge statement is unchanged
+across these steps. On 2026-09-27 Codex upgraded Lean and Mathlib together to
+v4.35.0-rc3, repaired the affected proofs, and verified that the dynamic
+Girsanov route remains in the completed proof. The Challenge and Solution
+source files were preserved unchanged during the upgrade.

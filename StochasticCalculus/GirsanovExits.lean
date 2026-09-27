@@ -135,7 +135,7 @@ theorem GirsanovDensityData.regularizedDrift_at_exit_ae_eq
       simp only [girsanovExitTime, hexit]
       rfl
     simpa only [heq] using hfixed
-  · simp only [regularizedGirsanovIntegratedDrift, hA, if_false]
+  · simp only [regularizedGirsanovIntegratedDrift, hA, ite_false]
 
 /-- The literal stopped coefficient is the cross bracket after a positive
 radius exit of the Girsanov integrator. -/

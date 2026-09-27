@@ -105,21 +105,13 @@ theorem HasQuadraticVariationInProbabilityAt.timeConstant_mul
     (quadraticVariationApprox_timeConstant_mul c X t (n + 1) omega).symm
 
 omit [NormedAddCommGroup W] [NormedSpace ℝ W] in
-/-- Literal `L²` quadratic variation implies quadratic variation in
-probability when the process is measurable at each fixed time. -/
+/-- Literal `L²` quadratic variation implies quadratic variation in probability. -/
 theorem HasQuadraticVariationAt.to_inProbability
-    {t : ℝ≥0} {q : ℝ} (hX : HasQuadraticVariationAt X P t q)
-    (hXmeas : ∀ s, AEStronglyMeasurable (X s) P) :
+    {t : ℝ≥0} {q : ℝ} (hX : HasQuadraticVariationAt X P t q) :
     HasQuadraticVariationInProbabilityAt X P t (fun _ => q) := by
   unfold HasQuadraticVariationInProbabilityAt
   apply tendstoInMeasure_of_tendsto_eLpNorm (p := 2) (by norm_num)
-  · intro n
-    exact aestronglyMeasurable_quadraticVariationApprox hXmeas t (n + 1)
-  · exact aestronglyMeasurable_const
-  · unfold HasQuadraticVariationAt at hX
-    convert hX using 1
-    funext n
-    congr 1
+  exact hX
 
 omit [NormedAddCommGroup W] [NormedSpace ℝ W] in
 /-- Uniform-partition quadratic-variation sums respect almost-everywhere
@@ -821,9 +813,7 @@ lemma centeredSquare_memLp_of_hasLaw
     funext ω
     simp only [Pi.mul_apply]
     ring
-  convert hmem2.sub (memLp_const (v : ℝ)) using 1
-  funext ω
-  rfl
+  exact hmem2.sub (memLp_const (v : ℝ))
 
 /-- The centered square of a centered Gaussian random variable has mean zero. -/
 lemma integral_centeredSquare_of_hasLaw

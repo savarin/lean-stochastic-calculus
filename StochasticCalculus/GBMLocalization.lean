@@ -374,16 +374,16 @@ theorem integral_sq_indicator_limit_le_of_second_moment
     convert ENNReal.tendsto_ofReal hrealnorm using 1
     funext n
     exact (ENNReal.ofReal_toReal (hSmem (ns n)).eLpNorm_ne_top).symm
-  have hImeas : AEStronglyMeasurable I P :=
-    hI.aestronglyMeasurable (fun n ↦ ((hSmem n).indicator hA).aestronglyMeasurable)
   have hInorm : eLpNorm I 2 P ≤ ENNReal.ofReal (Real.sqrt L) := by
     have hlower := Lp.eLpNorm_lim_le_liminf_eLpNorm (p := (2 : ℝ≥0∞))
-      (fun n ↦ ((hSmem (ns n)).indicator hA).aestronglyMeasurable) I hnsae
+      (fun n ↦ ((hSmem (ns n)).indicator hA).aestronglyMeasurable) I
+      (hI.aestronglyMeasurable
+        (fun n ↦ ((hSmem n).indicator hA).aestronglyMeasurable)) hnsae
     have hupper := Filter.liminf_le_liminf (f := atTop) (Filter.Eventually.of_forall
-      fun n ↦ eLpNorm_indicator_le (μ := P) (p := (2 : ℝ≥0∞)) (S (ns n)) (s := A))
+      fun n ↦ eLpNorm_indicator_le (μ := P) (p := (2 : ℝ≥0∞)) (S (ns n)) hA)
     exact hlower.trans (hupper.trans_eq hennnorm.liminf_eq)
   have hImem : MemLp I 2 P :=
-    ⟨hImeas, hInorm.trans_lt ENNReal.ofReal_lt_top⟩
+    hInorm.trans_lt ENNReal.ofReal_lt_top
   refine ⟨hImem, ?_⟩
   rw [integral_sq_eq_eLpNorm_two_toReal_sq hImem]
   have hreal : (eLpNorm I 2 P).toReal ≤ Real.sqrt L := by

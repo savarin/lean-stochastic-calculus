@@ -221,21 +221,21 @@ theorem integral_mul_weighted_martingaleIncrements_eq_zero
     change MemLp (M d - M c) 2 P
     exact (hM2 d).sub (hM2 c)
   have hAmeas : AEStronglyMeasurable A P := by
-    exact (hZ.mono (𝓥.le a)).aestronglyMeasurable.mul hDeltaAB2.1
+    exact (hZ.mono (𝓥.le a)).aestronglyMeasurable.mul hDeltaAB2.aestronglyMeasurable
   have hA2 : MemLp A 2 P := by
     refine hDeltaAB2.of_le_mul (c := K) hAmeas ?_
     filter_upwards with omega
     simp only [A, Real.norm_eq_abs, abs_mul]
     exact mul_le_mul_of_nonneg_right (hZK omega) (abs_nonneg _)
   have hYDmeas : AEStronglyMeasurable (Y * D) P :=
-    (hY.mono (𝓥.le c)).aestronglyMeasurable.mul hDeltaCD2.1
+    (hY.mono (𝓥.le c)).aestronglyMeasurable.mul hDeltaCD2.aestronglyMeasurable
   have hYD2 : MemLp (Y * D) 2 P := by
     refine hDeltaCD2.of_le_mul (c := L) hYDmeas ?_
     filter_upwards with omega
     simp only [Pi.mul_apply, D, Real.norm_eq_abs, abs_mul]
     exact mul_le_mul_of_nonneg_right (hYL omega) (abs_nonneg _)
   have hprodAssoc : Integrable (A * (Y * D)) P :=
-    memLp_one_iff_integrable.mp (hYD2.mul hA2)
+    memLp_one_iff_integrable.mp (hA2.mul hYD2)
   have hprod : Integrable ((A * Y) * D) P := by
     apply hprodAssoc.congr
     filter_upwards with omega
@@ -300,7 +300,7 @@ theorem integral_sq_sum_range_of_pairwise_orthogonal
       have hS2 : MemLp S 2 P := by
         exact memLp_finsetSum (Finset.range n) (fun i _ ↦ hf i)
       have hSn : Integrable (S * f n) P :=
-        memLp_one_iff_integrable.mp ((hf n).mul hS2)
+        memLp_one_iff_integrable.mp (hS2.mul (hf n))
       have hcross : ∫ omega, S omega * f n omega ∂P = 0 := by
         simp only [S, Finset.sum_mul]
         rw [integral_finsetSum]
@@ -308,7 +308,7 @@ theorem integral_sq_sum_range_of_pairwise_orthogonal
           intro i hi
           exact horth i n (Finset.mem_range.mp hi)
         · intro i _
-          exact memLp_one_iff_integrable.mp ((hf n).mul (hf i))
+          exact memLp_one_iff_integrable.mp ((hf i).mul (hf n))
       simp_rw [Finset.sum_range_succ]
       change ∫ omega, (S omega + f n omega) ^ 2 ∂P =
         (∑ i ∈ Finset.range n, ∫ omega, f i omega ^ 2 ∂P) +
@@ -403,7 +403,7 @@ theorem StronglyAdapted.finset_sum
   simpa only [Finset.sum_apply] using
     S.stronglyMeasurable_sum fun i hi ↦ hX i hi t
 
-/-- An almost-everywhere strongly measurable `L¹`-norm limit of integrable
+/-- An `L¹`-norm limit of integrable
 functions is integrable.  Convergence to zero makes one difference have
 finite `L¹` norm, after which integrability follows by adding back the
 corresponding approximant. -/
@@ -411,7 +411,6 @@ theorem integrable_of_tendsto_eLpNorm_one_sub
     {W : Type*} [MeasurableSpace W] {P : Measure W}
     {f : ℕ → W → ℝ} {g : W → ℝ}
     (hf : ∀ n, Integrable (f n) P)
-    (hg : AEStronglyMeasurable g P)
     (hconv : Tendsto (fun n ↦ eLpNorm (g - f n) 1 P)
       Filter.atTop (𝓝 0)) :
     Integrable g P := by
@@ -420,8 +419,7 @@ theorem integrable_of_tendsto_eLpNorm_one_sub
     (tendsto_order.1 hconv).2 1 (by simp)
   rcases hlt.exists with ⟨n, hn⟩
   have hdiff : Integrable (g - f n) P :=
-    memLp_one_iff_integrable.mp
-      ⟨hg.sub (hf n).1, hn.trans (by simp)⟩
+    memLp_one_iff_integrable.mp (hn.trans (by simp))
   simpa only [sub_add_cancel] using hdiff.add (hf n)
 
 /-- A uniformly `L²`-bounded family on a probability space is uniformly
@@ -435,12 +433,15 @@ theorem uniformIntegrable_one_of_uniform_eLpNorm_two
     (hf : ∀ i, AEStronglyMeasurable (f i) P)
     (C : ℝ≥0) (hC : ∀ i, eLpNorm (f i) 2 P ≤ C) :
     UniformIntegrable f 1 P := by
-  refine ⟨hf, ?_, ⟨C, fun i ↦ ?_⟩⟩
-  · intro ε hε
+  refine ⟨unifIntegrable_iff'.2 ?_, ⟨C, fun i ↦ ?_⟩⟩
+  · intro ε₀ hε₀
+    obtain ⟨ε, _, hε, hεlt⟩ := ENNReal.lt_iff_exists_real_btwn.1 hε₀
+    have hε : 0 < ε := ENNReal.ofReal_pos.1 hε
     let d : ℝ := ε / ((C : ℝ) + 1)
     have hd : 0 < d := div_pos hε (by positivity)
-    refine ⟨d ^ 2, sq_pos_of_pos hd, fun i s hs hPs ↦ ?_⟩
-    rw [eLpNorm_indicator_eq_eLpNorm_restrict hs]
+    refine ⟨ENNReal.ofReal (d ^ 2), ENNReal.ofReal_pos.2 (sq_pos_of_pos hd),
+      fun i s _hs hPs ↦ ?_⟩
+    apply le_trans ?_ hεlt.le
     calc
       eLpNorm (f i) 1 (P.restrict s) ≤
           eLpNorm (f i) 2 (P.restrict s) *
@@ -470,7 +471,7 @@ theorem uniformIntegrable_one_of_uniform_eLpNorm_two
             gcongr
             norm_num
           _ = ε := by field_simp
-  · exact (eLpNorm_le_eLpNorm_of_exponent_le (by norm_num) (hf i)).trans
+  · exact (eLpNorm_le_eLpNorm_of_exponent_le (by norm_num)).trans
       (hC i)
 
 /-- A strongly adapted pointwise-in-time `L¹`-norm limit of martingales is a
@@ -489,12 +490,10 @@ theorem martingale_of_tendsto_eLpNorm_one
   have hYint : ∀ t, Integrable (Y t) P := fun t ↦
     integrable_of_tendsto_eLpNorm_one_sub
       (fun n ↦ (hX n).integrable t)
-      ((hYadapt t).mono (𝓥.le t)).aestronglyMeasurable (hconv t)
+      (hconv t)
   refine ⟨hYadapt, ?_⟩
   intro s t hst
-  rw [← sub_ae_eq_zero, ← eLpNorm_eq_zero_iff
-    ((stronglyMeasurable_condExp.mono (𝓥.le s)).sub
-      ((hYadapt s).mono (𝓥.le s))).aestronglyMeasurable one_ne_zero]
+  rw [← sub_ae_eq_zero, ← eLpNorm_eq_zero_iff one_ne_zero]
   apply le_antisymm
   · have hconvS : Tendsto (fun n ↦ eLpNorm (X n s - Y s) 1 P)
         Filter.atTop (𝓝 0) := by
@@ -521,11 +520,7 @@ theorem martingale_of_tendsto_eLpNorm_one
         eLpNorm_congr_ae hdecomp
       _ ≤ eLpNorm (P[Y t - X n t | 𝓥 s]) 1 P +
             eLpNorm (X n s - Y s) 1 P :=
-        eLpNorm_add_le
-          (integrable_condExp (μ := P) (m := 𝓥 s)
-            (f := Y t - X n t)).1
-          ((((hX n).stronglyMeasurable s).mono
-            (𝓥.le s)).aestronglyMeasurable.sub (hYint s).1) le_rfl
+        eLpNorm_add_le le_rfl
       _ ≤ eLpNorm (Y t - X n t) 1 P + eLpNorm (X n s - Y s) 1 P :=
         add_le_add (eLpNorm_condExp_le_eLpNorm _ le_rfl) le_rfl
   · exact zero_le

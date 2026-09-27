@@ -588,38 +588,6 @@ theorem cappedDoleansDadeLeftSumProcess_tendstoInMeasure_pairedExit
   have hEcont : ∀ omega, Continuous (fun t => E t omega) := fun omega =>
     continuous_doleansDadeExponential M bracket omega
       (hMcont omega) (hbracketPath omega).1
-  have htau : IsStoppingTime 𝒱 tau :=
-    (isStoppingTime_continuousExitTime_of_stronglyAdapted
-      hM.stronglyAdapted H K).min
-      (isStoppingTime_continuousExitTime_of_stronglyAdapted hEadapt H R)
-  have htheta : IsStoppingTime 𝒱 theta :=
-    (isStoppingTime_continuousExitTime_of_stronglyAdapted
-      hM.stronglyAdapted H (K + 1)).min
-      (isStoppingTime_continuousExitTime_of_stronglyAdapted
-        hEadapt H (R + 1))
-  have hsigma (m : ℕ) : IsStoppingTime 𝒱 (sigma m) :=
-    isStoppingTime_pairedDyadicHittingTimeNNReal
-      hM.stronglyAdapted hEadapt H K R m
-  have hrho (m : ℕ) : IsStoppingTime 𝒱 (rho m) :=
-    (hsigma m).min htheta
-  have hXadapt (n : ℕ) : StronglyAdapted 𝒱 (X n) :=
-    stronglyAdapted_uniformAdaptedMartingaleLeftSumProcess
-      hM.stronglyAdapted
-      (stronglyAdapted_cappedDoleansDadeExponential
-        hM.stronglyAdapted hbracket (n + 1)) T (n + 1)
-  have hXcont (n : ℕ) : ∀ omega, Continuous (fun s => X n s omega) :=
-    fun omega => continuous_uniformAdaptedMartingaleLeftSumProcess
-      hMcont T (n + 1) omega
-  have hmeas : ∀ m n, AEStronglyMeasurable
-      (localizingStoppedProcess (X n) tau t -
-        localizingStoppedProcess (X n) (rho m) t) P := by
-    intro m n
-    exact (((stronglyAdapted_localizingStoppedProcess
-      (hXadapt n) (hXcont n) htau t).mono
-        (𝒱.le t)).aestronglyMeasurable).sub
-      (((stronglyAdapted_localizingStoppedProcess
-        (hXadapt n) (hXcont n) (hrho m) t).mono
-          (𝒱.le t)).aestronglyMeasurable)
   have hBtend : Tendsto B Filter.atTop (nhds 0) := by
     dsimp only [B, tau, theta, rho, sigma, E]
     exact tendsto_outerCappedDyadic_doleans_error_bound
@@ -638,7 +606,7 @@ theorem cappedDoleansDadeLeftSumProcess_tendstoInMeasure_pairedExit
         T H K R (K + 1) (R + 1)
         (le_add_right le_rfl) (le_add_right le_rfl) m n t
   have hcapApprox := uniform_approximation_in_measure_of_eLpNorm
-    hmeas hBtend hbound
+    hBtend hbound
   have hexception := tendsto_measure_outerContinuousExit_lt_pairedDyadic
     (P := P) hM.stronglyAdapted hEadapt hMcont hEcont
       H K R (K + 1) (R + 1) hpos (lt_add_one K) (lt_add_one R)
@@ -898,8 +866,7 @@ theorem martingale_doleansDadeExponential_pairedContinuousExit
       at hadd
   have hadd' : Martingale (fun t omega =>
       1 + localizingStoppedProcess (doleansDadeIntegralCandidate M bracket)
-        tau t omega) 𝒱 P := by
-    convert hadd using 1; rfl
+        tau t omega) 𝒱 P := hadd
   have heq := localizingStoppedProcess_one_add_of_pos
     (doleansDadeIntegralCandidate M bracket) tau hpos
   rw [← heq] at hadd'

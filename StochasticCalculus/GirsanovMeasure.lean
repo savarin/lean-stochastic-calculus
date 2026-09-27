@@ -167,9 +167,9 @@ theorem continuous_regularizedGirsanovIntegratedDrift
       regularizedGirsanovIntegratedDrift bracket theta T t omega) := by
   unfold regularizedGirsanovIntegratedDrift
   by_cases hzero : bracket T omega = 0
-  · simp only [hzero, if_pos]
+  · simp only [hzero, ite_eq_left]
     fun_prop
-  · simp only [hzero, if_false]
+  · simp only [hzero, ite_false]
     have hsqne : (∫ r in Set.Icc (0 : ℝ) (T : ℝ),
         (theta r.toNNReal omega) ^ 2) ≠ 0 := by
       rw [← integral_nonnegative_Ioc_sq_eq_real_Icc]
@@ -425,7 +425,7 @@ theorem GirsanovDensityData.regularizedGirsanovIntegratedDrift_ae_eq
       hcross hB t] with omega hcrossZero
     unfold regularizedGirsanovIntegratedDrift
     by_cases hzero : bracket T omega = 0
-    · rw [if_pos hzero]
+    · rw [ite_eq_left hzero]
       have hbracketNonneg : 0 ≤ bracket t omega := by
         rw [← hdata.bracket_zero omega]
         exact (hdata.continuous_monotone_bracket omega).2 bot_le
@@ -434,13 +434,13 @@ theorem GirsanovDensityData.regularizedGirsanovIntegratedDrift_ae_eq
       have hbracketZero : bracket t omega = 0 := by linarith
       have hdriftZero := hcrossZero hbracketZero
       linarith
-    · rw [if_neg hzero]
+    · rw [ite_eq_right hzero]
   · have hTt : T ≤ t := le_of_not_ge htT
     filter_upwards [hdata.crossVariation_eq_zero_of_bracket_eq_zero_ae
       hcross hB T] with omega hcrossZero
     unfold regularizedGirsanovIntegratedDrift
     by_cases hzero : bracket T omega = 0
-    · rw [if_pos hzero]
+    · rw [ite_eq_left hzero]
       have hterminalZero := hcrossZero hzero
       have hstop : girsanovIntegratedDrift theta T t omega =
           girsanovIntegratedDrift theta T T omega := by
@@ -448,7 +448,7 @@ theorem GirsanovDensityData.regularizedGirsanovIntegratedDrift_ae_eq
           girsanovIntegratedDrift_of_horizon_le theta le_rfl]
       rw [hstop]
       linarith
-    · rw [if_neg hzero]
+    · rw [ite_eq_right hzero]
 
 /-- The cross-variation contract may use the continuous regularized drift
 representative.  Convergence in probability is insensitive to the
@@ -711,10 +711,10 @@ theorem Martingale.rightCont_of_continuous
       le_rfl ENNReal.one_ne_top
       (fun n ↦ memLp_one_iff_integrable.mpr (hX.integrable (u n)))
       (memLp_one_iff_integrable.mpr (hX.integrable s))).mp
-      ⟨hinMeasure, hui.2.1⟩
+      ⟨hinMeasure, hui.unifIntegrable⟩
   have hIntegral : Tendsto (fun n ↦ ∫ omega in A, X (u n) omega ∂P)
       atTop (nhds (∫ omega in A, X s omega ∂P)) :=
-    tendsto_setIntegral_of_L1' (X s) (hX.integrable s).aestronglyMeasurable
+    tendsto_setIntegral_of_L1' (X s)
       (Filter.Eventually.of_forall fun n ↦ hX.integrable (u n)) hL1 A
   have hIntegralEq (n : ℕ) :
       ∫ omega in A, X (u n) omega ∂P = ∫ omega in A, X t omega ∂P := by

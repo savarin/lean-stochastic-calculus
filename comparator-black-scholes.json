@@ -5,6 +5,5 @@
     "PalomarBlackScholes.black_scholes"
   ],
   "definition_names": [],
-  "permitted_axioms": ["propext", "Quot.sound", "Classical.choice"],
-  "enable_nanoda": false
+  "permitted_axioms": ["propext", "Quot.sound", "Classical.choice"]
 }

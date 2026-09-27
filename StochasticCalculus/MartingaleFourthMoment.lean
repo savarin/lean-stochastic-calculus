@@ -26,7 +26,7 @@ theorem memLp_two_mul_of_memLp_four
     (hX : MemLp X 4 P) (hY : MemLp Y 4 P) :
     MemLp (fun omega ↦ X omega * Y omega) 2 P := by
   let _ : ENNReal.HolderTriple 4 4 2 := holderTriple_four_four_two
-  exact hY.mul' hX
+  exact hX.fun_mul hY
 
 /-- A real L4 function has integrable fourth power. -/
 theorem integrable_pow_four_of_memLp_four
