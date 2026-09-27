@@ -11,10 +11,11 @@ import Mathlib.Probability.CDF
 
 /-! # Black–Scholes pricing (Solution)
 
-Restates every Challenge definition with the same body, so that the
-Comparator sees identical constants, and discharges the main theorem by
-the library theorem `StochasticCalculus.BlackScholes.black_scholes`, whose
-statement unfolds to the one below. -/
+Restates every Challenge definition and structure with the same body, so
+that Comparator sees identical constants. The proof passes the five
+strong-solution fields into the corresponding library structure and applies
+`StochasticCalculus.BlackScholes.black_scholes`. The remaining boundary
+definitions unfold to their library counterparts. -/
 
 open MeasureTheory ProbabilityTheory Filter Topology Set
 open scoped BigOperators NNReal ENNReal

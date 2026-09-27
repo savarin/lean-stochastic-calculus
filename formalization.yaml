@@ -4,9 +4,10 @@ version: "v0.4"
 project:
   name: "Black-Scholes pricing via Girsanov change of measure"
   description: >-
-    Formal proof that every strong solution of the geometric Brownian motion
-    SDE is priced by the Black-Scholes formula under the Girsanov
-    risk-neutral measure. The change of measure uses the constant-drift
+    Formal proof of the time-zero Black-Scholes formula for a European call
+    on any strong solution of the geometric Brownian motion SDE, with positive
+    initial price, strike, volatility and maturity, and constant drift and
+    interest rate. The change of measure uses the constant-drift
     case of the general predictable (dynamic) Girsanov theorem.
     The discounted stopped asset is a martingale
     under one fixed terminal measure, and the call-payoff expectation
@@ -65,7 +66,15 @@ status:
     absolute continuity of the risk-neutral measure, Brownianity of the
     shifted driver, the martingale property of the discounted stopped
     asset, integrability of the call payoff, and equality of the
-    discounted expectation with the Black-Scholes closed form.
+    discounted expectation at time zero with the Black-Scholes closed form.
+    Initial price, strike, volatility and maturity are strictly positive;
+    drift and interest rate are arbitrary real constants. The driver is
+    Brownian with strongly measurable values at each time. The solution is
+    adapted to its natural filtration, has continuous paths and the stated
+    initial value almost surely, has integrable drift on each finite interval
+    along almost every path, and satisfies the left-sum convergence condition.
+    The statement does not include trading-strategy replication or a
+    conditional price process at later times.
   sorry_count: 0
   sorry_in_definitions: 0
   axioms: ["propext", "Classical.choice", "Quot.sound"]
@@ -102,8 +111,8 @@ automation:
       tool_setup: >-
         On 2026-09-21 PDT the measure change was rerouted from the
         constant-drift Gaussian oracle to the predictable Girsanov theorem,
-        a kernel-environment reachability script guided the library cleanup, the two
-        largest files were split by topic, and the Solution was rewritten to
+        a kernel-environment reachability script guided the library cleanup,
+        the two largest files were split by topic, and the Solution was rewritten to
         restate the Challenge bodies. Strict Lake builds, the boundary
         preflight and the pinned Comparator were run after each step.
       cost:
@@ -122,7 +131,10 @@ automation:
         source attribution, and updated the checking scripts. Validation
         used strict Lake builds, the bundled Comparator and proof checkers,
         a deliberately altered Challenge, and a proof-dependency audit.
-        The Challenge and Solution source files were preserved unchanged.
+        The public mathematical statement and definition bodies, and the
+        Solution's proof, were preserved. The final review corrected the
+        Solution's explanatory comment about the conversion between
+        strong-solution structures.
       cost:
         wall_time: "not tracked"
         spend_usd: "subscription-based"
@@ -141,8 +153,10 @@ automation:
 fidelity:
   divergences: >-
     The Challenge states the SDE solution via concrete left-sum convergence
-    in probability (IsStrongLinearSolution), which is definitionally equal
-    to the library's IsStrongLinearSDESolution. The Challenge uses
+    in probability (IsStrongLinearSolution). This and the library's
+    IsStrongLinearSDESolution are distinct structures with the same five
+    conditions; the Solution converts between them by passing each field
+    explicitly. The Challenge uses
     Mathlib's gaussianReal CDF for the Black-Scholes expression rather
     than the standard normal CDF symbol Phi. The formalization works in
     the universe-polymorphic setting with Type u sample spaces. The

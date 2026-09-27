@@ -1,9 +1,12 @@
 # Black-Scholes submission preparation — 2026-09-27
 
-This record covers the Lean 4.35 upgrade in `lean-stochastic-calculus`.
-The changes are uncommitted for author review, based on
-`3bb950a4439da4997ec0e9fe31668f0a84c2ae98`. No new commit has been pushed or
-submitted to Palomar. GitHub CI must pass on the eventual submission commit.
+This records local checks of the Lean 4.35 upgrade and the final document
+review in `lean-stochastic-calculus` on 2026-09-27. The upgrade was prepared
+from `3bb950a4439da4997ec0e9fe31668f0a84c2ae98` and committed by the author as
+`d9afe51e59cf7108e4243ce43ba5579ceee75742`. The review corrections described
+below were made after that commit. The eventual submission must include them,
+and GitHub CI must pass on that exact final commit. This local record is not
+a Palomar verification report or a substitute for the final commit identifier.
 
 ## What changed
 
@@ -11,7 +14,8 @@ Lean and Mathlib were upgraded together. The proof repairs adapt to changed
 library interfaces for integrability, Gaussian laws, product measures and
 uniform integrability, and replace deprecated lemma names. Some internal
 helper assumptions changed to match Mathlib. The public mathematical statement,
-its assumptions and the Solution source are unchanged.
+its assumptions, definition bodies and proof are unchanged. The final review
+corrected an explanatory comment in the Solution.
 
 The metadata now identifies the Black-Scholes paper as the source of the known
 result, with `relationship: independently-proves`, and explains the standard
@@ -23,6 +27,13 @@ The README, blueprint, library guide and metadata explicitly describe the
 constant-drift application of the general predictable (dynamic) Girsanov
 theorem. The blueprint and library guide identify the retained adapters that
 are outside this Black-Scholes proof.
+
+The final review made the positivity assumptions and time-zero scope explicit,
+corrected the account of the field-by-field conversion between the two
+strong-solution structures, and repaired the blueprint's probability-measure
+explanation and Novikov lemma location. The Challenge and Comparator
+configuration needed no further changes. The existing disclosure about the
+absence of in-depth human review still applies.
 
 Checking scripts now use Lean's bundled Comparator and exporters. They select
 the bundled NanoDa and con-ron checkers in a temporary local configuration.
@@ -85,10 +96,11 @@ Comparator, lean4export and a Landrun shim.
    The unchanged license text matches Apache's published Apache-2.0 license
    after whitespace normalization and agrees with the metadata. Palomar's
    license detector remains part of its protected run.
-7. **Statement preservation — passed.** Both public files are byte-for-byte
-   identical to the base commit. SHA-256:
+7. **Statement preservation — passed.** The Challenge is byte-for-byte
+   identical to the base commit. The Solution differs only in its module
+   comment; its declarations and proof are unchanged. SHA-256:
    - Challenge: `3b553460fe14af05f193ac8f57a062aca5b36853187aed787a0f15db85928421`
-   - Solution: `5e50680e07d123f7a12f2b04821dafda5ff5d281ae1bfbb6748d69342b9d38f7`
+   - Solution: `2f668d3f5146c8838f34bb3425f7f9101118a8217650831d47f8cbf0026fcc11`
 
 Commands for a fresh checkout are in [README.md](README.md). Local transcripts
 are retained under the ignored `.lake/palomar-prep-20260927/` directory:
@@ -98,6 +110,12 @@ control restored the Challenge. The import audit also recorded the complete
 Challenge import graph: 4,780 imported modules, all from Lean or Mathlib's
 pinned dependency set.
 
+The final-review checks are recorded separately under
+`.lake/palomar-review-20260927/`. They include the updated Solution build,
+Comparator and independent kernels, negative control, proof-dependency audit,
+and a compiled check that the two strong-solution structures imply each other
+by transferring the same five fields.
+
 ## Limits and next steps
 
 These checks ran on macOS with `--local`, which explicitly disables the Linux
@@ -105,7 +123,10 @@ sandbox. They are local proof checks, not a Palomar mechanical or editorial
 review. Palomar must independently rebuild, protect the Challenge and verify
 the exact submitted commit. Its rules may change before submission.
 
-After author review: commit and push, require GitHub CI to pass on that exact
-commit, and record its full identifier for submission. Any subsequent proof or
-configuration changes require the relevant checks again. Palomar submission,
+Before submission: commit and push all review corrections, require GitHub CI
+to pass on that exact commit, and record its full identifier. The repository
+must also be publicly accessible, as required by
+[Palomar's submission instructions](https://palomar-registry.org/how-to-submit).
+Any subsequent proof or configuration changes require the relevant checks
+again. Palomar submission,
 review and the author's decision about registration remain outstanding.

@@ -8,10 +8,13 @@ theorem, and use the resulting change of measure to evaluate the option price.
 
 ## Target
 
-`PalomarBlackScholes.black_scholes` (`BlackScholesChallenge.lean`): for a
-real Brownian motion `B` with almost-surely continuous paths, every strong
-solution `X` of the linear SDE `dX = μX dt + σX dB` with `X_0 = spot`, and
-every maturity `T > 0`, the exact terminal density measure
+`PalomarBlackScholes.black_scholes` (`BlackScholesChallenge.lean`): fix
+strictly positive initial price `spot`, strike `K`, volatility `σ` and maturity
+`T`, and arbitrary constant real drift `μ` and interest rate `r`. Let `B` be
+a real Brownian motion with almost-surely continuous paths and strongly
+measurable values at every time. For every strong solution `X` of the linear
+SDE `dX = μX dt + σX dB` with `X_0 = spot` almost surely, the exact terminal
+density measure
 
 ```
 Q = P.withDensity (exp (−θ B_T − θ² T / 2)),   θ = (μ − r) / σ
@@ -20,8 +23,8 @@ Q = P.withDensity (exp (−θ B_T − θ² T / 2)),   θ = (μ − r) / σ
 is a probability measure equivalent to `P`; the shifted driver
 `B_t + θ (t ∧ T)` is a Brownian motion under `Q`; the discounted asset
 stopped at `T` is a `Q`-martingale in the natural filtration of `B`; the
-call payoff is `Q`-integrable; and its discounted `Q`-expectation is the
-Black–Scholes formula `S Φ(d₁) − K e^{−rT} Φ(d₂)`.
+call payoff is `Q`-integrable; and its discounted `Q`-expectation at time zero
+is the Black–Scholes formula `spot Φ(d₁) − K e^{−rT} Φ(d₂)`.
 
 The strong solution is pinned by concrete left-sum convergence in
 probability (`IsStrongLinearSolution`), not by an abstract stochastic
@@ -70,9 +73,12 @@ integral, so the Challenge imports only Mathlib.
    `withDensity_congr_ae` identifies the two measures and
    `IsPreBrownianReal.congr` transfers Brownianity
    (`isPreBrownianReal_girsanovShiftedBrownian_const_dynamic`). Integrability
-   and expectation one of the density give equivalence of measures and the
-   probability property (`girsanovMeasure_const_mutuallyAbsolutelyContinuous`,
-   `isProbabilityMeasure_girsanovMeasure_const`).
+   and strict positivity of the density give equivalence of measures
+   (`girsanovMeasure_const_mutuallyAbsolutelyContinuous`). Absolute continuity
+   transfers almost-sure path continuity from `P` to `Q`, so the shifted driver
+   is Brownian (`isBrownianReal_riskNeutralBrownian`, `BlackScholes.lean`).
+   The final proof obtains the probability property from this Brownian law
+   through `hW.isGaussianProcess.isProbabilityMeasure`.
 
 6. **The discounted martingale.** Under `Q` the discounted stopped asset
    equals `spot` times the Doléans–Dade exponential of `σ` times the shifted
@@ -97,11 +103,12 @@ integral, so the Challenge imports only Mathlib.
 | 2 | `continuousBrownianVersion`, `isBrownianReal_continuousBrownianVersion` | `BrownianContinuousVersion.lean` |
 | 3 | `girsanovDensityData_neg_mul_stopped` | `GirsanovConstantDrift.lean` |
 | 3 | `hasQuadraticVariationBeforeStop_preBrownianReal` | `LocalMartingaleContract.lean` |
-| 3 | `novikovCondition_deterministic` | `Novikov.lean` |
+| 3 | `novikovCondition_deterministic` | `NovikovCondition.lean` |
 | 4 | `GirsanovDensityData.isPreBrownianReal_girsanovShiftedBrownian_predictable` | `GirsanovTheorem.lean` |
 | 4 | `GirsanovDensityData.martingale_stopAt_complexDoleans_predictable` | `GirsanovTheorem.lean` |
 | 5 | `isPreBrownianReal_girsanovShiftedBrownian_const_dynamic` | `GirsanovConstantDrift.lean` |
 | 5 | `girsanovMeasure_const_mutuallyAbsolutelyContinuous` | `GirsanovConstantDrift.lean` |
+| 5 | `isBrownianReal_riskNeutralBrownian` | `BlackScholes.lean` |
 | 6 | `martingale_discountedStoppedAsset`, `natural_add_deterministic` | `BlackScholes.lean` |
 | 6 | `martingale_scaledBrownianDoleansDadeExponential_via_gaussianIncrements` | `DoleansDade.lean` |
 | 7 | `call_expectation_eq_blackScholes`, `integrable_callPayoff` | `BlackScholes.lean` |
@@ -140,8 +147,10 @@ each has a library twin used by the proof:
 | `marketPriceOfRisk`, `riskNeutralMeasure`, `riskNeutralBrownian`, `discountedStoppedAsset`, `blackScholesCall` | the same names in `StochasticCalculus.BlackScholes` |
 | `black_scholes` | `StochasticCalculus.BlackScholes.black_scholes` |
 
-The Solution proof is one `exact` of the library theorem; the definitions
-unfold to the same terms on both sides.
+The Solution proof applies the library theorem with one `exact`. The two
+strong-solution structures are distinct Lean types with the same five
+conditions, so the proof passes those fields explicitly into the library
+structure. The remaining boundary definitions unfold to their library twins.
 
 ## Pitfalls
 

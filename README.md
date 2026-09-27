@@ -17,14 +17,28 @@ risk-neutral measure. Prepared for submission to
 ## Scope
 
 The formalization covers a single asset driven by scalar Brownian motion
-on a finite time horizon. Starting from the Itô integral construction,
-it proves:
+on a finite time horizon. The initial asset price, strike, volatility and
+maturity are strictly positive. The drift and interest rate are constant real
+numbers; either may be negative. The formula is the price at time zero,
+expressed as a discounted expectation under the constructed measure.
+
+The Brownian driver has almost-surely continuous paths, and its value at each
+time is assumed strongly measurable. A solution is adapted to the driver's
+natural filtration, has almost-surely continuous paths and the given initial
+value, has an integrable drift along almost every path, and satisfies the SDE
+through convergence in probability of explicit left sums. The sample space is
+an arbitrary measurable space. Under these assumptions, the theorem proves:
 
 - Existence and mutual absolute continuity of the risk-neutral measure
 - Brownianity of the shifted driver under the new measure
 - The martingale property of the discounted stopped asset
 - Integrability of the call payoff
 - Equality of the discounted expectation with the Black-Scholes formula
+
+The submitted theorem covers this expectation formula and the supporting
+change of measure. It does not include a trading-strategy replication theorem
+or a conditional option-price process at later times. Zero strike, zero
+volatility and zero maturity are outside its stated scope.
 
 The library contains 65 Lean source files (~46k lines) organized in six
 stages. See [LIBRARY.md](LIBRARY.md) for per-file descriptions.
@@ -64,7 +78,7 @@ Challenge definition with the same body and discharges the theorem by the
 sorry-free proof library under `StochasticCalculus/`. The proof route and
 its code mapping are in [BLUEPRINT.md](BLUEPRINT.md).
 
-- Imports: Mathlib only
+- Challenge imports: Mathlib only
 - Permitted axioms: `propext`, `Classical.choice`, `Quot.sound`
 
 ## Build and verify
@@ -79,9 +93,9 @@ python3 scripts/check_boundary.py
 lake env lean scripts/check_girsanov_route.lean
 ```
 
-The library and the Solution build with `--iofail`, which rejects any
-stray informational output. The Challenge is built separately because its
-one deliberate `sorry` is reported as a warning.
+The library and the Solution build with `--iofail`, which rejects warnings
+and informational output from Lean. The Challenge is built separately because
+its one deliberate `sorry` is reported as a warning.
 
 Lean 4.35 bundles Comparator, the matching exporter, and independent proof
 checkers. The scripts use those tools directly; no separate Comparator or
@@ -134,14 +148,28 @@ parts of the library, and split the largest files
 on 2026-09-21. Codex upgraded the project to Lean and Mathlib 4.35 and
 updated the submission checks on 2026-09-27. The author directed the work,
 read the Challenge and the metadata, and approved the earlier changes;
-the current upgrade awaits review. The library has not been examined in
-depth by human experts. Details, including model names and cost notes, are
-in `formalization.yaml`.
+the upgrade was prepared for author review before committing. The library
+has not been examined in depth by human experts. Details, including model
+names and cost notes, are in `formalization.yaml`.
 
 The mathematics follows a standard route to the established Black-Scholes
 formula. The metadata identifies the original paper as the source of the
 result and explains the different proof route; no mathematical novelty is
 claimed.
+
+## Submission settings
+
+Submission requires public access to
+`https://github.com/savarin/lean-stochastic-calculus` and the full 40-character
+identifier of the final pushed commit. Require the GitHub Build workflow to
+pass on that same commit, including any review fixes.
+The project and `formalization.yaml` are at the repository root; the Comparator
+configuration path is **`comparator-black-scholes.json`** and must be supplied
+explicitly because it differs from the default filename.
+
+The responsible author or maintainer submits under that relationship.
+These are the inputs for [Palomar submission](https://palomar-registry.org/how-to-submit);
+this repository does not submit or register the result automatically.
 
 ## License
 
