@@ -29,7 +29,9 @@ value, has an integrable drift along almost every path, and satisfies the SDE
 through convergence in probability of explicit left sums. The sample space is
 an arbitrary measurable space. Under these assumptions, the theorem proves:
 
-- Existence and mutual absolute continuity of the risk-neutral measure
+- The explicitly defined risk-neutral measure is a probability measure
+  equivalent to the original one: the two give probability zero to the same
+  events
 - Brownianity of the shifted driver under the new measure
 - The martingale property of the discounted stopped asset
 - Integrability of the call payoff
@@ -41,13 +43,14 @@ or a conditional option-price process at later times. Zero strike, zero
 volatility and zero maturity are outside its stated scope.
 
 The library contains 65 Lean source files (~46k lines) organized in six
-stages. See [LIBRARY.md](LIBRARY.md) for per-file descriptions.
+stages. The completed Black-Scholes proof draws on 53 of them; the other 12,
+including the general Itô-integral construction, belong to the wider library.
+See the [library catalogue in BLUEPRINT.md](BLUEPRINT.md#library-catalogue)
+for per-file descriptions; it marks the 12.
 
 ## Proof architecture
 
 ```
-Itô integral construction
-         │
   Quadratic variation ⟨B⟩ = t
          │
      Itô formula
@@ -61,6 +64,11 @@ Itô integral construction
   Black-Scholes pricing
 ```
 
+The chain shows the completed proof. The library's Itô integral on all
+predictable square-integrable integrands (`ItoConstruction`, `ItoProcess`) is
+not part of it: no declaration of that construction is reached from the
+final theorem.
+
 Here “dynamic” describes the general theorem: it allows a drift that varies
 with time and the random path, subject to its stated conditions. Black-Scholes
 needs the constant drift above, for which the proof supplies those conditions
@@ -70,7 +78,7 @@ the Lean lemmas used.
 
 ## Trust boundary
 
-The 114-line Mathlib-only
+The 118-line Mathlib-only
 [BlackScholesChallenge.lean](BlackScholesChallenge.lean) exposes the
 Palomar boundary: one theorem, zero definition holes.
 [BlackScholesSolution.lean](BlackScholesSolution.lean) restates every
@@ -119,7 +127,7 @@ To validate metadata and packaging with Palomar's pinned validator
 python3 -m venv .lake/checks-venv
 .lake/checks-venv/bin/python -m pip install -r scripts/requirements-checks.txt
 git clone https://github.com/PalomarRegistry/PalomarSubmission.git .lake/palomar-submission
-git -C .lake/palomar-submission checkout --detach a59f25bd8a66bf6faf3a4f4260d412989c0185ea
+git -C .lake/palomar-submission checkout --detach 65f0154ed776cd26c224254aa57b379137f28b0d
 .lake/checks-venv/bin/python scripts/check_metadata.py
 ```
 
@@ -129,28 +137,44 @@ records the rules checked here; reassess it if submission is delayed.
 
 ## Verification
 
-The Lean 4.35 verification results, exact versions, commands, and limits
-are recorded in [VERIFICATION.md](VERIFICATION.md). Earlier results from
-Lean 4.33 do not establish that the upgraded project passes.
+### Palomar's mechanical verification of `d95e78e` (2026-09-27)
 
-GitHub CI checks the strict build, publication boundary, dynamic Girsanov
-dependency, metadata, and packaging. The full local Comparator and
-negative-control results are recorded separately; Palomar performs the
-protected verification after submission.
+Palomar's protected mechanical verification passed for commit
+[`d95e78e`](https://github.com/savarin/lean-stochastic-calculus/commit/d95e78e71dc7e20d41c0c099251b49d8b4f0668d),
+submission `tqn47eiberv4`: status pass, with no errors and no warnings
+([workflow run](https://github.com/PalomarRegistry/PalomarSubmission/actions/runs/36347292478),
+PalomarSubmission `a59f25bd`). A passing mechanical check is not editorial
+acceptance or registration.
+
+### This revision (2026-09-29)
+
+Palomar now requires every Lean file to use Lean's module system, which
+`d95e78e` predates. The local build, boundary preflight, Comparator,
+Girsanov-dependency, altered-statement and metadata checks passed on this
+revision; Palomar has not yet verified it.
 
 ## Production and review
 
-The proof library was written by agents and is checked by the Lean
-kernel: Codex built the library and the boundary on 2026-09-07 in the
-`lean-pipeline/black-scholes-sde` workspace, and Claude Fable 5.1 rerouted
-the measure change through the predictable Girsanov theorem, pruned unused
-parts of the library, and split the largest files
-on 2026-09-21. Codex upgraded the project to Lean and Mathlib 4.35 and
-updated the submission checks on 2026-09-27. The author directed the work,
-read the Challenge and the metadata, and approved the earlier changes;
-the upgrade was prepared for author review before committing. The library
-has not been examined in depth by human experts. Details, including model
-names and cost notes, are in `formalization.yaml`.
+The proof library was written by agents and is checked by the Lean kernel.
+Codex agents developed its components in separate pipeline runs from
+2026-09-02 to 2026-09-06. These included the Itô integral, quadratic
+variation, the Itô formula, the Doléans-Dade exponential, Novikov's
+condition and the Girsanov theorem. On 2026-09-07 Codex finished the
+geometric Brownian motion component and assembled the components into the
+Black-Scholes proof and its boundary in the
+`lean-pipeline/black-scholes-sde` workspace. On 2026-09-18 Claude Opus 4.6
+consolidated the library and the boundary into this repository. Claude Fable
+5.1 rerouted the measure change through the predictable Girsanov theorem and
+pruned unused parts of the library on 2026-09-21. Early on 2026-09-22 it
+split the five largest files and made the Solution restate the Challenge's
+definitions. Codex upgraded the project to Lean and Mathlib 4.35 and updated
+the submission checks on 2026-09-27. Claude Opus 5.5 ported every file to
+Lean's module system on 2026-09-29. The author directed the work, read the
+Challenge and the metadata, and approved the earlier changes; the port was
+prepared for author review before committing. The library has not been
+examined in depth by human experts. `formalization.yaml` gives the models
+where session records name them, and notes where records are missing or
+disagree.
 
 The mathematics follows a standard route to the established Black-Scholes
 formula. The metadata identifies the original paper as the source of the

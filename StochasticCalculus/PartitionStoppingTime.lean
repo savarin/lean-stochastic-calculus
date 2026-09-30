@@ -3,7 +3,9 @@ Copyright (c) 2026 Ezzeri Esa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ezzeri Esa
 -/
-import StochasticCalculus.LocalizingStoppedProcess
+module
+
+public import StochasticCalculus.LocalizingStoppedProcess
 
 /-!
 # Partition-valued stopping times
@@ -14,6 +16,8 @@ continuous exit times, adaptedness of localizations, and convergence in
 measure through uniform approximations.
 -/
 
+public section
+
 open Filter MeasureTheory ProbabilityTheory
 open scoped BigOperators ENNReal NNReal Topology
 
@@ -23,7 +27,7 @@ namespace StochasticCalculus
 
 /-- The first index of a uniform partition lying at or after a bounded
 stopping rule. -/
-noncomputable def uniformPartitionCeilIndex
+@[expose] noncomputable def uniformPartitionCeilIndex
     {W : Type*} (tau : W → WithTop ℝ≥0) (T : ℝ≥0) (N : ℕ)
     (hN : 0 < N) (hbound : ∀ omega, tau omega ≤ (T : WithTop ℝ≥0))
     (omega : W) : ℕ :=
@@ -31,7 +35,7 @@ noncomputable def uniformPartitionCeilIndex
 
 /-- Ceiling approximation of a bounded stopping rule on a uniform
 partition. -/
-noncomputable def uniformPartitionCeilStoppingTime
+@[expose] noncomputable def uniformPartitionCeilStoppingTime
     {W : Type*} (tau : W → WithTop ℝ≥0) (T : ℝ≥0) (N : ℕ)
     (hN : 0 < N) (hbound : ∀ omega, tau omega ≤ (T : WithTop ℝ≥0)) :
     W → WithTop ℝ≥0 :=

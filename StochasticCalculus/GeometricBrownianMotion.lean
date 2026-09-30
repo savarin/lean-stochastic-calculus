@@ -3,8 +3,10 @@ Copyright (c) 2026 Ezzeri Esa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ezzeri Esa
 -/
-import StochasticCalculus.WeightedBracketRiemann
-import Mathlib.Analysis.ODE.Gronwall
+module
+
+public import StochasticCalculus.WeightedBracketRiemann
+public import Mathlib.Analysis.ODE.Gronwall
 
 /-!
 # Geometric Brownian motion and the linear SDE
@@ -13,6 +15,8 @@ This file defines the explicit geometric Brownian process and proves its
 fixed-time integral SDE identity from the general time-dependent Itô formula.
 The stochastic integral is pinned by concrete uniform Brownian left sums.
 -/
+
+public section
 
 open MeasureTheory ProbabilityTheory Set Filter Topology
 open scoped BigOperators NNReal ENNReal
@@ -209,19 +213,19 @@ theorem ae_all_eq_of_continuous_processes
 
 /-- The time-dependent exponential used to construct geometric Brownian
 motion from its Brownian driver. -/
-def geometricBrownianFunction
+@[expose] def geometricBrownianFunction
     (spot drift volatility s x : ℝ) : ℝ :=
   spot * Real.exp
     ((drift - volatility ^ 2 / 2) * s + volatility * x)
 
 /-- Geometric Brownian motion with spot, drift, and volatility parameters. -/
-def geometricBrownianMotion
+@[expose] def geometricBrownianMotion
     {W : Type*} (spot drift volatility : ℝ) (B : ℝ≥0 → W → ℝ)
     (t : ℝ≥0) (omega : W) : ℝ :=
   geometricBrownianFunction spot drift volatility t (B t omega)
 
 /-- Uniform predictable left sums for the diffusion coefficient `σ X`. -/
-def linearSDESpaceApprox
+@[expose] def linearSDESpaceApprox
     {W : Type*} (volatility : ℝ) (X B : ℝ≥0 → W → ℝ)
     (t : ℝ≥0) (n : ℕ) (omega : W) : ℝ :=
   ∑ i ∈ Finset.range n,
@@ -233,7 +237,7 @@ def linearSDESpaceApprox
 index.  This form is useful for discrete exit-time localization, where the
 coefficient at index `i` remembers whether an earlier grid point has crossed
 the localization level. -/
-def uniformBrownianLeftSum
+@[expose] def uniformBrownianLeftSum
     {W : Type*} (C : ℕ → W → ℝ) (B : ℝ≥0 → W → ℝ)
     (t : ℝ≥0) (n : ℕ) (omega : W) : ℝ :=
   ∑ i ∈ Finset.range n, C i omega *
@@ -241,7 +245,7 @@ def uniformBrownianLeftSum
       B (uniformPartitionTime t n i) omega)
 
 /-- Samples have remained inside `[-R,R]` through grid index `i`. -/
-def uniformGridStaySet
+@[expose] def uniformGridStaySet
     {W : Type*} (R : ℝ≥0) (X : ℝ≥0 → W → ℝ)
     (t : ℝ≥0) (n i : ℕ) : Set W :=
   ⋂ j ∈ Finset.range (i + 1),
@@ -249,7 +253,7 @@ def uniformGridStaySet
 
 /-- The linear diffusion coefficient, switched off permanently after the
 first sampled exit from `[-R,R]`. -/
-def uniformGridExitCoefficient
+@[expose] def uniformGridExitCoefficient
     {W : Type*} (volatility : ℝ) (R : ℝ≥0)
     (X : ℝ≥0 → W → ℝ) (t : ℝ≥0) (n i : ℕ) : W → ℝ :=
   (uniformGridStaySet R X t n i).indicator fun omega ↦
@@ -257,7 +261,7 @@ def uniformGridExitCoefficient
 
 /-- The Brownian left sum stopped at the first grid exit of its coefficient
 process. -/
-def gridExitLinearSDESpaceApprox
+@[expose] def gridExitLinearSDESpaceApprox
     {W : Type*} (volatility : ℝ) (R : ℝ≥0)
     (X B : ℝ≥0 → W → ℝ) (t : ℝ≥0) (n : ℕ) : W → ℝ :=
   uniformBrownianLeftSum
@@ -271,7 +275,7 @@ def uniformGridPathStaySet
 
 /-- A process switched off after its path has left `[-R,R]`, expressed using
 the countably measurable all-mesh event. -/
-def pathExitCoefficient
+@[expose] def pathExitCoefficient
     {W : Type*} (R : ℝ≥0) (X : ℝ≥0 → W → ℝ) : ℝ≥0 → W → ℝ :=
   fun t ↦ (uniformGridPathStaySet R X t).indicator (X t)
 
@@ -797,7 +801,7 @@ theorem integral_sq_eq_eLpNorm_two_toReal_sq
     Real.sq_sqrt hnonneg]
 
 /-- The stochastic residual in the integral form of `dX = μX dt + σX dB`. -/
-def linearSDEResidual
+@[expose] def linearSDEResidual
     {W : Type*} (drift : ℝ) (X : ℝ≥0 → W → ℝ)
     (spot : ℝ) (t : ℝ≥0) (omega : W) : ℝ :=
   X t omega - spot -

@@ -3,7 +3,9 @@ Copyright (c) 2026 Ezzeri Esa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ezzeri Esa
 -/
-import StochasticCalculus.ElementaryMartingaleIntegral
+module
+
+public import StochasticCalculus.ElementaryMartingaleIntegral
 
 /-!
 # Localized stopped processes
@@ -13,6 +15,8 @@ local quadratic-variation contract with an explicit common localizer, and
 the continuity, monotonicity and norm bounds of localizations at continuous
 exit times.
 -/
+
+public section
 
 open Filter MeasureTheory ProbabilityTheory
 open scoped BigOperators ENNReal NNReal Topology
@@ -24,7 +28,7 @@ namespace StochasticCalculus
 /-- The stopped-and-indicated process used in Mathlib's definition of a
 local property.  Naming it keeps local `L¹` approximation statements
 readable. -/
-noncomputable def localizingStoppedProcess
+@[expose] noncomputable def localizingStoppedProcess
     {W : Type*} (X : ℝ≥0 → W → ℝ) (tau : W → WithTop ℝ≥0) :
     ℝ≥0 → W → ℝ :=
   stoppedProcess
@@ -60,7 +64,7 @@ Along one localizing sequence, `M` becomes a genuine martingale and the
 localized `bracket` satisfies the robust completed-cell quadratic-variation
 contract.  Unlike a hypothesis phrased using `Locally.localSeq`, this
 definition does not expose the witness chosen from a proof of locality. -/
-def HasLocalQuadraticVariationProcessInProbability
+@[expose] def HasLocalQuadraticVariationProcessInProbability
     {W : Type*} [MeasurableSpace W]
     (M bracket : ℝ≥0 → W → ℝ)
     (𝒱 : Filtration ℝ≥0 ‹MeasurableSpace W›) (P : Measure W) : Prop :=

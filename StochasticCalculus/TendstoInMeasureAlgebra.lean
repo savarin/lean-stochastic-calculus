@@ -3,7 +3,9 @@ Copyright (c) 2026 Ezzeri Esa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ezzeri Esa
 -/
-import StochasticCalculus.ItoProcess
+module
+
+public import StochasticCalculus.ItoProcess
 
 /-!
 # Convergence in measure for real sequences
@@ -13,6 +15,8 @@ variables: sums, products by fixed or constant factors, and comparison,
 without measurability side conditions where none are needed.  The later
 quadratic-variation layers use these to pass limits through partition sums.
 -/
+
+public section
 
 open MeasureTheory
 open ProbabilityTheory

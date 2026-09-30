@@ -3,8 +3,10 @@ Copyright (c) 2026 Ezzeri Esa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ezzeri Esa
 -/
-import StochasticCalculus.Girsanov
-import StochasticCalculus.GirsanovMoments
+module
+
+public import StochasticCalculus.Girsanov
+public import StochasticCalculus.GirsanovMoments
 
 /-!
 # Random cutoffs of variation approximations
@@ -13,6 +15,8 @@ Monotone completed-cell sums admit a finite-grid sandwich. A continuous
 monotone limit then permits evaluation at an arbitrary bounded random
 cutoff, without assuming sample-path regularity of an unrelated integrator.
 -/
+
+public section
 
 open Filter MeasureTheory ProbabilityTheory
 open scoped ENNReal NNReal Topology

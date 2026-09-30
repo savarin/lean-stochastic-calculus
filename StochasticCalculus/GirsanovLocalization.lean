@@ -3,7 +3,9 @@ Copyright (c) 2026 Ezzeri Esa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ezzeri Esa
 -/
-import StochasticCalculus.StoppedCrossVariation
+module
+
+public import StochasticCalculus.StoppedCrossVariation
 
 /-!
 # Localization of predictable Girsanov data
@@ -11,6 +13,8 @@ import StochasticCalculus.StoppedCrossVariation
 The terminally stopped bracket gives global polynomial moments of the real
 integrator. Continuous exits then allow the bounded-density closure to apply.
 -/
+
+public section
 
 open Filter MeasureTheory ProbabilityTheory
 open scoped ENNReal NNReal Topology

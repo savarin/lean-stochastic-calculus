@@ -3,14 +3,16 @@ Copyright (c) 2026 Ezzeri Esa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ezzeri Esa
 -/
-import StochasticCalculus.Novikov
-import StochasticCalculus.QuadraticVariation
-import StochasticCalculus.QuadraticVariationDensity
-import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
-import Mathlib.MeasureTheory.Measure.Tilted
-import Mathlib.Probability.Independence.BoundedContinuousFunction
-import Mathlib.Probability.Moments.ComplexMGF
-import Mathlib.Probability.Moments.SubGaussian
+module
+
+public import StochasticCalculus.Novikov
+public import StochasticCalculus.QuadraticVariation
+public import StochasticCalculus.QuadraticVariationDensity
+public import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
+public import Mathlib.MeasureTheory.Measure.Tilted
+public import Mathlib.Probability.Independence.BoundedContinuousFunction
+public import Mathlib.Probability.Moments.ComplexMGF
+public import Mathlib.Probability.Moments.SubGaussian
 
 /-!
 # Cross-variation contracts and convergence in measure
@@ -22,6 +24,8 @@ scalars.  The file also records that a pre-Brownian law is determined by its
 restricted increment laws, and that adaptedness and strong predictability
 are monotone under enlargement of the filtration.
 -/
+
+public section
 
 open Filter MeasureTheory ProbabilityTheory
 open scoped ENNReal NNReal
@@ -219,7 +223,7 @@ theorem isPreBrownianReal_of_map_restrict_increment_eq_of_ae_zero
   simp only [Y, homega, neg_zero, zero_add]
 
 /-- Process-valued quadratic covariation along uniform partitions. -/
-def HasCrossVariationProcessInProbability
+@[expose] def HasCrossVariationProcessInProbability
     {W : Type*} [MeasurableSpace W]
     (X Y covariation : ℝ≥0 → W → ℝ) (P : Measure W) : Prop :=
   ∀ t, TendstoInMeasure P

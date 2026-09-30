@@ -3,7 +3,9 @@ Copyright (c) 2026 Ezzeri Esa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ezzeri Esa
 -/
-import StochasticCalculus.PredictableProcess
+module
+
+public import StochasticCalculus.PredictableProcess
 
 /-!
 # Density of adapted elementary predictable processes
@@ -17,6 +19,8 @@ time; the omitted time origin is null.
 `predictableTrimEquiv` also identifies the local `lpMeas` model with the equivalent
 trimmed-measure `L²` model used by completion constructions of the Itô integral.
 -/
+
+public section
 
 open MeasureTheory ProbabilityTheory Filter Topology Function
 open scoped ENNReal NNReal InnerProductSpace
@@ -260,7 +264,7 @@ theorem elementaryPredictable_adaptedIndicator
     (elementaryPredictable (P := P) 𝓕 a b (adaptedIndicator (P := P) 𝓕 a hF) :
         TimeProcessL2 P) =
       indicatorConstLp (μ := nonnegativeLebesgueMeasure.prod P) 2
-        (measurableSet_Ioc.prod (𝓕.le a F hF))
+        ((measurableSet_Ioc : MeasurableSet (Set.Ioc a b)).prod (𝓕.le a F hF))
         (by
           rw [Measure.prod_prod (μ := nonnegativeLebesgueMeasure) (ν := P)]
           exact ENNReal.mul_ne_top
@@ -314,7 +318,7 @@ lemma inner_elementaryPredictable_adaptedIndicator [SFinite P]
   exact integral_indicator (measurableSet_Ioc.prod (𝓕.le a F hF))
 
 /-- The algebraic span of all one-step adapted predictable processes. -/
-def elementaryPredictableSpan [SFinite P]
+@[expose] def elementaryPredictableSpan [SFinite P]
     (𝓕 : Filtration ℝ≥0 ‹MeasurableSpace W›) :
     Submodule ℝ (PredictableProcessL2 𝓕 P) :=
   Submodule.span ℝ {U | ∃ a b : ℝ≥0,

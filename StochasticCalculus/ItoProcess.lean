@@ -3,8 +3,10 @@ Copyright (c) 2026 Ezzeri Esa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ezzeri Esa
 -/
-import StochasticCalculus.ItoConstruction
-import Mathlib.Probability.Martingale.Basic
+module
+
+public import StochasticCalculus.ItoConstruction
+public import Mathlib.Probability.Martingale.Basic
 
 /-!
 # The natural Itô integral as an L²-valued process
@@ -13,6 +15,8 @@ This file gives the quotient/a.e. layer of the time-indexed integral.  A
 predictable process is cut off on `(0,t]` inside predictable product `L²`, and
 the existing terminal-value Itô isometry is applied to that cutoff.
 -/
+
+public section
 
 open MeasureTheory ProbabilityTheory Filter Topology
 open scoped ENNReal NNReal InnerProductSpace
@@ -28,7 +32,7 @@ variable {W : Type*} [NormedAddCommGroup W] [NormedSpace ℝ W]
   {B : ℝ≥0 → W → ℝ}
 
 /-- The product-space time frame `(0,t] × Ω`. -/
-def predictableTimeFrame (t : ℝ≥0) : Set (ℝ≥0 × W) :=
+@[expose] def predictableTimeFrame (t : ℝ≥0) : Set (ℝ≥0 × W) :=
   Set.Ioc 0 t ×ˢ Set.univ
 
 omit [NormedAddCommGroup W] [NormedSpace ℝ W] [CompleteSpace W] [BorelSpace W]
@@ -282,7 +286,7 @@ theorem predictableTimeRestrict_smul
 omit [NormedAddCommGroup W] [NormedSpace ℝ W] [CompleteSpace W] [BorelSpace W]
     [SecondCountableTopology W] [IsGaussian P] in
 /-- Time restriction as a contraction on predictable product `L²`. -/
-noncomputable def predictableTimeRestrictCLM
+@[expose] noncomputable def predictableTimeRestrictCLM
     (𝓕 : Filtration ℝ≥0 ‹MeasurableSpace W›) (t : ℝ≥0) :
     PredictableProcessL2 𝓕 P →L[ℝ] PredictableProcessL2 𝓕 P :=
   LinearMap.mkContinuous
@@ -301,7 +305,7 @@ theorem predictableTimeRestrictCLM_apply
   rfl
 
 /-- The natural Itô integral up to time `t`, as an equality class in `L²(P)`. -/
-noncomputable def naturalItoProcess
+@[expose] noncomputable def naturalItoProcess
     (hB : IsPreBrownianReal B P) (hsm : ∀ t, StronglyMeasurable (B t))
     {𝓕 : Filtration ℝ≥0 ‹MeasurableSpace W›}
     (hnat : 𝓕 = Filtration.natural B hsm)
@@ -335,7 +339,7 @@ theorem naturalItoProcess_predictableTimeRestrict
   rw [predictableTimeRestrict_min]
 
 /-- The integrand supported on the time slice `(s,t]`. -/
-noncomputable def predictableTimeSlice
+@[expose] noncomputable def predictableTimeSlice
     (𝓕 : Filtration ℝ≥0 ‹MeasurableSpace W›) (s t : ℝ≥0)
     (U : PredictableProcessL2 𝓕 P) : PredictableProcessL2 𝓕 P :=
   predictableTimeRestrict 𝓕 t U - predictableTimeRestrict 𝓕 s U
@@ -343,7 +347,7 @@ noncomputable def predictableTimeSlice
 omit [NormedAddCommGroup W] [NormedSpace ℝ W] [CompleteSpace W] [BorelSpace W]
     [SecondCountableTopology W] [IsGaussian P] in
 /-- Taking the part of a predictable process on `(s,t]` is continuous and linear. -/
-noncomputable def predictableTimeSliceCLM
+@[expose] noncomputable def predictableTimeSliceCLM
     (𝓕 : Filtration ℝ≥0 ‹MeasurableSpace W›) (s t : ℝ≥0) :
     PredictableProcessL2 𝓕 P →L[ℝ] PredictableProcessL2 𝓕 P :=
   predictableTimeRestrictCLM 𝓕 t - predictableTimeRestrictCLM 𝓕 s
@@ -666,7 +670,7 @@ theorem aestronglyMeasurable_naturalItoProcess
   exact mem_lpMeas_iff_aestronglyMeasurable.mp hUK
 
 /-- The fixed-time Itô value, bundled in the `L²(𝓕_t)` subspace. -/
-noncomputable def naturalItoProcessLpMeas
+@[expose] noncomputable def naturalItoProcessLpMeas
     (hB : IsPreBrownianReal B P) (hsm : ∀ t, StronglyMeasurable (B t))
     {𝓕 : Filtration ℝ≥0 ‹MeasurableSpace W›}
     (hnat : 𝓕 = Filtration.natural B hsm)
@@ -706,7 +710,7 @@ theorem condExpL2_naturalItoProcess
     exact inner_naturalItoProcess_sub_adapted hB hsm hnat hst U ⟨Z, hZ⟩
 
 /-- A strongly `𝓕_t`-measurable representative of each quotient-valued Itô process value. -/
-noncomputable def naturalItoProcessRepresentative
+@[expose] noncomputable def naturalItoProcessRepresentative
     (hB : IsPreBrownianReal B P) (hsm : ∀ t, StronglyMeasurable (B t))
     {𝓕 : Filtration ℝ≥0 ‹MeasurableSpace W›}
     (hnat : 𝓕 = Filtration.natural B hsm)

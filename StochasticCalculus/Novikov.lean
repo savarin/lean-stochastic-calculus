@@ -3,7 +3,9 @@ Copyright (c) 2026 Ezzeri Esa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ezzeri Esa
 -/
-import StochasticCalculus.NovikovCondition
+module
+
+public import StochasticCalculus.NovikovCondition
 
 /-!
 # Novikov's theorem
@@ -13,6 +15,8 @@ scaling trick for the Doléans--Dade exponential, and the conclusion: under
 Novikov's condition the stopped stochastic exponential is a uniformly
 integrable martingale with expectation one on `[0, T]`.
 -/
+
+public section
 
 open Filter MeasureTheory ProbabilityTheory
 open scoped ENNReal NNReal Topology

@@ -3,8 +3,10 @@ Copyright (c) 2026 Ezzeri Esa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ezzeri Esa
 -/
-import StochasticCalculus.ElementaryIto
-import StochasticCalculus.PredictableDensity
+module
+
+public import StochasticCalculus.ElementaryIto
+public import StochasticCalculus.PredictableDensity
 
 /-!
 # Construction identities for the Brownian Itô integral
@@ -22,6 +24,8 @@ predictable `L²`, agrees with `Z (B_b - B_a)` on every elementary adapted proce
 as both `naturalItoIntegralIsometry` and `centeredNaturalItoIntegralIsometry`.
 -/
 
+public section
+
 open MeasureTheory ProbabilityTheory Filter Topology
 open scoped ENNReal NNReal InnerProductSpace
 
@@ -36,7 +40,7 @@ variable {W : Type*} [NormedAddCommGroup W] [NormedSpace ℝ W]
   {B : ℝ≥0 → W → ℝ}
 
 /-- Promote an adapted coefficient to a later sigma-algebra of the filtration. -/
-noncomputable def adaptedMono
+@[expose] noncomputable def adaptedMono
     (𝓕 : Filtration ℝ≥0 ‹MeasurableSpace W›) {a c : ℝ≥0} (hac : a ≤ c)
     (Z : lpMeas ℝ ℝ (𝓕 a) 2 P) : lpMeas ℝ ℝ (𝓕 c) 2 P :=
   ⟨Z.1, AEStronglyMeasurable.mono (𝓕.mono hac) (lpMeas.aestronglyMeasurable Z)⟩
@@ -200,7 +204,7 @@ abbrev ElementaryPredictableIndex
   Σ a : ℝ≥0, {b : ℝ≥0 // a ≤ b} × lpMeas ℝ ℝ (𝓕 a) 2 P
 
 /-- The predictable-process realization of one formal elementary generator. -/
-noncomputable def elementaryPredictableGenerator
+@[expose] noncomputable def elementaryPredictableGenerator
     (𝓕 : Filtration ℝ≥0 ‹MeasurableSpace W›) (P : Measure W) [SFinite P] :
     ElementaryPredictableIndex 𝓕 P → PredictableProcessL2 𝓕 P :=
   fun x ↦ elementaryPredictable 𝓕 x.1 x.2.1.1 x.2.2
@@ -214,7 +218,7 @@ noncomputable def elementaryBrownianGenerator
   fun x ↦ elementaryBrownianValue hB hsm hnat x.2.1.2 x.2.2
 
 /-- Formal finite combinations realized as predictable processes. -/
-noncomputable def elementaryFinsuppToPredictable
+@[expose] noncomputable def elementaryFinsuppToPredictable
     (𝓕 : Filtration ℝ≥0 ‹MeasurableSpace W›) (P : Measure W) [SFinite P] :
     (ElementaryPredictableIndex 𝓕 P →₀ ℝ) →ₗ[ℝ] PredictableProcessL2 𝓕 P :=
   Finsupp.linearCombination ℝ (elementaryPredictableGenerator 𝓕 P)
@@ -394,7 +398,7 @@ theorem norm_naturalItoIntegral
   exact (sq_eq_sq₀ (norm_nonneg _) (norm_nonneg _)).mp h
 
 /-- The constructed natural-filtration Itô integral as a linear isometry. -/
-noncomputable def naturalItoIntegralIsometry
+@[expose] noncomputable def naturalItoIntegralIsometry
     (hB : IsPreBrownianReal B P) (hsm : ∀ t, StronglyMeasurable (B t))
     {𝓕 : Filtration ℝ≥0 ‹MeasurableSpace W›}
     (hnat : 𝓕 = Filtration.natural B hsm) :
@@ -458,7 +462,7 @@ theorem integral_naturalItoIntegral
 
 /-- The constructed natural-filtration Itô integral with codomain restricted to centered random
 variables. -/
-noncomputable def centeredNaturalItoIntegralIsometry
+@[expose] noncomputable def centeredNaturalItoIntegralIsometry
     (hB : IsPreBrownianReal B P) (hsm : ∀ t, StronglyMeasurable (B t))
     {𝓕 : Filtration ℝ≥0 ‹MeasurableSpace W›}
     (hnat : 𝓕 = Filtration.natural B hsm) :

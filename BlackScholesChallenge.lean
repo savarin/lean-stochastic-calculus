@@ -3,10 +3,14 @@ Copyright (c) 2026 Ezzeri Esa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ezzeri Esa
 -/
-import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
-import Mathlib.Probability.BrownianMotion.Basic
-import Mathlib.Probability.Martingale.Basic
-import Mathlib.Probability.CDF
+module
+
+public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
+public import Mathlib.Probability.BrownianMotion.Basic
+public import Mathlib.Probability.Martingale.Basic
+public import Mathlib.Probability.CDF
+
+public section
 
 open MeasureTheory ProbabilityTheory Filter Topology Set
 open scoped BigOperators NNReal ENNReal
@@ -22,7 +26,7 @@ def uniformPartitionTime (t : ℝ≥0) (n i : ℕ) : ℝ≥0 :=
   t * (i : ℝ≥0) / (n : ℝ≥0)
 
 /-- Geometric Brownian motion with spot, drift, and volatility parameters. -/
-def geometricBrownianMotion
+@[expose] def geometricBrownianMotion
     {W : Type u} (spot drift volatility : ℝ) (B : ℝ≥0 → W → ℝ)
     (t : ℝ≥0) (omega : W) : ℝ :=
   spot * Real.exp
@@ -66,7 +70,7 @@ structure IsStrongLinearSolution
 def marketPriceOfRisk (drift rate volatility : ℝ) : ℝ := (drift - rate) / volatility
 
 /-- The exact finite-horizon Girsanov density measure. -/
-def riskNeutralMeasure {W : Type*} [MeasurableSpace W]
+@[expose] def riskNeutralMeasure {W : Type*} [MeasurableSpace W]
     (P : Measure W) (B : ℝ≥0 → W → ℝ) (drift rate volatility : ℝ) (T : ℝ≥0) : Measure W :=
   let theta := marketPriceOfRisk drift rate volatility
   P.withDensity (fun omega ↦ ENNReal.ofReal
@@ -83,7 +87,7 @@ def discountedStoppedAsset {W : Type*} (X : ℝ≥0 → W → ℝ)
   Real.exp (-rate * ((min t T : ℝ≥0) : ℝ)) * X (min t T) omega
 
 /-- The Black--Scholes expression, with d2 = d1 - sigma sqrt T. -/
-def blackScholesCall (spot strike rate volatility maturity : ℝ) : ℝ :=
+@[expose] def blackScholesCall (spot strike rate volatility maturity : ℝ) : ℝ :=
   let d1 := (Real.log (spot / strike) + (rate + volatility ^ 2 / 2) * maturity) /
     (volatility * Real.sqrt maturity)
   let d2 := d1 - volatility * Real.sqrt maturity

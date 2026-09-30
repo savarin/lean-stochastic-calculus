@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""Check local metadata and packaging with a pinned Palomar validator.
+"""Check local metadata, packaging and Lean source requirements with a pinned
+Palomar validator.
 
 Requires Python 3.11+, PyYAML, and a clean PalomarSubmission checkout at the
 revision below. This does not submit anything or run Palomar's protected job.
@@ -11,7 +12,7 @@ from pathlib import Path
 import subprocess
 import sys
 
-PALOMAR_REV = "a59f25bd8a66bf6faf3a4f4260d412989c0185ea"
+PALOMAR_REV = "65f0154ed776cd26c224254aa57b379137f28b0d"
 # Matches https://www.apache.org/licenses/LICENSE-2.0.txt after whitespace normalization.
 APACHE_LICENSE_SHA256 = "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4"
 
@@ -36,7 +37,7 @@ def main() -> None:
     require(not git(upstream, "status", "--porcelain", "--untracked-files=no"),
             "PalomarSubmission has modified tracked files")
     sys.path.insert(0, str(upstream))
-    from scripts import submission_contract as contract, verify_submission as verifier
+    from scripts import source_requirements, submission_contract as contract, verify_submission as verifier
 
     metadata = contract.load_formalization_metadata(root / "formalization.yaml")
     require(metadata.get("version") == "v0.4", "metadata must declare v0.4")
@@ -44,6 +45,11 @@ def main() -> None:
     require(origin == "source-based", "Black-Scholes must be classified as source-based")
     verifier.load_comparator_config(root / "comparator-black-scholes.json")
     print("PASS: Palomar metadata validator; source-based provenance; Comparator schema")
+
+    summary, issues = source_requirements.inspect_lean_sources(root)
+    require(not issues, "Lean source requirements: " + "; ".join(map(str, issues)))
+    print(f"PASS: Palomar's Lean source requirements; {summary['files_checked']} files "
+          "start with the module header and stay within the line cap")
 
     toolchain = (root / "lean-toolchain").read_text().strip()
     verifier.supported_toolchain(toolchain)

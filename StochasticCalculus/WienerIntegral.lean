@@ -3,8 +3,10 @@ Copyright (c) 2026 Ezzeri Esa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ezzeri Esa
 -/
-import StochasticCalculus.CameronMartinTheorem
-import StochasticCalculus.IteratedIntegral
+module
+
+public import StochasticCalculus.CameronMartinTheorem
+public import StochasticCalculus.IteratedIntegral
 
 /-!
 # The Wiener integral
@@ -52,6 +54,8 @@ along the dense map `stepToLp` to the Wiener integral `wienerIntegral hB`.
 * `IsBrownian.integral_two_boxKernel`: the Brownian link conditionally fixes the order-two box
   value as the corresponding product of increments.
 -/
+
+public section
 
 open MeasureTheory ProbabilityTheory Filter Topology
 open scoped ENNReal NNReal InnerProductSpace
@@ -259,7 +263,7 @@ theorem ae_eq_zero_of_forall_setIntegral_Ioc {g : ℝ≥0 → ℝ}
   exact hs ⌈s⌉₊ (Nat.le_ceil s)
 
 /-- The indicator of the interval `(0, t]` as an element of `L²(ℝ≥0)`. -/
-noncomputable def intervalIndicator (t : ℝ≥0) : Lp ℝ 2 nonnegativeLebesgueMeasure :=
+@[expose] noncomputable def intervalIndicator (t : ℝ≥0) : Lp ℝ 2 nonnegativeLebesgueMeasure :=
   indicatorConstLp 2 measurableSet_Ioc (nonnegativeLebesgueMeasure_Ioc_ne_top 0 t) (1 : ℝ)
 
 /-- The interval indicators `1_{(0, t]}` have dense span in `L²(ℝ≥0)`. -/
@@ -564,7 +568,7 @@ noncomputable def kernelToLine : IteratedKernel 1 →ₗᵢ[ℝ] Lp ℝ 2 nonneg
   Lp.compMeasurePreservingₗᵢ ℝ _ measurePreserving_funUnique_symm_nnreal
 
 /-- The genuine order-one iterated Itô integral on `IteratedKernel 1`. -/
-noncomputable def wienerIntegralKernel (hB : IsPreBrownianReal B P) :
+@[expose] noncomputable def wienerIntegralKernel (hB : IsPreBrownianReal B P) :
     IteratedKernel 1 →L[ℝ] RandomL2 P :=
   (wienerIntegral hB).comp kernelToLine.toContinuousLinearMap
 

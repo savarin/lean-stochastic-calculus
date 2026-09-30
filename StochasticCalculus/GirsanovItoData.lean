@@ -3,8 +3,10 @@ Copyright (c) 2026 Ezzeri Esa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ezzeri Esa
 -/
-import StochasticCalculus.Girsanov
-import StochasticCalculus.GirsanovConstantDrift
+module
+
+public import StochasticCalculus.Girsanov
+public import StochasticCalculus.GirsanovConstantDrift
 
 /-!
 # Girsanov density data from a predictable `L²` integrand
@@ -28,6 +30,8 @@ The constant integrand on `(0, T]` instantiates the repaired contract on the
 continuous version of the driver: its natural Itô integral is the stopped
 scaled driver and its bracket is deterministic.
 -/
+
+public section
 
 open MeasureTheory ProbabilityTheory
 open scoped ENNReal NNReal

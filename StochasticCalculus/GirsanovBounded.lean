@@ -3,8 +3,10 @@ Copyright (c) 2026 Ezzeri Esa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ezzeri Esa
 -/
-import StochasticCalculus.GirsanovClosure
-import StochasticCalculus.GirsanovMoments
+module
+
+public import StochasticCalculus.GirsanovClosure
+public import StochasticCalculus.GirsanovMoments
 
 /-!
 # Girsanov closure under a bounded density
@@ -13,6 +15,8 @@ The paired probability limit becomes an L1 limit when the real stochastic
 exponential is bounded through the horizon. The real integrator is a true
 square-integrable martingale by the Novikov moment consequences.
 -/
+
+public section
 
 open Filter MeasureTheory ProbabilityTheory
 open scoped ENNReal NNReal Topology

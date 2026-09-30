@@ -3,11 +3,13 @@ Copyright (c) 2026 Ezzeri Esa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ezzeri Esa
 -/
-import Mathlib.MeasureTheory.Function.L2Space
-import Mathlib.MeasureTheory.Function.SimpleFuncDenseLp
-import Mathlib.MeasureTheory.Integral.Prod
-import Mathlib.Analysis.Normed.Operator.Extend
-import Lean.Elab.Recall
+module
+
+public import Mathlib.MeasureTheory.Function.L2Space
+public import Mathlib.MeasureTheory.Function.SimpleFuncDenseLp
+public import Mathlib.MeasureTheory.Integral.Prod
+public import Mathlib.Analysis.Normed.Operator.Extend
+public import Lean.Elab.Recall
 
 /-!
 # The Fubini lift `L²(μ; L²(ν)) → L²(ν × μ)`
@@ -35,6 +37,8 @@ representatives is delicate, so we construct the map as an isometry: on the simp
 * `fubiniLift_surjective`, `fubiniEquiv`: for σ-finite measures the lift is onto, so
   `L²(μ; L²(ν)) ≃ L²(ν × μ)` isometrically.
 -/
+
+public section
 
 open MeasureTheory Filter Topology Function
 open scoped ENNReal NNReal InnerProductSpace
@@ -218,7 +222,7 @@ theorem norm_fubiniLiftL (f : Lp (Lp ℝ 2 ν) 2 μ) : ‖fubiniLiftL f‖ = ‖
   exact (sq_eq_sq₀ (norm_nonneg _) (norm_nonneg _)).mp h
 
 /-- **The Fubini lift** `L²(μ; L²(ν)) → L²(ν × μ)` as a linear isometry. -/
-noncomputable def fubiniLift : Lp (Lp ℝ 2 ν) 2 μ →ₗᵢ[ℝ] Lp ℝ 2 (ν.prod μ) :=
+@[expose] noncomputable def fubiniLift : Lp (Lp ℝ 2 ν) 2 μ →ₗᵢ[ℝ] Lp ℝ 2 (ν.prod μ) :=
   ⟨fubiniLiftL.toLinearMap, norm_fubiniLiftL⟩
 
 theorem fubiniLift_apply (f : Lp (Lp ℝ 2 ν) 2 μ) : fubiniLift f = fubiniLiftL f := rfl
@@ -343,7 +347,7 @@ theorem norm_tensor [SFinite ν] (g : Lp ℝ 2 ν) (G : Lp ℝ 2 μ) :
   exact (sq_eq_sq₀ (norm_nonneg _) (by positivity)).mp h
 
 /-- `G ↦ g ⊗ G` as a continuous linear map. -/
-noncomputable def tensorL [SFinite ν] (g : Lp ℝ 2 ν) :
+@[expose] noncomputable def tensorL [SFinite ν] (g : Lp ℝ 2 ν) :
     Lp ℝ 2 μ →L[ℝ] Lp ℝ 2 (ν.prod μ) :=
   LinearMap.mkContinuous
     { toFun := tensor g
@@ -692,7 +696,7 @@ theorem fubiniLift_surjective : Function.Surjective (fubiniLift (μ := μ) (ν :
   exact this
 
 /-- **The Fubini isomorphism** `L²(μ; L²(ν)) ≃ L²(ν × μ)`. -/
-noncomputable def fubiniEquiv : Lp (Lp ℝ 2 ν) 2 μ ≃ₗᵢ[ℝ] Lp ℝ 2 (ν.prod μ) :=
+@[expose] noncomputable def fubiniEquiv : Lp (Lp ℝ 2 ν) 2 μ ≃ₗᵢ[ℝ] Lp ℝ 2 (ν.prod μ) :=
   LinearIsometryEquiv.ofSurjective fubiniLift fubiniLift_surjective
 
 theorem fubiniEquiv_apply (f : Lp (Lp ℝ 2 ν) 2 μ) : fubiniEquiv f = fubiniLift f := rfl
@@ -721,7 +725,7 @@ theorem memLp_boundedSMul {G : Ω → ℝ} (hG : AEStronglyMeasurable G μ) {C :
   exact mul_le_mul_of_nonneg_right (hC x) (norm_nonneg _)
 
 /-- Multiplication by a bounded measurable scalar function as a linear map on `L²(μ; E)`. -/
-noncomputable def boundedSMulₗ {G : Ω → ℝ} (hG : AEStronglyMeasurable G μ) {C : ℝ}
+@[expose] noncomputable def boundedSMulₗ {G : Ω → ℝ} (hG : AEStronglyMeasurable G μ) {C : ℝ}
     (hC : ∀ x, |G x| ≤ C) : Lp E 2 μ →ₗ[ℝ] Lp E 2 μ where
   toFun U := (memLp_boundedSMul hG hC U).toLp _
   map_add' U V := by
@@ -746,7 +750,7 @@ theorem norm_boundedSMulₗ_le {G : Ω → ℝ} (hG : AEStronglyMeasurable G μ)
 
 /-- Multiplication by a bounded measurable scalar function as a continuous linear map on
 `L²(μ; E)`. -/
-noncomputable def boundedSMul {G : Ω → ℝ} (hG : AEStronglyMeasurable G μ) {C : ℝ}
+@[expose] noncomputable def boundedSMul {G : Ω → ℝ} (hG : AEStronglyMeasurable G μ) {C : ℝ}
     (hC : ∀ x, |G x| ≤ C) : Lp E 2 μ →L[ℝ] Lp E 2 μ :=
   LinearMap.mkContinuous (boundedSMulₗ hG hC) C (norm_boundedSMulₗ_le hG hC)
 

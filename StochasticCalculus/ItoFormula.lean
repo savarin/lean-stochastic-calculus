@@ -3,9 +3,11 @@ Copyright (c) 2026 Ezzeri Esa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ezzeri Esa
 -/
-import StochasticCalculus.QuadraticVariationDensity
-import Mathlib.Analysis.Calculus.Deriv.Polynomial
-import Mathlib.Analysis.SpecialFunctions.Trigonometric.DerivHyp
+module
+
+public import StochasticCalculus.QuadraticVariationDensity
+public import Mathlib.Analysis.Calculus.Deriv.Polynomial
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.DerivHyp
 
 /-!
 # Taylor partition sums along Brownian paths
@@ -17,6 +19,8 @@ derivative-weighted increment sums, the left Riemann sums, and the
 quadratic-variation-controlled remainder sums.
 -/
 
+public section
+
 open MeasureTheory Set
 open ProbabilityTheory
 open scoped BigOperators ENNReal NNReal Topology
@@ -27,7 +31,7 @@ variable {W : Type*} [NormedAddCommGroup W] [NormedSpace ℝ W] [MeasurableSpace
 namespace StochasticCalculus
 
 /-- The remainder after subtracting the explicit second-order Taylor polynomial. -/
-noncomputable def itoTaylorRemainder (f : ℝ → ℝ) (x₀ x : ℝ) : ℝ :=
+@[expose] noncomputable def itoTaylorRemainder (f : ℝ → ℝ) (x₀ x : ℝ) : ℝ :=
   f x - (f x₀ + deriv f x₀ * (x - x₀) +
     (1 / 2 : ℝ) * deriv (deriv f) x₀ * (x - x₀) ^ 2)
 

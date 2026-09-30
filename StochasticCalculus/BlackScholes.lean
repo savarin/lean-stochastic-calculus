@@ -3,11 +3,13 @@ Copyright (c) 2026 Ezzeri Esa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ezzeri Esa
 -/
-import StochasticCalculus.GBMLocalization
-import StochasticCalculus.GirsanovConstantDrift
-import Mathlib.Probability.BrownianMotion.Basic
-import Mathlib.Probability.CDF
-import Mathlib.Probability.Moments.Tilted
+module
+
+public import StochasticCalculus.GBMLocalization
+public import StochasticCalculus.GirsanovConstantDrift
+public import Mathlib.Probability.BrownianMotion.Basic
+public import Mathlib.Probability.CDF
+public import Mathlib.Probability.Moments.Tilted
 
 /-!
 # The Black–Scholes formula
@@ -26,6 +28,8 @@ risk (`GirsanovConstantDrift`), the discounted asset is a martingale, and the
 terminal payoff expectation is identified with the Gaussian calculation.
 -/
 
+public section
+
 open MeasureTheory ProbabilityTheory
 open scoped ENNReal NNReal Real
 
@@ -34,7 +38,7 @@ noncomputable section
 namespace StochasticCalculus.BlackScholes
 
 /-- The standard normal cumulative distribution function. -/
-def normalCDF (x : ℝ) : ℝ := cdf (gaussianReal 0 1) x
+@[expose] def normalCDF (x : ℝ) : ℝ := cdf (gaussianReal 0 1) x
 
 /-- The terminal value of geometric Brownian motion, written as a function of a standard normal
 coordinate. -/
@@ -46,11 +50,11 @@ def geometricBrownianTerminal (spot rate volatility maturity z : ℝ) : ℝ :=
 def callPayoff (strike terminalValue : ℝ) : ℝ := max (terminalValue - strike) 0
 
 /-- The two dimensionless parameters in the Black--Scholes call formula. -/
-def dOne (spot strike rate volatility maturity : ℝ) : ℝ :=
+@[expose] def dOne (spot strike rate volatility maturity : ℝ) : ℝ :=
   (Real.log (spot / strike) + (rate + volatility ^ 2 / 2) * maturity) /
     (volatility * Real.sqrt maturity)
 
-def dTwo (spot strike rate volatility maturity : ℝ) : ℝ :=
+@[expose] def dTwo (spot strike rate volatility maturity : ℝ) : ℝ :=
   dOne spot strike rate volatility maturity - volatility * Real.sqrt maturity
 
 /-- The discounted Gaussian expectation defining the European call price in the risk-neutral
@@ -62,7 +66,7 @@ def gaussianCallPrice (spot strike rate volatility maturity : ℝ) : ℝ :=
       ∂gaussianReal 0 1
 
 /-- The closed-form Black--Scholes expression. -/
-def blackScholesCall (spot strike rate volatility maturity : ℝ) : ℝ :=
+@[expose] def blackScholesCall (spot strike rate volatility maturity : ℝ) : ℝ :=
   spot * normalCDF (dOne spot strike rate volatility maturity) -
     strike * Real.exp (-rate * maturity) *
       normalCDF (dTwo spot strike rate volatility maturity)
@@ -397,22 +401,22 @@ open scoped NNReal ENNReal
 namespace StochasticCalculus.BlackScholes
 
 /-- The market price of Brownian risk. -/
-def marketPriceOfRisk (drift rate volatility : ℝ) : ℝ := (drift - rate) / volatility
+@[expose] def marketPriceOfRisk (drift rate volatility : ℝ) : ℝ := (drift - rate) / volatility
 
 /-- The exact finite-horizon Girsanov density measure. -/
-def riskNeutralMeasure {W : Type*} [MeasurableSpace W]
+@[expose] def riskNeutralMeasure {W : Type*} [MeasurableSpace W]
     (P : Measure W) (B : ℝ≥0 → W → ℝ) (drift rate volatility : ℝ) (T : ℝ≥0) : Measure W :=
   let theta := marketPriceOfRisk drift rate volatility
   P.withDensity (fun omega ↦ ENNReal.ofReal
     (Real.exp (-theta * B T omega - theta ^ 2 * (T : ℝ) / 2)))
 
 /-- The Brownian driver under the terminal measure, continued after T. -/
-def riskNeutralBrownian {W : Type*} (B : ℝ≥0 → W → ℝ)
+@[expose] def riskNeutralBrownian {W : Type*} (B : ℝ≥0 → W → ℝ)
     (drift rate volatility : ℝ) (T t : ℝ≥0) (omega : W) : ℝ :=
   B t omega + marketPriceOfRisk drift rate volatility * ((min t T : ℝ≥0) : ℝ)
 
 /-- Discount and then stop at maturity. -/
-def discountedStoppedAsset {W : Type*} (X : ℝ≥0 → W → ℝ)
+@[expose] def discountedStoppedAsset {W : Type*} (X : ℝ≥0 → W → ℝ)
     (rate : ℝ) (T t : ℝ≥0) (omega : W) : ℝ :=
   Real.exp (-rate * ((min t T : ℝ≥0) : ℝ)) * X (min t T) omega
 

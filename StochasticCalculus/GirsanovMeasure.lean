@@ -3,7 +3,9 @@ Copyright (c) 2026 Ezzeri Esa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ezzeri Esa
 -/
-import StochasticCalculus.CrossVariationProcess
+module
+
+public import StochasticCalculus.CrossVariationProcess
 
 /-!
 # The Girsanov density, measure and drift
@@ -17,6 +19,8 @@ probability and equivalence of the new measure, and passage to the
 right-continuous filtration.
 -/
 
+public section
+
 open Filter MeasureTheory ProbabilityTheory
 open scoped ENNReal NNReal
 
@@ -25,19 +29,19 @@ noncomputable section
 namespace StochasticCalculus
 
 /-- The terminal stochastic-exponential density used by Girsanov. -/
-def girsanovDensity {W : Type*}
+@[expose] def girsanovDensity {W : Type*}
     (M bracket : ℝ≥0 → W → ℝ) (T : ℝ≥0) : W → ℝ :=
   doleansDadeExponential M bracket T
 
 /-- The Girsanov measure `Q = Z_T · P`, represented by Mathlib's
 `Measure.withDensity`. -/
-def girsanovMeasure {W : Type*} [MeasurableSpace W]
+@[expose] def girsanovMeasure {W : Type*} [MeasurableSpace W]
     (P : Measure W) (M bracket : ℝ≥0 → W → ℝ) (T : ℝ≥0) : Measure W :=
   P.withDensity (fun omega => ENNReal.ofReal (girsanovDensity M bracket T omega))
 
 /-- The finite-horizon pathwise drift accumulated from a predictable
 integrand. -/
-def girsanovIntegratedDrift {W : Type*}
+@[expose] def girsanovIntegratedDrift {W : Type*}
     (theta : ℝ≥0 → W → ℝ) (T t : ℝ≥0) (omega : W) : ℝ :=
   ∫ s in Set.Ioc (0 : ℝ≥0) (min t T), theta s omega
     ∂nonnegativeLebesgueMeasure
@@ -125,7 +129,7 @@ theorem girsanovIntegratedDrift_eq_integratedDrift
 /-- A path-regular representative of the stopped Girsanov drift.  On the
 zero-terminal-bracket event it is set to zero; elsewhere the terminal
 square integral is genuine and the original integral has continuous paths. -/
-def regularizedGirsanovIntegratedDrift {W : Type*}
+@[expose] def regularizedGirsanovIntegratedDrift {W : Type*}
     (bracket theta : ℝ≥0 → W → ℝ) (T t : ℝ≥0) (omega : W) : ℝ :=
   if bracket T omega = 0 then 0 else girsanovIntegratedDrift theta T t omega
 
@@ -223,7 +227,7 @@ theorem continuous_regularizedGirsanovIntegratedDrift
 /-- The process `B_t + ∫₀^{t∧T} theta_s ds` appearing in the
 finite-horizon Girsanov theorem.  Brownian motion itself is not stopped after
 `T`; only the compensating drift is. -/
-def girsanovShiftedBrownian {W : Type*}
+@[expose] def girsanovShiftedBrownian {W : Type*}
     (B theta : ℝ≥0 → W → ℝ) (T : ℝ≥0) : ℝ≥0 → W → ℝ :=
   fun t omega => B t omega + girsanovIntegratedDrift theta T t omega
 

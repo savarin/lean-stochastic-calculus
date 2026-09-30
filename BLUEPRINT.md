@@ -46,17 +46,21 @@ integral, so the Challenge imports only Mathlib.
    strongly measurable, and the result is again a Brownian motion agreeing
    with `B` almost surely at every fixed time (`BrownianContinuousVersion.lean`).
 
-3. **The Girsanov density contract at constant drift.** For the version
-   `B'`, the process `M = −θ B'_{t ∧ T}` is a continuous martingale in the
-   natural filtration of `B'` with deterministic bracket `θ² (t ∧ T)`;
+3. **Preparing the constant-drift inputs for the general Girsanov theorem.**
+   For the version `B'`, the process `M = −θ B'_{t ∧ T}` is a continuous
+   martingale in the natural filtration of `B'` with deterministic bracket
+   `θ² (t ∧ T)`;
    Novikov's condition is automatic for a deterministic bracket. These
    assemble into `GirsanovDensityData`
    (`girsanovDensityData_neg_mul_stopped`, `GirsanovConstantDrift.lean`),
    with the quadratic variation of the stopped scaled driver supplied by
    `hasQuadraticVariationBeforeStop_preBrownianReal`
-   (`LocalMartingaleContract.lean`) and the cross variation with `B'` by
-   `tendstoInMeasure_stopped_brownian_brownian_covariation`
-   (`QuadraticVariation.lean`).
+   (`LocalMartingaleContract.lean`). The package has no cross-variation
+   field. The cross variation between the stopped driver and `B'` is a
+   separate hypothesis of the general theorem: the constant-drift bridge
+   proves it with `tendstoInMeasure_stopped_brownian_brownian_covariation`
+   (`QuadraticVariation.lean`) and supplies it, alongside the package, when
+   it applies the theorem in step 4.
 
 4. **The predictable Girsanov theorem.** Under the density contract and the
    cross-variation identity, the shifted driver is pre-Brownian for the exact
@@ -80,13 +84,20 @@ integral, so the Challenge imports only Mathlib.
    The final proof obtains the probability property from this Brownian law
    through `hW.isGaussianProcess.isProbabilityMeasure`.
 
-6. **The discounted martingale.** Under `Q` the discounted stopped asset
-   equals `spot` times the Doléans–Dade exponential of `σ` times the shifted
-   driver, stopped at `T` (`discounted_gbm_eq_exponential`); that exponential
-   is a martingale by the Gaussian-increment argument
+6. **The discounted martingale.** For the explicit geometric Brownian motion
+   of step 1, the discounted asset stopped at `T` equals `spot` times the
+   Doléans–Dade exponential of `σ` times the shifted driver, stopped at `T`.
+   This is an algebraic identity on every path, with no measure involved
+   (`discounted_gbm_eq_exponential`). That exponential is a `Q`-martingale by
+   the Gaussian-increment argument
    (`martingale_scaledBrownianDoleansDadeExponential_via_gaussianIncrements`,
    `DoleansDade.lean`), and a deterministic drift shift leaves the natural
-   filtration unchanged (`natural_add_deterministic`).
+   filtration unchanged (`natural_add_deterministic`). The theorem covers
+   every allowed strong solution, not only the explicit formula:
+   `martingale_discountedStoppedAsset` uses the uniqueness of step 1 to make
+   the given solution agree with the formula `P`-almost surely, then `Q ≪ P`
+   to keep that agreement `Q`-almost surely, and with the solution's
+   adaptedness transfers the martingale property to it.
 
 7. **Evaluation of the call.** The terminal asset is a lognormal function of
    a standard Gaussian under `Q`; the discounted expectation is computed
@@ -128,11 +139,14 @@ Run `lake env lean scripts/check_girsanov_route.lean` to follow the dependencies
 of the completed proof. It requires the general predictable Girsanov theorem,
 the constant-drift bridge and the continuous Brownian version to occur in that
 proof, and rejects a dependency on the old Gaussian measure-change shortcut.
-The results on Lean 4.35 are recorded in [VERIFICATION.md](VERIFICATION.md).
+The results on Lean 4.35 are recorded in
+[README.md § Verification](README.md#verification).
 The Gaussian calculations in steps 6 and 7 remain part of the proof after the
 change of measure has been established.
 
 ## Code mapping
+
+### Submission definitions
 
 Every Challenge definition is restated with the same body in
 `BlackScholesSolution.lean`, so the Comparator sees identical constants, and
@@ -151,6 +165,52 @@ The Solution proof applies the library theorem with one `exact`. The two
 strong-solution structures are distinct Lean types with the same five
 conditions, so the proof passes those fields explicitly into the library
 structure. The remaining boundary definitions unfold to their library twins.
+
+Under Lean's module system a proof nested in a definition becomes a helper
+named after its file, so `geometricBrownianMotion`, `riskNeutralMeasure` and
+`blackScholesCall` carry `@[expose]` in both files to keep those constants
+identical.
+
+### Library catalogue
+
+The 65 files are under `StochasticCalculus/` (names omit `.lean`), and each
+opens with its own description. Files marked † contribute no declaration to
+the completed Black-Scholes proof, which reaches the other 53; they belong to
+the wider library and are retained.
+
+Shared foundation, by dependency layer:
+
+- Layer 0, only Mathlib: CameronMartin †, Symmetrization †, FubiniLift †
+- Layer 1: CameronMartinTheorem †, Simplex †
+- Layer 2: IteratedIntegral
+- Layer 3: WienerIntegral
+- Layer 4: PredictableProcess †
+- Layer 5: ElementaryIto, PredictableDensity †
+- Layer 6: ItoConstruction †
+
+Black-Scholes chain, by stage:
+
+- Stage A, the natural Itô process: ItoProcess †
+- Stage B, quadratic variation: TendstoInMeasureAlgebra, UniformPartitionSums,
+  QuadraticVariationContract, QuadraticVariation,
+  QuadraticVariationElementary †, QuadraticVariationDensity
+- Stage C, Itô formula: ItoFormula, ItoMaximal, QuadraticVariationTightness,
+  QuadraticVariationGrid, TightProduct, ItoFormulaPartition,
+  ItoFormulaGeneral, WeightedBracketRiemann
+- Stage D, exponential martingales: LocalMartingaleContract,
+  ContinuousExitTime, ElementaryMartingaleIntegral, LocalizingStoppedProcess,
+  PartitionStoppingTime, MartingaleLeftSum, DoleansDadeExponential,
+  DoleansDadeMartingale, DoleansDade, GeometricBrownianMotion, GBMGronwall,
+  NovikovCondition, Novikov
+- Stage E, Girsanov core: GBMLocalization, CrossVariationProcess,
+  GirsanovMeasure, GirsanovMartingaleTransform, GirsanovCommonRefinement,
+  GirsanovFourierIncrement, GirsanovComplexEuler, GirsanovMeshControl,
+  GirsanovStoppedControl, Girsanov, GirsanovClosure, GirsanovMoments,
+  MartingaleFourthMoment, GirsanovBounded, StoppedVariation, ZeroBracket
+- Stage F, Girsanov applications → Black-Scholes: GirsanovCrossVariation,
+  StoppedCrossVariation, GirsanovLocalization, GirsanovExits, GirsanovTheorem,
+  GirsanovFiltered †, BrownianContinuousVersion, GirsanovConstantDrift,
+  GirsanovItoData †, BlackScholes
 
 ## Pitfalls
 
@@ -176,13 +236,18 @@ structure. The remaining boundary definitions unfold to their library twins.
 ## Provenance
 
 The library originates in the `lean-pipeline/black-scholes-sde` workspace
-(commit `e5a7803`, proof built 2026-09-07 with Codex), consolidated into
-this repository on 2026-09-17. On 2026-09-21 the measure change was
+(proof built 2026-09-07 with Codex) and was consolidated into this
+repository on 2026-09-18;
+[`fe6cd1d`](https://github.com/savarin/lean-stochastic-calculus/commit/fe6cd1d053741a2de5ac6cc727ec3bb49a55cf80)
+is the imported repository snapshot. On 2026-09-21 the measure change was
 rerouted from a constant-drift Gaussian oracle to the predictable Girsanov
-theorem, a proof-dependency audit guided the library cleanup, and the two
-largest files were split by topic (Claude Fable 5.1 with Claude Code).
+theorem and a proof-dependency audit guided the library cleanup; early on
+2026-09-22 the five largest files were split by topic into 24 files (Claude
+Fable 5.1 with Claude Code).
 The Challenge statement is unchanged
 across these steps. On 2026-09-27 Codex upgraded Lean and Mathlib together to
 v4.35.0-rc3, repaired the affected proofs, and verified that the dynamic
 Girsanov route remains in the completed proof. The Challenge and Solution
-source files were preserved unchanged during the upgrade.
+source files were preserved unchanged during the upgrade. On 2026-09-29 the
+files were ported to Lean's module system (Claude Opus 5.5 with Claude Code);
+the Challenge statement is unchanged.

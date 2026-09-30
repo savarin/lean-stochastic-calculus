@@ -3,7 +3,9 @@ Copyright (c) 2026 Ezzeri Esa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ezzeri Esa
 -/
-import StochasticCalculus.LocalMartingaleContract
+module
+
+public import StochasticCalculus.LocalMartingaleContract
 
 /-!
 # Continuous exit times
@@ -14,6 +16,8 @@ its stopping-time property and bounds, and the global exit sequences that
 localize a continuous process.
 -/
 
+public section
+
 open Filter MeasureTheory ProbabilityTheory
 open scoped BigOperators ENNReal NNReal Topology
 
@@ -22,7 +26,7 @@ noncomputable section
 namespace StochasticCalculus
 
 /-- Sample a continuous-time process on a deterministic uniform grid. -/
-def uniformPartitionSample
+@[expose] def uniformPartitionSample
     {W : Type*} (M : ℝ≥0 → W → ℝ) (T : ℝ≥0) (n : ℕ) :
     ℕ → W → ℝ :=
   fun k => M (uniformPartitionTime T n k)
@@ -38,7 +42,7 @@ noncomputable def uniformPartitionHittingTime
 
 /-- The preceding grid hitting index mapped back to continuous nonnegative
 time. -/
-noncomputable def uniformPartitionHittingTimeNNReal
+@[expose] noncomputable def uniformPartitionHittingTimeNNReal
     {W : Type*} (M : ℝ≥0 → W → ℝ) (T : ℝ≥0) (n : ℕ)
     (S : Set ℝ) : W → WithTop ℝ≥0 :=
   fun omega =>
@@ -145,13 +149,13 @@ def outsideClosedBall (R : ℝ≥0) : Set ℝ := {x | (R : ℝ) ≤ |x|}
 
 /-- First visit to the complement of the radius-`R` ball on the dyadic grid
 of level `n`, mapped back to continuous nonnegative time. -/
-noncomputable def dyadicHittingTimeNNReal
+@[expose] noncomputable def dyadicHittingTimeNNReal
     {W : Type*} (M : ℝ≥0 → W → ℝ) (T R : ℝ≥0) (n : ℕ) :
     W → WithTop ℝ≥0 :=
   uniformPartitionHittingTimeNNReal M T (2 ^ n) (outsideClosedBall R)
 
 /-- The pointwise minimum of two dyadic-grid exit rules on the same grid. -/
-noncomputable def pairedDyadicHittingTimeNNReal
+@[expose] noncomputable def pairedDyadicHittingTimeNNReal
     {W : Type*} (Z Q : ℝ≥0 → W → ℝ) (T R S : ℝ≥0) (n : ℕ) :
     W → WithTop ℝ≥0 :=
   fun omega => min (dyadicHittingTimeNNReal Z T R n omega)
@@ -273,7 +277,7 @@ theorem antitone_dyadicHittingTimeNNReal
 
 /-- The bounded continuous-time exit rule obtained as the decreasing limit
 of the dyadic-grid hitting times. -/
-noncomputable def continuousExitTime
+@[expose] noncomputable def continuousExitTime
     {W : Type*} (M : ℝ≥0 → W → ℝ) (T R : ℝ≥0) :
     W → WithTop ℝ≥0 :=
   fun omega => ⨅ n, dyadicHittingTimeNNReal M T R n omega
@@ -899,7 +903,7 @@ theorem continuousExitTime_le_double_horizon
 
 /-- Continuous exits along exponentially growing horizons and linearly
 growing radii. -/
-noncomputable def globalContinuousExitSequence
+@[expose] noncomputable def globalContinuousExitSequence
     {W : Type*} (Z : ℝ≥0 → W → ℝ) :
     ℕ → W → WithTop ℝ≥0 :=
   fun n => continuousExitTime Z (2 ^ n) (n + 2)
@@ -973,7 +977,7 @@ theorem isLocalizingSequence_globalContinuousExit
     tendsto_globalContinuousExitSequence Z hZcont omega
 
 /-- The minimum of two growing-horizon continuous-exit sequences. -/
-noncomputable def globalPairedContinuousExitSequence
+@[expose] noncomputable def globalPairedContinuousExitSequence
     {W : Type*} (Z Q : ℝ≥0 → W → ℝ) :
     ℕ → W → WithTop ℝ≥0 :=
   fun n omega => min (globalContinuousExitSequence Z n omega)
@@ -1069,7 +1073,7 @@ theorem tendsto_measure_outerContinuousExit_lt_pairedDyadic
 
 /-- A process killed at and after its bounded continuous exit time.  This is
 the predictable-side coefficient used in stopped transform estimates. -/
-def beforeContinuousExitProcessOf
+@[expose] def beforeContinuousExitProcessOf
     {W : Type*} (Z H : ℝ≥0 → W → ℝ) (T R : ℝ≥0) :
     ℝ≥0 → W → ℝ :=
   fun t => {omega | (t : WithTop ℝ≥0) < continuousExitTime Z T R omega}.indicator

@@ -3,11 +3,13 @@ Copyright (c) 2026 Ezzeri Esa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ezzeri Esa
 -/
-import Mathlib.MeasureTheory.Function.Holder
-import Mathlib.MeasureTheory.Measure.LogLikelihoodRatio
-import Mathlib.Probability.Distributions.Gaussian.Fernique
-import Mathlib.Probability.Moments.CovarianceBilinDual
-import Lean.Elab.Recall
+module
+
+public import Mathlib.MeasureTheory.Function.Holder
+public import Mathlib.MeasureTheory.Measure.LogLikelihoodRatio
+public import Mathlib.Probability.Distributions.Gaussian.Fernique
+public import Mathlib.Probability.Moments.CovarianceBilinDual
+public import Lean.Elab.Recall
 
 /-!
 # The Cameron--Martin space of a Gaussian measure
@@ -30,6 +32,8 @@ equivalent to `μ`; using that characterization as the definition here would be 
 * `CameronMartin.inclusion`: its covariance embedding into the ambient Banach space;
 * `CameronMartin.logDensity`: the log Radon--Nikodym derivative used by the next rung.
 -/
+
+public section
 
 open MeasureTheory ProbabilityTheory
 open scoped ENNReal NNReal Real Topology
@@ -177,10 +181,10 @@ section Translations
 variable {W : Type*} [NormedAddCommGroup W] [MeasurableSpace W]
 
 /-- Translation of the ambient space by `h`. -/
-def translate (h : W) : W → W := fun x ↦ x + h
+@[expose] def translate (h : W) : W → W := fun x ↦ x + h
 
 /-- The law obtained by translating `μ` by `h`. -/
-noncomputable def translatedMeasure (μ : Measure W) (h : W) : Measure W :=
+@[expose] noncomputable def translatedMeasure (μ : Measure W) (h : W) : Measure W :=
   μ.map (translate h)
 
 @[fun_prop]
@@ -209,7 +213,7 @@ def IsAdmissibleShift (μ : Measure W) (h : W) : Prop :=
   translatedMeasure μ h ≪ μ
 
 /-- A shift is quasi-invariant when translation preserves the measure class. -/
-def IsQuasiInvariantShift (μ : Measure W) (h : W) : Prop :=
+@[expose] def IsQuasiInvariantShift (μ : Measure W) (h : W) : Prop :=
   translatedMeasure μ h ≪ μ ∧ μ ≪ translatedMeasure μ h
 
 end Translations
@@ -222,7 +226,7 @@ variable {W : Type*} [NormedAddCommGroup W] [NormedSpace ℝ W]
   (μ : Measure W) [IsGaussian μ]
 
 /-- The Bochner mean of a Gaussian measure. -/
-noncomputable def mean : W := ∫ x, x ∂μ
+@[expose] noncomputable def mean : W := ∫ x, x ∂μ
 
 /-- The centered identity random variable. -/
 noncomputable def centeredId : W → W := id - fun _ ↦ mean μ
@@ -263,14 +267,14 @@ theorem centeredDualToLp_ae_eq (L : StrongDual ℝ W) :
   simpa [hL, hc, Function.const_apply] using hsub
 
 /-- The first Gaussian chaos: the closed span of centered continuous linear functionals. -/
-noncomputable def firstChaos : Submodule ℝ (Lp ℝ 2 μ) :=
+@[expose] noncomputable def firstChaos : Submodule ℝ (Lp ℝ 2 μ) :=
   (centeredDualToLp μ).range.topologicalClosure
 
 /-- The Cameron--Martin Hilbert space.  Its norm and inner product are inherited from `L²(μ)`. -/
 noncomputable abbrev Space := firstChaos μ
 
 /-- Continuous linear functionals give a dense family of Cameron--Martin vectors. -/
-noncomputable def ofDual : StrongDual ℝ W →L[ℝ] Space μ :=
+@[expose] noncomputable def ofDual : StrongDual ℝ W →L[ℝ] Space μ :=
   (centeredDualToLp μ).codRestrict (firstChaos μ) fun L ↦
     Submodule.le_topologicalClosure _ ⟨L, rfl⟩
 
@@ -404,12 +408,12 @@ theorem exists_integrable_exp_sq :
   exact h_fernique
 
 /-- The translated law along a Cameron--Martin vector. -/
-noncomputable def translated (h : Space μ) : Measure W :=
+@[expose] noncomputable def translated (h : Space μ) : Measure W :=
   translatedMeasure μ (inclusion μ h)
 
 /-- Its log Radon--Nikodym derivative with respect to `μ`.  The Cameron--Martin theorem will
 identify this almost everywhere with `h - ‖h‖² / 2`. -/
-noncomputable def logDensity (h : Space μ) : W → ℝ :=
+@[expose] noncomputable def logDensity (h : Space μ) : W → ℝ :=
   llr (translated μ h) μ
 
 end CameronMartin

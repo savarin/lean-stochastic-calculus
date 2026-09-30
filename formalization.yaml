@@ -62,11 +62,13 @@ sources:
 status:
   scope: >-
     The formalization covers the finite-horizon European call on a single
-    asset driven by scalar Brownian motion. It proves existence and mutual
-    absolute continuity of the risk-neutral measure, Brownianity of the
-    shifted driver, the martingale property of the discounted stopped
-    asset, integrability of the call payoff, and equality of the
-    discounted expectation at time zero with the Black-Scholes closed form.
+    asset driven by scalar Brownian motion. It proves that the explicitly
+    defined risk-neutral measure is a probability measure equivalent to the
+    original measure (the two give probability zero to the same events),
+    Brownianity of the shifted driver, the martingale property of the
+    discounted stopped asset, integrability of the call payoff, and equality
+    of the discounted expectation at time zero with the Black-Scholes closed
+    form.
     Initial price, strike, volatility and maturity are strictly positive;
     drift and interest rate are arbitrary real constants. The driver is
     Brownian with strongly measurable values at each time. The solution is
@@ -88,42 +90,64 @@ status:
 automation:
   methods:
     - method: "agent"
-      models: ["OpenAI Codex"]
+      models: ["GPT-5.6 Sol (OpenAI), where recorded"]
+      framework: "Codex"
+      tool_setup: >-
+        From 2026-09-02 to 2026-09-06 PDT, separate pipeline runs developed
+        the components in their own workspaces. These included the Ito
+        integral and process, quadratic variation, the Ito formula and its
+        general form, the Doleans-Dade exponential, Novikov's condition,
+        early Girsanov and Gaussian-evaluation components, and the Girsanov
+        theorem over five sessions. Session records name GPT-5.6 Sol for
+        most runs. The quadratic-variation and Novikov-condition runs have no
+        model record, and the Girsanov-theorem run's records disagree: its
+        session logs name GPT-5.6 Sol and its telemetry names GPT-6 Astra.
+        Lean elaboration and Lake builds were the only oracle.
+      prompting_notes: >-
+        Each run was launched by the formalization pipeline for one
+        component; its prompts are not reproduced here.
+    - method: "agent"
+      models: ["GPT-6 Astra (OpenAI)"]
       framework: "Codex"
       tool_setup: >-
         On 2026-09-07 PDT, in the lean-pipeline/black-scholes-sde workspace,
-        an agent combined completed Girsanov, strong-GBM uniqueness and
+        an agent finished the strong-GBM uniqueness component, then
+        combined completed Girsanov, strong-GBM uniqueness and
         Gaussian-evaluation workspaces, proved measure identification,
         filtration invariance, discounted martingality for arbitrary strong
         solutions, payoff integrability and the expectation identity, and
         built the standalone boundary. Lean elaboration and full Lake builds
         were the only oracle.
-      cost:
-        wall_time: "not tracked; the assembly session ran under a one-hour cap"
-        spend_usd: "subscription-based"
-        hardware: "local machine"
       prompting_notes: >-
         The agent was given the blueprint of the route and the completed
         component workspaces as references.
+    - method: "agent"
+      models: ["Claude Opus 4.6 (Anthropic)"]
+      framework: "Claude Code"
+      tool_setup: >-
+        From 2026-09-07 to 2026-09-18 PDT an agent set up this repository.
+        It copied the pipeline's boundary into the initial scaffold,
+        imported the library, and on 2026-09-18 added the Palomar
+        submission boundary and preflight harness.
+      prompting_notes: >-
+        The author directed the consolidation into a standalone submission
+        repository.
     - method: "agent"
       models: ["Claude Fable 5.1 (Anthropic)"]
       framework: "Claude Code"
       tool_setup: >-
         On 2026-09-21 PDT the measure change was rerouted from the
         constant-drift Gaussian oracle to the predictable Girsanov theorem,
-        a kernel-environment reachability script guided the library cleanup,
-        the two largest files were split by topic, and the Solution was rewritten to
-        restate the Challenge bodies. Strict Lake builds, the boundary
-        preflight and the pinned Comparator were run after each step.
-      cost:
-        wall_time: "not tracked"
-        spend_usd: "subscription-based"
-        hardware: "local machine"
+        and a kernel-environment reachability script guided the library
+        cleanup. Early on 2026-09-22 the five largest files were split by
+        topic into 24 files, and the Solution was rewritten to restate the
+        Challenge bodies. Strict Lake builds, the boundary preflight and the
+        pinned Comparator were run after each step.
       prompting_notes: >-
         The agent was directed step by step by the author, with the review
         checklist and the sibling submission repositories as references.
     - method: "agent"
-      models: ["OpenAI Codex"]
+      models: ["GPT-6 Astra (OpenAI)"]
       framework: "Codex"
       tool_setup: >-
         On 2026-09-27 PDT an agent upgraded Lean and Mathlib together to
@@ -135,16 +159,21 @@ automation:
         Solution's proof, were preserved. The final review corrected the
         Solution's explanatory comment about the conversion between
         strong-solution structures.
-      cost:
-        wall_time: "not tracked"
-        spend_usd: "subscription-based"
-        hardware: "local machine"
       prompting_notes: >-
         The author requested preparation for Black-Scholes submission
         through the dynamic Girsanov theorem, with the fully general
         integrand constructor deferred and changes left for review before
         committing.
-  spend_usd: "subscription-based"
+    - method: "agent"
+      models: ["Claude Opus 5.5 (Anthropic)"]
+      framework: "Claude Code"
+      tool_setup: >-
+        On 2026-09-29 PDT an agent ported every Lean file to Lean's module
+        system, as Palomar now requires, and updated the checks and
+        documentation.
+      prompting_notes: >-
+        The author agreed the porting rules in discussion; the changes were
+        left for the author's review before committing.
   notes: >-
     Every step is kernel-checked; the author's role was direction, review of
     the boundary files and metadata, and the go-ahead for each change. No
@@ -178,8 +207,8 @@ review:
     the library statement. An agent review on 2026-09-21 compared the
     repository against the sibling submissions and Palomar's policy, ran the
     pinned Comparator, and produced the checklist addressed in this release.
-    An agent performed the upgrade and local checks recorded in
-    VERIFICATION.md on 2026-09-27; these are not a Palomar review.
+    Agents performed the upgrade on 2026-09-27 and the module-system port on
+    2026-09-29, each with local checks; these are not a Palomar review.
     The proof library has not been examined in depth by human experts.
 
 alignment:

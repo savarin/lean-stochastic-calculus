@@ -3,7 +3,9 @@ Copyright (c) 2026 Ezzeri Esa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ezzeri Esa
 -/
-import StochasticCalculus.MartingaleLeftSum
+module
+
+public import StochasticCalculus.MartingaleLeftSum
 
 /-!
 # The Doléans--Dade exponential and its left sums
@@ -13,6 +15,8 @@ version and integral candidate, the left-sum processes, the Stieltjes
 bracket integral of continuous weights, and the quadratic variation and
 Taylor expansion of the logarithm along uniform partitions.
 -/
+
+public section
 
 open Filter MeasureTheory ProbabilityTheory
 open scoped BigOperators ENNReal NNReal Topology
@@ -24,13 +28,13 @@ namespace StochasticCalculus
 /-- The compensated logarithm `M - (1/2) ⟪M⟫` used in the stochastic
 exponential.  The second argument is kept abstract until a bracket API is
 available at the process level. -/
-def doleansDadeLog
+@[expose] def doleansDadeLog
     {W : Type*} (M bracket : ℝ≥0 → W → ℝ) (t : ℝ≥0) (omega : W) : ℝ :=
   M t omega - (1 / 2 : ℝ) * bracket t omega
 
 /-- The real Doléans–Dade exponential associated to a process and a selected
 bracket process. -/
-def doleansDadeExponential
+@[expose] def doleansDadeExponential
     {W : Type*} (M bracket : ℝ≥0 → W → ℝ) (t : ℝ≥0) (omega : W) : ℝ :=
   Real.exp (doleansDadeLog M bracket t omega)
 
@@ -50,7 +54,7 @@ theorem stronglyAdapted_doleansDadeExponential
 identity: the stochastic exponential minus its initial constant.  Naming
 this process lets the approximation endpoint state its sole analytic input
 without quantifying over an otherwise arbitrary integral process. -/
-def doleansDadeIntegralCandidate
+@[expose] def doleansDadeIntegralCandidate
     {W : Type*} (M bracket : ℝ≥0 → W → ℝ)
     (t : ℝ≥0) (omega : W) : ℝ :=
   doleansDadeExponential M bracket t omega - 1
@@ -80,7 +84,7 @@ theorem continuous_doleansDadeIntegralCandidate
 /-- The stochastic exponential capped above at a deterministic nonnegative
 level.  Positivity of the exponential makes this a bounded adapted
 integrand suitable for the elementary arbitrary-integrator construction. -/
-def cappedDoleansDadeExponential
+@[expose] def cappedDoleansDadeExponential
     {W : Type*} (M bracket : ℝ≥0 → W → ℝ) (R : ℝ≥0)
     (t : ℝ≥0) (omega : W) : ℝ :=
   min (doleansDadeExponential M bracket t omega) R
@@ -132,7 +136,7 @@ theorem eventually_cappedDoleansDadeExponential_eq_on_Icc
 
 /-- A diagonal approximation to `∫ E(M) dM`: at stage `n`, cap the
 Doléans integrand at `n + 1` and use an `n + 1` point uniform grid. -/
-def cappedDoleansDadeLeftSumProcess
+@[expose] def cappedDoleansDadeLeftSumProcess
     {W : Type*} (M bracket : ℝ≥0 → W → ℝ)
     (T : ℝ≥0) (n : ℕ) : ℝ≥0 → W → ℝ :=
   uniformAdaptedMartingaleLeftSumProcess M
@@ -354,7 +358,7 @@ theorem uniformPartition_weighted_stieltjes_tendsto
 
 /-- Uniform left sums of a process-valued weight against increments of a
 candidate bracket process. -/
-def bracketWeightedLeftSum
+@[expose] def bracketWeightedLeftSum
     {W : Type*} (H A : ℝ≥0 → W → ℝ) (t : ℝ≥0)
     (n : ℕ) (omega : W) : ℝ :=
   ∑ i ∈ Finset.range n,

@@ -3,7 +3,9 @@ Copyright (c) 2026 Ezzeri Esa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ezzeri Esa
 -/
-import StochasticCalculus.ItoFormulaPartition
+module
+
+public import StochasticCalculus.ItoFormulaPartition
 
 /-!
 # Continuous modifications of natural Itô processes
@@ -15,6 +17,8 @@ continuous representatives of elementary finite combinations, and the
 existence of a continuous modification of every natural predictable Itô
 integral, with its before-stop quadratic variation.
 -/
+
+public section
 
 open MeasureTheory ProbabilityTheory
 open scoped BigOperators NNReal ENNReal

@@ -3,7 +3,9 @@ Copyright (c) 2026 Ezzeri Esa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ezzeri Esa
 -/
-import StochasticCalculus.GBMGronwall
+module
+
+public import StochasticCalculus.GBMGronwall
 
 /-!
 # Localization of the linear SDE
@@ -11,6 +13,8 @@ import StochasticCalculus.GBMGronwall
 Dyadic sampled exits approximate the bounded path-exit coefficient. These
 lemmas retain the original probability measure and the adapted coefficients.
 -/
+
+public section
 
 open MeasureTheory ProbabilityTheory Set Filter Topology
 open scoped BigOperators NNReal ENNReal

@@ -3,7 +3,9 @@ Copyright (c) 2026 Ezzeri Esa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ezzeri Esa
 -/
-import StochasticCalculus.GirsanovStoppedControl
+module
+
+public import StochasticCalculus.GirsanovStoppedControl
 
 /-!
 # Girsanov change of measure
@@ -18,6 +20,8 @@ The final section records that a strongly adapted continuous modification of
 a natural predictable Itô integral carries the local quadratic-variation
 contract.
 -/
+
+public section
 
 open Filter MeasureTheory ProbabilityTheory
 open scoped ENNReal NNReal
@@ -671,7 +675,7 @@ theorem
 /-- The genuinely higher-order half of the canonical stochastic-Taylor
 obligation.  Its one-cell summands satisfy
 `norm_complexDoleansSecondOrderResidual_le`. -/
-def GirsanovComplexDoleansHigherOrderCondition
+@[expose] def GirsanovComplexDoleansHigherOrderCondition
     {W : Type*} [MeasurableSpace W] (P : Measure W)
     (M bracket B C : ℝ≥0 → W → ℝ) (T : ℝ≥0) : Prop :=
   ∀ (c : ℝ) (t : ℝ≥0), TendstoInMeasure P (fun n =>

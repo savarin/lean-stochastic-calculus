@@ -3,7 +3,9 @@ Copyright (c) 2026 Ezzeri Esa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ezzeri Esa
 -/
-import StochasticCalculus.Girsanov
+module
+
+public import StochasticCalculus.Girsanov
 
 /-!
 # Fourth-moment bounds for discrete martingale variation
@@ -12,6 +14,8 @@ An elementary quartic convexity inequality bounds the sum of fourth powers
 of martingale increments. Discrete integration by parts then bounds the
 second moment of the quadratic sum by the terminal fourth moment.
 -/
+
+public section
 
 open Filter MeasureTheory ProbabilityTheory
 open scoped ENNReal NNReal Topology

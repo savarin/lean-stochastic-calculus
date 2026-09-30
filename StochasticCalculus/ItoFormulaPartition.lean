@@ -3,10 +3,12 @@ Copyright (c) 2026 Ezzeri Esa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ezzeri Esa
 -/
-import StochasticCalculus.ItoFormula
-import StochasticCalculus.ItoMaximal
-import StochasticCalculus.QuadraticVariationGrid
-import StochasticCalculus.TightProduct
+module
+
+public import StochasticCalculus.ItoFormula
+public import StochasticCalculus.ItoMaximal
+public import StochasticCalculus.QuadraticVariationGrid
+public import StochasticCalculus.TightProduct
 
 /-!
 # General Itô formula: exact partition reduction
@@ -28,6 +30,8 @@ sums, complete the file; the continuous modification of a natural Itô
 process is constructed in `ItoFormulaGeneral`.
 -/
 
+public section
+
 open MeasureTheory ProbabilityTheory
 open scoped BigOperators NNReal ENNReal
 
@@ -40,20 +44,20 @@ variable {W : Type*} [NormedAddCommGroup W] [NormedSpace ℝ W]
   {P : Measure W} {B X μ σ : ℝ≥0 → W → ℝ}
 
 /-- The time partial derivative, with the state variable held fixed. -/
-noncomputable def itoTimeDerivative (f : ℝ → ℝ → ℝ) (s x : ℝ) : ℝ :=
+@[expose] noncomputable def itoTimeDerivative (f : ℝ → ℝ → ℝ) (s x : ℝ) : ℝ :=
   deriv (fun r => f r x) s
 
 /-- The space partial derivative, with the time variable held fixed. -/
-noncomputable def itoSpaceDerivative (f : ℝ → ℝ → ℝ) (s x : ℝ) : ℝ :=
+@[expose] noncomputable def itoSpaceDerivative (f : ℝ → ℝ → ℝ) (s x : ℝ) : ℝ :=
   deriv (f s) x
 
 /-- The second space partial derivative. -/
-noncomputable def itoSpaceSecondDerivative (f : ℝ → ℝ → ℝ)
+@[expose] noncomputable def itoSpaceSecondDerivative (f : ℝ → ℝ → ℝ)
     (s x : ℝ) : ℝ :=
   deriv (deriv (f s)) x
 
 /-- The left-endpoint time-derivative sum along the uniform `n`-partition. -/
-noncomputable def generalItoTimeApprox
+@[expose] noncomputable def generalItoTimeApprox
     (f : ℝ → ℝ → ℝ) (X : ℝ≥0 → W → ℝ) (t : ℝ≥0)
     (n : ℕ) (omega : W) : ℝ :=
   ∑ i ∈ Finset.range n,
@@ -63,7 +67,7 @@ noncomputable def generalItoTimeApprox
         (uniformPartitionTime t n i : ℝ))
 
 /-- The left-endpoint space-derivative sum against the increments of `X`. -/
-noncomputable def generalItoSpaceApprox
+@[expose] noncomputable def generalItoSpaceApprox
     (f : ℝ → ℝ → ℝ) (X : ℝ≥0 → W → ℝ) (t : ℝ≥0)
     (n : ℕ) (omega : W) : ℝ :=
   ∑ i ∈ Finset.range n,
@@ -74,7 +78,7 @@ noncomputable def generalItoSpaceApprox
 
 /-- The left-endpoint weighted quadratic-variation term, including the
 coefficient `1 / 2`. -/
-noncomputable def generalItoQuadraticApprox
+@[expose] noncomputable def generalItoQuadraticApprox
     (f : ℝ → ℝ → ℝ) (X : ℝ≥0 → W → ℝ) (t : ℝ≥0)
     (n : ℕ) (omega : W) : ℝ :=
   ∑ i ∈ Finset.range n,
@@ -127,7 +131,7 @@ theorem aestronglyMeasurable_generalItoQuadraticApprox
 
 /-- The exact one-step residual after the time, space, and quadratic terms
 have been removed from the increment of `f`. -/
-noncomputable def generalItoRemainderIncrement
+@[expose] noncomputable def generalItoRemainderIncrement
     (f : ℝ → ℝ → ℝ) (s₀ s₁ x₀ x₁ : ℝ) : ℝ :=
   f s₁ x₁ - f s₀ x₀ -
     itoTimeDerivative f s₀ x₀ * (s₁ - s₀) -
@@ -135,7 +139,7 @@ noncomputable def generalItoRemainderIncrement
     (1 / 2 : ℝ) * itoSpaceSecondDerivative f s₀ x₀ * (x₁ - x₀) ^ 2
 
 /-- Sum of the exact one-step residuals along the uniform `n`-partition. -/
-noncomputable def generalItoRemainderApprox
+@[expose] noncomputable def generalItoRemainderApprox
     (f : ℝ → ℝ → ℝ) (X : ℝ≥0 → W → ℝ) (t : ℝ≥0)
     (n : ℕ) (omega : W) : ℝ :=
   ∑ i ∈ Finset.range n,
@@ -1341,7 +1345,7 @@ theorem generalIto_exists_space_limit_and_formula
       hformula⟩
 
 /-- The pathwise time integral appearing in the general Itô formula. -/
-noncomputable def generalItoTimeIntegral
+@[expose] noncomputable def generalItoTimeIntegral
     (f : ℝ → ℝ → ℝ) (X : ℝ≥0 → W → ℝ) (t : ℝ≥0)
     (omega : W) : ℝ :=
   ∫ s in Set.Icc (0 : ℝ) (t : ℝ),
@@ -1435,7 +1439,7 @@ theorem IsContinuousProcessModification.timeApprox_tendstoInMeasure
 
 /-- The pathwise diffusion-weighted second-order integral appearing in the
 general Itô formula. -/
-noncomputable def generalItoQuadraticIntegral
+@[expose] noncomputable def generalItoQuadraticIntegral
     (f : ℝ → ℝ → ℝ) (X σ : ℝ≥0 → W → ℝ) (t : ℝ≥0)
     (omega : W) : ℝ :=
   (1 / 2 : ℝ) * ∫ s in Set.Icc (0 : ℝ) (t : ℝ),
@@ -1443,7 +1447,7 @@ noncomputable def generalItoQuadraticIntegral
       (σ s.toNNReal omega) ^ 2
 
 /-- The second-order Taylor residual in the state coordinate. -/
-noncomputable def itoStateTaylorRemainder
+@[expose] noncomputable def itoStateTaylorRemainder
     (f : ℝ → ℝ) (x₀ x₁ : ℝ) : ℝ :=
   f x₁ - f x₀ - deriv f x₀ * (x₁ - x₀) -
     (1 / 2 : ℝ) * deriv (deriv f) x₀ * (x₁ - x₀) ^ 2
@@ -1457,7 +1461,7 @@ theorem itoStateTaylorRemainder_eq_itoTaylorRemainder
   ring
 
 /-- Accumulated second-order state residual along the uniform partition. -/
-noncomputable def itoStateTaylorRemainderApprox
+@[expose] noncomputable def itoStateTaylorRemainderApprox
     (f : ℝ → ℝ) (X : ℝ≥0 → W → ℝ) (t : ℝ≥0)
     (n : ℕ) (omega : W) : ℝ :=
   ∑ i ∈ Finset.range n,

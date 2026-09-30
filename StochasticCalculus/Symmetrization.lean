@@ -3,8 +3,10 @@ Copyright (c) 2026 Ezzeri Esa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ezzeri Esa
 -/
-import Mathlib.MeasureTheory.Function.L2Space
-import Lean.Elab.Recall
+module
+
+public import Mathlib.MeasureTheory.Function.L2Space
+public import Lean.Elab.Recall
 
 /-!
 # Rung 1 (`symm`): the symmetrization operator
@@ -40,6 +42,8 @@ functions, and `symmetrize` is the projection onto them.
   functions (`symmetrizeL_eq_self_iff`).
 -/
 
+public section
+
 open MeasureTheory Finset
 open scoped ENNReal
 
@@ -51,7 +55,7 @@ variable {T : Type*} {E : Type*}
 
 /-- A function of `n` variables is *symmetric* if it is invariant under every permutation of
 its arguments. -/
-def IsSymmetric (n : ℕ) (f : (Fin n → T) → E) : Prop :=
+@[expose] def IsSymmetric (n : ℕ) (f : (Fin n → T) → E) : Prop :=
   ∀ (σ : Equiv.Perm (Fin n)) (t : Fin n → T), f (t ∘ σ) = f t
 
 /-- Symmetry only needs to be checked on transpositions (they generate `Equiv.Perm (Fin n)`). -/
@@ -79,7 +83,7 @@ variable [AddCommGroup E] [Module ℝ E]
 
 /-- The symmetrization of a function of `n` variables:
 `symmetrize n f t = (n!)⁻¹ • ∑ σ, f (t ∘ σ)`. -/
-def symmetrize (n : ℕ) (f : (Fin n → T) → E) : (Fin n → T) → E :=
+@[expose] def symmetrize (n : ℕ) (f : (Fin n → T) → E) : (Fin n → T) → E :=
   fun t => ((n.factorial : ℝ)⁻¹) • ∑ σ : Equiv.Perm (Fin n), f (t ∘ σ)
 
 theorem symmetrize_apply (n : ℕ) (f : (Fin n → T) → E) (t : Fin n → T) :
@@ -110,7 +114,7 @@ theorem symmetrize_zero (n : ℕ) : symmetrize n (0 : (Fin n → T) → E) = 0 :
   simp only [symmetrize_apply, Pi.zero_apply, sum_const_zero, smul_zero]
 
 /-- `symmetrize` as an `ℝ`-linear map on functions of `n` variables. -/
-def symmetrizeₗ (n : ℕ) : ((Fin n → T) → E) →ₗ[ℝ] ((Fin n → T) → E) where
+@[expose] def symmetrizeₗ (n : ℕ) : ((Fin n → T) → E) →ₗ[ℝ] ((Fin n → T) → E) where
   toFun := symmetrize n
   map_add' := symmetrize_add n
   map_smul' := symmetrize_smul n

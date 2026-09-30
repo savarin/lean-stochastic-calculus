@@ -3,8 +3,10 @@ Copyright (c) 2026 Ezzeri Esa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ezzeri Esa
 -/
-import StochasticCalculus.GirsanovTheorem
-import StochasticCalculus.BrownianContinuousVersion
+module
+
+public import StochasticCalculus.GirsanovTheorem
+public import StochasticCalculus.BrownianContinuousVersion
 
 /-!
 # Constant-drift Girsanov through the dynamic theorem
@@ -20,6 +22,8 @@ surely at every fixed time.
 The main results are stated for the exact terminal density measure
 `girsanovMeasure P (-c · B_{· ∧ T}) (c² (· ∧ T)) T`.
 -/
+
+public section
 
 open MeasureTheory ProbabilityTheory
 open scoped ENNReal NNReal

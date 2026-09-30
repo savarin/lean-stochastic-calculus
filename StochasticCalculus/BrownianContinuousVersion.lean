@@ -3,7 +3,9 @@ Copyright (c) 2026 Ezzeri Esa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ezzeri Esa
 -/
-import Mathlib.Probability.BrownianMotion.Basic
+module
+
+public import Mathlib.Probability.BrownianMotion.Basic
 
 /-!
 # A version of a Brownian motion with every path continuous
@@ -15,6 +17,8 @@ the zero path: every path is then continuous and starts at zero, each time
 slice stays strongly measurable, and the result is again a Brownian motion
 that agrees with the original almost surely at every fixed time.
 -/
+
+public section
 
 open MeasureTheory ProbabilityTheory
 open scoped NNReal

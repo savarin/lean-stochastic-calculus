@@ -3,7 +3,9 @@ Copyright (c) 2026 Ezzeri Esa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ezzeri Esa
 -/
-import StochasticCalculus.GirsanovCommonRefinement
+module
+
+public import StochasticCalculus.GirsanovCommonRefinement
 
 /-!
 # Brownian Fourier increments and the complex exponential
@@ -15,6 +17,8 @@ Doléans--Dade exponential, and the tightness of the freezing density at left
 endpoints.
 -/
 
+public section
+
 open Filter MeasureTheory ProbabilityTheory
 open scoped ENNReal NNReal
 
@@ -23,7 +27,7 @@ noncomputable section
 namespace StochasticCalculus
 
 /-- The normalized complex character of a Brownian increment. -/
-def brownianFourierIncrement
+@[expose] def brownianFourierIncrement
     {W : Type*} (B : ℝ≥0 → W → ℝ) (c : ℝ) (a b : ℝ≥0) : W → ℂ :=
   fun omega ↦ Complex.exp
     (((c * (B b omega - B a omega) : ℝ) : ℂ) * Complex.I +
@@ -161,7 +165,7 @@ theorem brownianFourierIncrement_mul
 
 /-- The normalized Brownian character based at `s`; it is one before `s`
 and accumulates the normalized character of `B_t-B_s` afterwards. -/
-def brownianFourierIncrementProcess
+@[expose] def brownianFourierIncrementProcess
     {W : Type*} (B : ℝ≥0 → W → ℝ) (s : ℝ≥0) (c : ℝ) :
     ℝ≥0 → W → ℂ := fun t ↦ brownianFourierIncrement B c (min t s) t
 
@@ -370,13 +374,13 @@ theorem martingale_brownianFourierIncrementProcess_rightCont_natural
 
 /-- The complex local-martingale combination `M + i c B` used in the
 Fourier proof of Girsanov's theorem. -/
-def complexMartingaleCombination
+@[expose] def complexMartingaleCombination
     {W : Type*} (M B : ℝ≥0 → W → ℝ) (c : ℝ) : ℝ≥0 → W → ℂ :=
   fun t omega ↦ (M t omega : ℂ) + ((c * B t omega : ℝ) : ℂ) * Complex.I
 
 /-- The complex bracket of `M + i c B`: the real Brownian quadratic term
 changes sign and the real cross variation becomes the imaginary term. -/
-def complexMartingaleCombinationBracket
+@[expose] def complexMartingaleCombinationBracket
     {W : Type*} (bracket C : ℝ≥0 → W → ℝ) (c : ℝ) :
     ℝ≥0 → W → ℂ := fun t omega ↦
   (bracket t omega : ℂ) - (c ^ 2 * (t : ℝ) : ℝ) +
@@ -413,7 +417,7 @@ theorem stronglyAdapted_complexMartingaleCombinationBracket
 
 /-- Algebraic complex Doléans exponential associated to a complex process
 and its algebraic quadratic variation. -/
-noncomputable def complexDoleansDadeExponential
+@[expose] noncomputable def complexDoleansDadeExponential
     {W : Type*} (X Q : ℝ≥0 → W → ℂ) : ℝ≥0 → W → ℂ :=
   fun t omega ↦ Complex.exp (X t omega - Q t omega / 2)
 
@@ -799,7 +803,7 @@ theorem
 /-- The density maximum used by the early complex-freezing layer.  A
 specialized copy is kept here because the more featureful stopped-weight
 controls are developed later in the file. -/
-noncomputable def complexFreezingDensityLeftMax
+@[expose] noncomputable def complexFreezingDensityLeftMax
     {W : Type*} (M bracket : ℝ≥0 → W → ℝ) (T : ℝ≥0)
     (n : ℕ) (omega : W) : ℝ :=
   (Finset.range (n + 1)).sup' Finset.nonempty_range_add_one fun k ↦

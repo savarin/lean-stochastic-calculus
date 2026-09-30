@@ -3,7 +3,10 @@ Copyright (c) 2026 Ezzeri Esa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ezzeri Esa
 -/
-import StochasticCalculus.ItoFormulaGeneral
+module
+
+public import StochasticCalculus.ItoFormulaGeneral
+public import Mathlib.Order.Interval.Set.Union
 
 /-!
 # Weighted bracket Riemann sums
@@ -13,6 +16,8 @@ absolutely continuous bracket of a natural Itô process.  Combined with the
 two-scale completed-cell comparison, this closes diffusion-weighted
 quadratic variation for the natural stochastic-integral component.
 -/
+
+public section
 
 open MeasureTheory ProbabilityTheory Set Filter Topology
 open scoped BigOperators NNReal ENNReal
@@ -24,7 +29,7 @@ namespace StochasticCalculus
 /-- A quadratic partition sum whose state-dependent weight is sampled from
 `Z`, while the squared increments are sampled from `M`.  This separates the
 state process from its stochastic-integral component during drift removal. -/
-noncomputable def generalItoMixedQuadraticApprox
+@[expose] noncomputable def generalItoMixedQuadraticApprox
     {W : Type*} [MeasurableSpace W]
     (f : ℝ → ℝ → ℝ) (Z M : ℝ≥0 → W → ℝ) (t : ℝ≥0)
     (n : ℕ) (omega : W) : ℝ :=

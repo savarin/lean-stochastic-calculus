@@ -3,7 +3,9 @@ Copyright (c) 2026 Ezzeri Esa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ezzeri Esa
 -/
-import StochasticCalculus.PartitionStoppingTime
+module
+
+public import StochasticCalculus.PartitionStoppingTime
 
 /-!
 # Left sums against a martingale
@@ -13,6 +15,8 @@ process, their martingale property, terminal `L²` bounds, double
 localization at continuous exits, and the `L²` control of localized
 differences.
 -/
+
+public section
 
 open Filter MeasureTheory ProbabilityTheory
 open scoped BigOperators ENNReal NNReal Topology
@@ -24,7 +28,7 @@ namespace StochasticCalculus
 /-- The stochastic integral of a finite elementary predictable integrand
 against `M`: each summand has a bounded coefficient known at its left
 endpoint and is supported on its own deterministic interval. -/
-def elementaryMartingaleIntegralSum
+@[expose] def elementaryMartingaleIntegralSum
     {W I : Type*} (M : ℝ≥0 → W → ℝ) (S : Finset I)
     (a b : I → ℝ≥0) (Z : I → W → ℝ) : ℝ≥0 → W → ℝ :=
   ∑ i ∈ S, elementaryMartingaleIntegralProcess M (a i) (b i) (Z i)
@@ -108,7 +112,7 @@ theorem stoppedProcess_indicator_elementaryMartingaleIntegralSum
 
 /-- The coherent uniform-grid left-sum process for a general time-dependent
 integrand `H` and integrator `M`. -/
-def uniformAdaptedMartingaleLeftSumProcess
+@[expose] def uniformAdaptedMartingaleLeftSumProcess
     {W : Type*} (M H : ℝ≥0 → W → ℝ)
     (T : ℝ≥0) (n : ℕ) : ℝ≥0 → W → ℝ :=
   elementaryMartingaleIntegralSum M (Finset.range n)

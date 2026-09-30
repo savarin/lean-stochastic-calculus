@@ -1,4 +1,6 @@
-import BlackScholesSolution
+module
+
+import Lean
 
 open Lean
 
@@ -15,8 +17,12 @@ partial def collectDependencies (kenv : Kernel.Environment) (n : Name) :
     | some v => for c in v.getUsedConstants do collectDependencies kenv c
     | none => return
 
+-- A module sees only the exported part of what it imports, which leaves out
+-- proofs. So load the Solution here with every module's private data, as if
+-- no file used the module system, and follow the proofs through that.
 #eval show CoreM Unit from do
-  let kenv := (← getEnv).checked.get
+  let env ← importModules #[{ module := `BlackScholesSolution }] {} (level := .private)
+  let kenv := env.toKernelEnv
   let (_, used) := (collectDependencies kenv `PalomarBlackScholes.black_scholes).run {}
   IO.println s!"Reachable constants: {used.size}"
   let required : List Name := [

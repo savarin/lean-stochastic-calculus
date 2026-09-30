@@ -3,7 +3,9 @@ Copyright (c) 2026 Ezzeri Esa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ezzeri Esa
 -/
-import StochasticCalculus.QuadraticVariationContract
+module
+
+public import StochasticCalculus.QuadraticVariationContract
 
 /-!
 # Quadratic variation of Brownian motion
@@ -13,6 +15,8 @@ import StochasticCalculus.QuadraticVariationContract
 time-changed versions, and for disjoint blocks, together with the
 covariation of stopped and interval Brownian blocks with the full path.
 -/
+
+public section
 
 open MeasureTheory
 open ProbabilityTheory

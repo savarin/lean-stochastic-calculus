@@ -3,7 +3,9 @@ Copyright (c) 2026 Ezzeri Esa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ezzeri Esa
 -/
-import StochasticCalculus.QuadraticVariationTightness
+module
+
+public import StochasticCalculus.QuadraticVariationTightness
 
 /-!
 # Quadratic variation on a common rational grid
@@ -14,6 +16,8 @@ sum on a common uniform grid and proves the exact rescaling identity.  As a
 first coherent-process consequence, every fixed rational prefix converges in
 probability along common refinements of that grid.
 -/
+
+public section
 
 open Filter MeasureTheory ProbabilityTheory Topology
 open scoped BigOperators NNReal
@@ -130,7 +134,7 @@ theorem quadraticVariation_stopped_naturalItoProcessRepresentative_bracket
 
 /-- The squared increments whose right endpoints lie before a deterministic
 stopping time. -/
-noncomputable def quadraticVariationBeforeStopApprox
+@[expose] noncomputable def quadraticVariationBeforeStopApprox
     (X : ℝ≥0 → W → ℝ) (t : ℝ≥0) (n : ℕ) (a : ℝ≥0)
     (omega : W) : ℝ :=
   ∑ i ∈ Finset.range n,
@@ -472,7 +476,7 @@ theorem abs_weightedQuadraticVariation_sub_completedBlocks_le
 /-- Cells of a uniform partition whose left endpoint is at or before `a`
 and whose right endpoint is strictly after `a`.  Monotonicity of the grid
 implies that this finset contains at most one cell. -/
-noncomputable def uniformPartitionCrossingCells
+@[expose] noncomputable def uniformPartitionCrossingCells
     (t : ℝ≥0) (n : ℕ) (a : ℝ≥0) : Finset ℕ :=
   (Finset.range n).filter fun i =>
     uniformPartitionTime t n i ≤ a ∧
@@ -562,7 +566,7 @@ theorem continuousOn_uniformPartition_crossing_increments_tendsto
 
 /-- The sole possible partial-cell contribution when a deterministic stop
 does not coincide with a partition point. -/
-noncomputable def quadraticVariationCrossingStopApprox
+@[expose] noncomputable def quadraticVariationCrossingStopApprox
     (X : ℝ≥0 → W → ℝ) (t : ℝ≥0) (n : ℕ) (a : ℝ≥0)
     (omega : W) : ℝ :=
   ∑ i ∈ uniformPartitionCrossingCells t n a,

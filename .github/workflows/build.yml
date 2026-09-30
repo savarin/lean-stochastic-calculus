@@ -28,7 +28,7 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           repository: PalomarRegistry/PalomarSubmission
-          ref: a59f25bd8a66bf6faf3a4f4260d412989c0185ea
+          ref: 65f0154ed776cd26c224254aa57b379137f28b0d
           path: .lake/palomar-submission
           persist-credentials: false
       - name: Check metadata and packaging

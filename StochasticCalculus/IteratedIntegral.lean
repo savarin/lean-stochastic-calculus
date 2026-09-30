@@ -3,10 +3,15 @@ Copyright (c) 2026 Ezzeri Esa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ezzeri Esa
 -/
-import Mathlib.Analysis.InnerProductSpace.l2Space
-import Mathlib.MeasureTheory.Measure.SeparableMeasure
-import StochasticCalculus.Simplex
-import Mathlib.Probability.BrownianMotion.Basic
+module
+
+public import Mathlib.Analysis.InnerProductSpace.l2Space
+public import Mathlib.MeasureTheory.Measure.SeparableMeasure
+public import StochasticCalculus.Simplex
+public import Mathlib.Probability.BrownianMotion.Basic
+public import Mathlib.Probability.Distributions.Gaussian.IsGaussianProcess.Basic
+public import Mathlib.Probability.Independence.Integration
+public import Mathlib.Probability.Distributions.Gaussian.HasGaussianLaw.Basic
 
 /-!
 # Iterated-integral Hilbert laws
@@ -29,6 +34,8 @@ additional link.  The selected law-level family assembles all positive simplex k
 Hilbert sum.  The construction selects its onto branch only when process-measurable `L²` exhausts
 the separable ambient space, so unrelated ambient randomness is never absorbed into the tower.
 -/
+
+public section
 
 namespace StochasticCalculus
 
@@ -441,7 +448,7 @@ end Step
 
 /-- Product of increments along a chain `u 0 ≤ v 0 ≤ u 1 ≤ v 1 ≤ …`: the intended
 ordered-box value in a Brownian-linked iterated-integral family. -/
-def chainIntegral {n : ℕ} (W : ℝ≥0 → Ω → ℝ) (u v : Fin n → ℝ≥0) : Ω → ℝ :=
+@[expose] def chainIntegral {n : ℕ} (W : ℝ≥0 → Ω → ℝ) (u v : Fin n → ℝ≥0) : Ω → ℝ :=
   fun x => ∏ i, (W (v i) x - W (u i) x)
 
 /-! ### The continuous iterated-integral tower
@@ -468,7 +475,7 @@ lemma measurableEmbedding_nnrealCoe_iterated :
   NNReal.isClosedEmbedding_coe.measurableEmbedding
 
 /-- Lebesgue measure on `ℝ≥0`, obtained by pulling real Lebesgue measure back along coercion. -/
-noncomputable def nonnegativeLebesgueMeasure : Measure ℝ≥0 :=
+@[expose] noncomputable def nonnegativeLebesgueMeasure : Measure ℝ≥0 :=
   Measure.comap ((↑) : ℝ≥0 → ℝ) (volume : Measure ℝ)
 
 /-- The nonnegative Lebesgue measure of `(a, b]` is its real length. -/
@@ -1285,7 +1292,7 @@ noncomputable def simplexIntegralLI (hB : IsPreBrownianReal B P) (n : ℕ) :
     simplexIntegralLI hB n f =
       ((positiveIteratedTowerLI hB (lp.single 2 n f) : CenteredRandomL2 hB) :
         RandomL2 P) :=
-  rfl
+  by rfl
 
 /-- A vector in the positive kernel Hilbert sum is the sum of its orderwise selected simplex
 images. -/
@@ -1444,7 +1451,7 @@ theorem iteratedIntegralCLM_symmetrized (hB : IsPreBrownianReal B P) (n : ℕ)
         (symmetrizeL ℝ (μ := nonnegativeLebesgueMeasure) (n + 1) 2 f) =
       IteratedIntegralConstruction.simplexIntegralLI hB n
         (IteratedIntegralConstruction.symmetrizeRestrict (n + 1) f) :=
-  rfl
+  by rfl
 
 /-- The polarized simplex isometry for two kernels of the same order. -/
 theorem inner_iteratedIntegralCLM (hB : IsPreBrownianReal B P) (n : ℕ)

@@ -3,12 +3,16 @@ Copyright (c) 2026 Ezzeri Esa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ezzeri Esa
 -/
-import StochasticCalculus.GirsanovLocalization
-import StochasticCalculus.ZeroBracket
+module
+
+public import StochasticCalculus.GirsanovLocalization
+public import StochasticCalculus.ZeroBracket
 
 /-!
 # Bounded exits for the predictable Girsanov closure
 -/
+
+public section
 
 open Filter MeasureTheory ProbabilityTheory
 open scoped ENNReal NNReal Topology
@@ -165,7 +169,7 @@ theorem GirsanovDensityData.crossVariation_girsanovExitTime
 
 /-- The complex Fourier exponential for the coefficient and integrator
 stopped at a bounded continuous radius exit. -/
-noncomputable def girsanovExitComplexExponential
+@[expose] noncomputable def girsanovExitComplexExponential
     {W : Type*} (M bracket B theta : ℝ≥0 → W → ℝ) (T R : ℝ≥0) (c : ℝ)
     (t : ℝ≥0) (omega : W) : ℂ :=
   complexDoleansDadeExponential

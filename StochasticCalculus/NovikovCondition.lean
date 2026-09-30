@@ -3,7 +3,9 @@ Copyright (c) 2026 Ezzeri Esa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ezzeri Esa
 -/
-import StochasticCalculus.DoleansDade
+module
+
+public import StochasticCalculus.DoleansDade
 
 /-!
 # Novikov's condition and nonnegative local martingales
@@ -13,6 +15,8 @@ cases, stopping of martingales at deterministic times, uniform
 integrability of martingales on bounded intervals, and the passage from a
 nonnegative local martingale with vanishing integral to a true martingale.
 -/
+
+public section
 
 open Filter MeasureTheory ProbabilityTheory
 open scoped ENNReal NNReal Topology
@@ -24,7 +28,7 @@ namespace StochasticCalculus
 /-- Novikov's exponential-integrability condition at a deterministic horizon.
 For an adapted bracket, strong measurability makes this equivalent to
 finiteness of the usual expectation of `exp (bracket_T / 2)`. -/
-def NovikovCondition
+@[expose] def NovikovCondition
     {W : Type*} [MeasurableSpace W]
     (bracket : ℝ≥0 → W → ℝ) (P : Measure W) (T : ℝ≥0) : Prop :=
   Integrable (fun omega => Real.exp (bracket T omega / 2)) P

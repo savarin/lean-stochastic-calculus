@@ -3,7 +3,9 @@ Copyright (c) 2026 Ezzeri Esa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ezzeri Esa
 -/
-import StochasticCalculus.GirsanovMartingaleTransform
+module
+
+public import StochasticCalculus.GirsanovMartingaleTransform
 
 /-!
 # Block sums along common refinements
@@ -14,6 +16,8 @@ closure of the martingale property under limits in measure with uniform
 integrability in a Banach space, and fourth-moment maximal inequalities for
 pre-Brownian block oscillations.
 -/
+
+public section
 
 open Filter MeasureTheory ProbabilityTheory
 open scoped ENNReal NNReal
@@ -437,7 +441,7 @@ theorem norm_sub_uniformPartition_rightEndpoint_complexStep_sum_le
 
 /-- Maximum error made by freezing a complex weight on the coarse cells of
 a positive common refinement. -/
-noncomputable def commonRefinementMaxComplexStepError
+@[expose] noncomputable def commonRefinementMaxComplexStepError
     {W : Type*} (A : ℝ≥0 → W → ℂ) (T : ℝ≥0)
   (k n : ℕ) (omega : W) : ℝ :=
   (Finset.range ((k + 1) * (n + 1))).sup'

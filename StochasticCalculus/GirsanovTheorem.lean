@@ -3,7 +3,9 @@ Copyright (c) 2026 Ezzeri Esa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ezzeri Esa
 -/
-import StochasticCalculus.GirsanovExits
+module
+
+public import StochasticCalculus.GirsanovExits
 
 /-!
 # Predictable Girsanov theorem
@@ -12,6 +14,8 @@ Novikov uniform integrability removes the bounded exits from the complex
 Fourier martingales. The characteristic-function endpoint identifies the
 shifted process under the exact terminal-density measure.
 -/
+
+public section
 
 open Filter MeasureTheory ProbabilityTheory
 open scoped ENNReal NNReal Topology

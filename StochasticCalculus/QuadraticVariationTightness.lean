@@ -3,7 +3,9 @@ Copyright (c) 2026 Ezzeri Esa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ezzeri Esa
 -/
-import StochasticCalculus.QuadraticVariationDensity
+module
+
+public import StochasticCalculus.QuadraticVariationDensity
 
 /-!
 # Tightness consequences of convergence in measure
@@ -13,6 +15,8 @@ not a global moment bound on the finite-variation part of an Itô process.
 This file records the elementary tail-transfer lemma that turns the already
 proved terminal quadratic-variation convergence into exactly that control.
 -/
+
+public section
 
 open Filter MeasureTheory ProbabilityTheory Topology
 open scoped NNReal

@@ -3,7 +3,9 @@ Copyright (c) 2026 Ezzeri Esa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ezzeri Esa
 -/
-import StochasticCalculus.Girsanov
+module
+
+public import StochasticCalculus.Girsanov
 
 /-!
 # Moment consequences of the Novikov contract
@@ -13,6 +15,8 @@ martingale. This supplies every polynomial moment and removes the need to
 approximate the real integrator by unrelated local martingales on the finite
 Girsanov horizon.
 -/
+
+public section
 
 open Filter MeasureTheory ProbabilityTheory
 open scoped ENNReal NNReal

@@ -3,7 +3,9 @@ Copyright (c) 2026 Ezzeri Esa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ezzeri Esa
 -/
-import StochasticCalculus.GirsanovMeasure
+module
+
+public import StochasticCalculus.GirsanovMeasure
 
 /-!
 # Elementary martingale transforms
@@ -13,6 +15,8 @@ coefficients against a real martingale, their martingale property, and the
 prefix and stopped forms of the cross-variation sums along common
 refinements of uniform partitions.
 -/
+
+public section
 
 open Filter MeasureTheory ProbabilityTheory
 open scoped ENNReal NNReal
@@ -24,7 +28,7 @@ namespace StochasticCalculus
 /-- The elementary stochastic integral of an `E`-valued coefficient against
 a real martingale on `(a,b]`.  This is the Banach-valued transform needed for
 complex Fourier martingales. -/
-def elementaryMartingaleSmulProcess
+@[expose] def elementaryMartingaleSmulProcess
     {W E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     (M : ℝ≥0 → W → ℝ) (a b : ℝ≥0) (Z : W → E)
     (t : ℝ≥0) (omega : W) : E :=
@@ -186,7 +190,7 @@ theorem martingale_elementaryMartingaleSmulProcess
 
 /-- A finite sum of Banach-valued elementary transforms against one real
 integrator. -/
-def elementaryMartingaleSmulSum
+@[expose] def elementaryMartingaleSmulSum
     {W E I : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     (M : ℝ≥0 → W → ℝ) (S : Finset I)
     (a b : I → ℝ≥0) (Z : I → W → E) : ℝ≥0 → W → E :=
@@ -227,7 +231,7 @@ theorem martingale_elementaryMartingaleSmulSum
 
 /-- The coherent uniform-grid Banach-valued transform of a time-dependent
 adapted coefficient against a real martingale. -/
-def uniformAdaptedMartingaleSmulProcess
+@[expose] def uniformAdaptedMartingaleSmulProcess
     {W E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     (M : ℝ≥0 → W → ℝ) (H : ℝ≥0 → W → E)
     (T : ℝ≥0) (n : ℕ) : ℝ≥0 → W → E :=
@@ -255,7 +259,7 @@ theorem martingale_uniformAdaptedMartingaleSmulProcess
 
 /-- The sum of two coherent Banach-valued left transforms, allowing two
 different real martingale integrators and two adapted coefficients. -/
-def uniformAdaptedTwoMartingaleSmulProcess
+@[expose] def uniformAdaptedTwoMartingaleSmulProcess
     {W E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     (M N : ℝ≥0 → W → ℝ) (H K : ℝ≥0 → W → E)
     (T : ℝ≥0) (n : ℕ) : ℝ≥0 → W → E :=
@@ -527,7 +531,7 @@ theorem
 /-- Covariation sum on a fixed uniform grid, with every grid endpoint
 stopped at the current time.  Unlike a separately repartitioned sum at each
 time, this gives a coherent process for martingale approximation. -/
-def uniformStoppedCovariationApprox
+@[expose] def uniformStoppedCovariationApprox
     {W : Type*} (X Y : ℝ≥0 → W → ℝ)
     (T : ℝ≥0) (n : ℕ) (t : ℝ≥0) (omega : W) : ℝ :=
   ∑ i ∈ Finset.range n,

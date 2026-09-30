@@ -3,7 +3,9 @@ Copyright (c) 2026 Ezzeri Esa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ezzeri Esa
 -/
-import StochasticCalculus.GirsanovFourierIncrement
+module
+
+public import StochasticCalculus.GirsanovFourierIncrement
 
 /-!
 # Capped complex Euler approximations
@@ -13,6 +15,8 @@ second-order residual of an exponential increment with its bound, and the
 weighted bracket, quadratic, cross and higher-order residual sums along
 uniform partitions.
 -/
+
+public section
 
 open Filter MeasureTheory ProbabilityTheory
 open scoped ENNReal NNReal
@@ -24,7 +28,7 @@ namespace StochasticCalculus
 /-- Cap only the real Novikov-density factor of the complex Girsanov
 exponential.  Its oscillatory factor is left unchanged, so the cap is
 bounded without requiring path regularity of the pre-Brownian driver. -/
-def cappedComplexDoleansDadeExponentialCombination
+@[expose] def cappedComplexDoleansDadeExponentialCombination
     {W : Type*} (M bracket B C : ℝ≥0 → W → ℝ)
     (c : ℝ) (R : ℝ≥0) (t : ℝ≥0) (omega : W) : ℂ :=
   (cappedDoleansDadeExponential M bracket R t omega : ℂ) *
@@ -79,13 +83,13 @@ theorem stronglyAdapted_cappedComplexDoleansDadeExponentialCombination
 
 /-- Deterministic norm bound for the density-capped complex coefficient on
 the Girsanov horizon. -/
-def cappedComplexGirsanovCoefficientBound
+@[expose] def cappedComplexGirsanovCoefficientBound
     (c : ℝ) (R T : ℝ≥0) : ℝ≥0 :=
   R * Real.toNNReal (Real.exp (c ^ 2 * (T : ℝ) / 2))
 
 /-- Deterministic norm bound for the Brownian coefficient `i c H` in the
 two-integrator complex Euler process. -/
-def cappedComplexGirsanovBrownianCoefficientBound
+@[expose] def cappedComplexGirsanovBrownianCoefficientBound
     (c : ℝ) (R T : ℝ≥0) : ℝ≥0 :=
   Real.toNNReal
     (|c| * (cappedComplexGirsanovCoefficientBound c R T : ℝ))
@@ -93,7 +97,7 @@ def cappedComplexGirsanovBrownianCoefficientBound
 /-- The Euler martingale candidate for the complex Girsanov exponential.
 The density factor in the coefficient is capped, while `N` is the chosen
 martingale approximation to the local-martingale integrator `M`. -/
-def cappedComplexGirsanovEulerProcess
+@[expose] def cappedComplexGirsanovEulerProcess
     {W : Type*} (N M bracket B C : ℝ≥0 → W → ℝ)
     (c : ℝ) (R U : ℝ≥0) (n : ℕ) : ℝ≥0 → W → ℂ :=
   let H : ℝ≥0 → W → ℂ := fun t omega =>
@@ -107,7 +111,7 @@ def cappedComplexGirsanovEulerProcess
 /-- The uncapped complex Euler process on a uniform grid.  It is the exact
 first-order sum whose stochastic Taylor error remains after the increasing
 density caps have become inactive. -/
-def complexGirsanovEulerProcess
+@[expose] def complexGirsanovEulerProcess
     {W : Type*} (N M bracket B C : ℝ≥0 → W → ℝ)
     (c : ℝ) (U : ℝ≥0) (n : ℕ) : ℝ≥0 → W → ℂ :=
   let H : ℝ≥0 → W → ℂ := fun t omega =>
@@ -122,7 +126,7 @@ def complexGirsanovEulerProcess
 
 /-- The canonical complex uniform-grid Doléans left sum, written directly
 for a complex integrator and its algebraic complex bracket. -/
-noncomputable def complexDoleansEulerProcess
+@[expose] noncomputable def complexDoleansEulerProcess
     {W : Type*} (X Q : ℝ≥0 → W → ℂ)
     (U : ℝ≥0) (n : ℕ) : ℝ≥0 → W → ℂ :=
   let H : ℝ≥0 → W → ℂ := fun t omega =>
@@ -135,7 +139,7 @@ noncomputable def complexDoleansEulerProcess
 
 /-- The exact one-step residual sum for the canonical complex Doléans Euler
 process.  Its first two terms telescope; the third is the Euler increment. -/
-noncomputable def complexDoleansEulerResidualApprox
+@[expose] noncomputable def complexDoleansEulerResidualApprox
     {W : Type*} (X Q : ℝ≥0 → W → ℂ)
     (U : ℝ≥0) (n : ℕ) (t : ℝ≥0) (omega : W) : ℂ :=
   let E := complexDoleansDadeExponential X Q
@@ -173,7 +177,7 @@ theorem complexDoleansDadeExponential_increment_sub_linear
 
 /-- The higher-order remainder left after extracting the quadratic-variation
 term from one complex Doléans Euler cell. -/
-noncomputable def complexDoleansSecondOrderResidual
+@[expose] noncomputable def complexDoleansSecondOrderResidual
     (dX dQ : ℂ) : ℂ :=
   Complex.exp (dX - dQ / 2) - 1 - dX - (dX ^ 2 - dQ) / 2
 
@@ -268,7 +272,7 @@ theorem complexDoleansDadeExponential_increment_sub_linear_eq_secondOrder
 
 /-- The stopped-grid weighted discrepancy between algebraic squared
 increments and increments of the proposed complex bracket. -/
-noncomputable def complexDoleansWeightedBracketResidualApprox
+@[expose] noncomputable def complexDoleansWeightedBracketResidualApprox
     {W : Type*} (X Q : ℝ≥0 → W → ℂ)
     (U : ℝ≥0) (n : ℕ) (t : ℝ≥0) (omega : W) : ℂ :=
   ∑ i ∈ Finset.range n,
@@ -1039,7 +1043,7 @@ theorem complexDoleansWeightedBracketResidualApprox_combination
 
 /-- The sum of higher-order exponential remainders on a stopped uniform
 grid. -/
-noncomputable def complexDoleansHigherOrderResidualApprox
+@[expose] noncomputable def complexDoleansHigherOrderResidualApprox
     {W : Type*} (X Q : ℝ≥0 → W → ℂ)
     (U : ℝ≥0) (n : ℕ) (t : ℝ≥0) (omega : W) : ℂ :=
   ∑ i ∈ Finset.range n,
@@ -1054,7 +1058,7 @@ noncomputable def complexDoleansHigherOrderResidualApprox
 /-- Explicit scalar majorant for the whole stopped-grid higher-order
 remainder.  This is the sum of the left exponential modulus times the
 one-cell cubic/bracket bound. -/
-noncomputable def complexDoleansHigherOrderResidualBoundApprox
+@[expose] noncomputable def complexDoleansHigherOrderResidualBoundApprox
     {W : Type*} (X Q : ℝ≥0 → W → ℂ)
     (U : ℝ≥0) (n : ℕ) (t : ℝ≥0) (omega : W) : ℝ :=
   ∑ i ∈ Finset.range n,

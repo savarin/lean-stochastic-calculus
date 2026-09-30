@@ -3,7 +3,9 @@ Copyright (c) 2026 Ezzeri Esa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ezzeri Esa
 -/
-import StochasticCalculus.QuadraticVariationTightness
+module
+
+public import StochasticCalculus.QuadraticVariationTightness
 
 /-!
 # Vanishing random errors under a tight control
@@ -12,6 +14,8 @@ This file records the elementary localization principle used for weighted
 quadratic-variation errors.  A random error that vanishes in measure remains
 negligible after multiplication by an eventually tight nonnegative control.
 -/
+
+public section
 
 open Filter Topology
 

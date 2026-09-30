@@ -3,10 +3,12 @@ Copyright (c) 2026 Ezzeri Esa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ezzeri Esa
 -/
-import StochasticCalculus.QuadraticVariationDensity
-import Mathlib.Analysis.Convex.Mul
-import Mathlib.MeasureTheory.Function.ConditionalExpectation.CondJensen
-import Mathlib.Probability.Martingale.OptionalStopping
+module
+
+public import StochasticCalculus.QuadraticVariationDensity
+public import Mathlib.Analysis.Convex.Mul
+public import Mathlib.MeasureTheory.Function.ConditionalExpectation.CondJensen
+public import Mathlib.Probability.Martingale.OptionalStopping
 
 /-!
 # Finite-grid maximal estimates for the natural Itô process
@@ -19,6 +21,8 @@ maximal inequality then gives a bound on every deterministic finite time
 grid which is independent of the number of grid points.
 -/
 
+public section
+
 open MeasureTheory ProbabilityTheory Filter Set
 open scoped NNReal ENNReal
 
@@ -30,7 +34,7 @@ variable {Ω ι κ : Type*} [MeasurableSpace Ω]
   {μ : Measure Ω} [IsFiniteMeasure μ]
 
 /-- Restrict a filtration along a monotone deterministic time change. -/
-def monotoneReindexFiltration [Preorder ι] [Preorder κ]
+@[expose] def monotoneReindexFiltration [Preorder ι] [Preorder κ]
     (𝓕 : Filtration ι ‹MeasurableSpace Ω›) (u : κ → ι)
     (hu : Monotone u) : Filtration κ ‹MeasurableSpace Ω› where
   seq k := 𝓕 (u k)
@@ -275,7 +279,7 @@ theorem dyadicPartitionSqMax_congr_ae
   rw [hω k]
 
 /-- Index of the dyadic grid point immediately to the left of `s`. -/
-noncomputable def dyadicApproxIndex (s t : ℝ≥0) (n : ℕ) : ℕ :=
+@[expose] noncomputable def dyadicApproxIndex (s t : ℝ≥0) (n : ℕ) : ℕ :=
   ⌊((s : ℝ) / (t : ℝ)) * (2 : ℝ) ^ n⌋₊
 
 /-- For `s ≤ t`, its left dyadic approximation is a valid grid index. -/
@@ -410,7 +414,7 @@ theorem monotone_uniformPartitionTime_general (t : ℝ≥0) (n : ℕ) :
   gcongr
 
 /-- The natural filtration sampled on a uniform deterministic time grid. -/
-def uniformPartitionFiltration
+@[expose] def uniformPartitionFiltration
     (𝓕 : Filtration ℝ≥0 ‹MeasurableSpace W›) (t : ℝ≥0) (n : ℕ) :
     Filtration ℕ ‹MeasurableSpace W› :=
   monotoneReindexFiltration 𝓕 (uniformPartitionTime t n)

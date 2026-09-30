@@ -3,9 +3,11 @@ Copyright (c) 2026 Ezzeri Esa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ezzeri Esa
 -/
-import StochasticCalculus.FubiniLift
-import StochasticCalculus.WienerIntegral
-import Mathlib.Probability.Process.Predictable
+module
+
+public import StochasticCalculus.FubiniLift
+public import StochasticCalculus.WienerIntegral
+public import Mathlib.Probability.Process.Predictable
 
 /-!
 # Predictable processes in L²
@@ -35,6 +37,8 @@ in-time version `E[F | 𝓕ₜ]`, identified with Mathlib's `condExp` by
 * `filtrationCondExpL2`: timewise `L²` conditional expectation `E[F | 𝓕ₜ]`;
 * `expectationL2`: the constant `L²` representative of `E[F]`.
 -/
+
+public section
 
 open MeasureTheory ProbabilityTheory Filter Topology
 open scoped ENNReal NNReal InnerProductSpace
@@ -284,7 +288,7 @@ theorem deterministicPredictableEmbedding_coeFn
 /-! ### Adapted elementary processes -/
 
 /-- Pointwise representative of the one-step process `1_(a,b] Z`. -/
-noncomputable def elementaryRepresentative (_𝓕 : Filtration ℝ≥0 ‹MeasurableSpace W›)
+@[expose] noncomputable def elementaryRepresentative (_𝓕 : Filtration ℝ≥0 ‹MeasurableSpace W›)
     (a b : ℝ≥0) (Z : W → ℝ) (p : ℝ≥0 × W) : ℝ :=
   if p.1 ∈ Set.Ioc a b then Z p.2 else 0
 
@@ -324,14 +328,14 @@ theorem stronglyMeasurable_elementaryRepresentative
     exact measurableSet_predictable_Ioc_prod a b (hZ.measurable measurableSet_Iic)
 
 /-- The scalar time indicator `1_(a,b]` as an `L²` function. -/
-noncomputable def iocIndicator (a b : ℝ≥0) :
+@[expose] noncomputable def iocIndicator (a b : ℝ≥0) :
     Lp ℝ 2 nonnegativeLebesgueMeasure :=
   indicatorConstLp 2 measurableSet_Ioc
     (nonnegativeLebesgueMeasure_Ioc_ne_top a b) (1 : ℝ)
 
 /-- The predictable `L²` class represented by `(t, ω) ↦ 1_(a,b](t) Z(ω)` for an
 `𝓕_a`-measurable square-integrable coefficient `Z`. -/
-noncomputable def elementaryPredictable [SFinite P]
+@[expose] noncomputable def elementaryPredictable [SFinite P]
     (𝓕 : Filtration ℝ≥0 ‹MeasurableSpace W›) (a b : ℝ≥0)
     (Z : lpMeas ℝ ℝ (𝓕 a) 2 P) : PredictableProcessL2 𝓕 P := by
   let hZ : AEStronglyMeasurable[𝓕 a] (Z : W → ℝ) P :=

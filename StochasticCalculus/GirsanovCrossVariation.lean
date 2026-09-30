@@ -3,9 +3,11 @@ Copyright (c) 2026 Ezzeri Esa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ezzeri Esa
 -/
-import StochasticCalculus.MartingaleFourthMoment
-import StochasticCalculus.GirsanovBounded
-import StochasticCalculus.StoppedVariation
+module
+
+public import StochasticCalculus.MartingaleFourthMoment
+public import StochasticCalculus.GirsanovBounded
+public import StochasticCalculus.StoppedVariation
 
 /-!
 # Stopping mixed variation without stopping the Brownian version
@@ -13,6 +15,8 @@ import StochasticCalculus.StoppedVariation
 L4 martingale estimates upgrade deterministic mixed sums to L1 and identify
 the product compensator. This provides maximal control of grid prefixes.
 -/
+
+public section
 
 open Filter MeasureTheory ProbabilityTheory
 open scoped ENNReal NNReal Topology

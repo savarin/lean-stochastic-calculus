@@ -3,7 +3,9 @@ Copyright (c) 2026 Ezzeri Esa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ezzeri Esa
 -/
-import StochasticCalculus.TendstoInMeasureAlgebra
+module
+
+public import StochasticCalculus.TendstoInMeasureAlgebra
 
 /-!
 # Uniform partition sums
@@ -13,6 +15,8 @@ uniform partition of `[0, t]`, and the quadratic, fourth, cross and total
 variation sums along it, with their algebraic identities, measurability,
 and the integrated drift of a measurable coefficient.
 -/
+
+public section
 
 open MeasureTheory
 open ProbabilityTheory
@@ -33,7 +37,7 @@ variable {W : Type*} [NormedAddCommGroup W] [NormedSpace ℝ W] [MeasurableSpace
   {P : Measure W} {B X μ σ : ℝ≥0 → W → ℝ}
 
 /-- The `i`-th point in the uniform `n`-step partition of `[0, t]`. -/
-noncomputable def uniformPartitionTime (t : ℝ≥0) (n i : ℕ) : ℝ≥0 :=
+@[expose] noncomputable def uniformPartitionTime (t : ℝ≥0) (n i : ℕ) : ℝ≥0 :=
   t * (i : ℝ≥0) / (n : ℝ≥0)
 
 lemma monotone_uniformPartitionTime (t : ℝ≥0) (n : ℕ) :
@@ -154,7 +158,7 @@ theorem continuous_uniformPartition_increments_tendsto
   continuousOn_uniformPartition_increments_tendsto g t hg.continuousOn
 
 /-- Sum of squared increments along the uniform `n`-step partition of `[0, t]`. -/
-noncomputable def quadraticVariationApprox
+@[expose] noncomputable def quadraticVariationApprox
     (B : ℝ≥0 → W → ℝ) (t : ℝ≥0) (n : ℕ) (ω : W) : ℝ :=
   ∑ i ∈ Finset.range n,
     (B (uniformPartitionTime t n (i + 1)) ω -
@@ -165,7 +169,7 @@ noncomputable def quadraticVariationApprox
 For a pre-Brownian process its expectation is of order `1 / n`.  This is the
 path-regularity-free replacement for a maximum-mesh estimate in Taylor
 remainder arguments. -/
-noncomputable def fourthVariationApprox
+@[expose] noncomputable def fourthVariationApprox
     (B : ℝ≥0 → W → ℝ) (t : ℝ≥0) (n : ℕ) (ω : W) : ℝ :=
   ∑ i ∈ Finset.range n,
     (B (uniformPartitionTime t n (i + 1)) ω -
@@ -173,7 +177,7 @@ noncomputable def fourthVariationApprox
 
 /-- Sum of products of the increments of two processes along the uniform
 `n`-step partition of `[0, t]`. -/
-noncomputable def quadraticCovariationApprox
+@[expose] noncomputable def quadraticCovariationApprox
     (X Y : ℝ≥0 → W → ℝ) (t : ℝ≥0) (n : ℕ) (ω : W) : ℝ :=
   ∑ i ∈ Finset.range n,
     (X (uniformPartitionTime t n (i + 1)) ω -
@@ -193,7 +197,7 @@ theorem quadraticCovariationApprox_comm
   ring
 
 /-- Sum of absolute increments along the uniform `n`-step partition. -/
-noncomputable def totalVariationApprox
+@[expose] noncomputable def totalVariationApprox
     (X : ℝ≥0 → W → ℝ) (t : ℝ≥0) (n : ℕ) (ω : W) : ℝ :=
   ∑ i ∈ Finset.range n,
     |X (uniformPartitionTime t n (i + 1)) ω -
@@ -520,7 +524,7 @@ theorem tendsto_quadraticVariationApprox_zero_of_continuous_monotone
 
 /-- The indefinite integral of a real function, parametrized by
 nonnegative time. -/
-noncomputable def nnrealIntegralPrimitive (g : ℝ → ℝ) (x : ℝ≥0) : ℝ :=
+@[expose] noncomputable def nnrealIntegralPrimitive (g : ℝ → ℝ) (x : ℝ≥0) : ℝ :=
   ∫ s in Set.Icc (0 : ℝ) (x : ℝ), g s
 
 private lemma nnrealIntegralPrimitive_sub_eq_integral_Ioc
@@ -669,7 +673,7 @@ theorem tendsto_quadraticVariationApprox_nnrealIntegralPrimitive_zero
       linarith)
 
 /-- The finite-variation drift component of an Itô process. -/
-noncomputable def integratedDrift
+@[expose] noncomputable def integratedDrift
     (μ : ℝ≥0 → W → ℝ) (t : ℝ≥0) (ω : W) : ℝ :=
   ∫ s in Set.Icc (0 : ℝ) (t : ℝ), μ s.toNNReal ω
 

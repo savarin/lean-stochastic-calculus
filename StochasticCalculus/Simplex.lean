@@ -3,7 +3,10 @@ Copyright (c) 2026 Ezzeri Esa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ezzeri Esa
 -/
-import StochasticCalculus.Symmetrization
+module
+
+public import StochasticCalculus.Symmetrization
+public import Mathlib.Data.Fin.Tuple.Sort
 
 /-!
 # Rung 2 prerequisite: the simplex `Δₙ` and the tiling `Tⁿ = ⨆_σ σ·Δₙ` (mod null sets)
@@ -36,6 +39,8 @@ which is what turns `E[Jₙ(f̃)²] = ‖f̃‖²_{L²(Δₙ)}` into `E[Iₙ(f)�
   integrable `g`;
   `integral_sq_norm_eq_factorial_smul` — its `L²` form `∫ ‖g‖² = n! • ∫_{Δₙ} ‖g‖²`.
 -/
+
+public section
 
 open MeasureTheory Finset Set
 open scoped ENNReal
@@ -80,7 +85,7 @@ section Order
 variable [LinearOrder T]
 
 /-- The (open) simplex `Δₙ = {t : Fin n → T | t 0 < t 1 < ⋯ < t (n-1)}`. -/
-def simplex (T : Type*) [LinearOrder T] (n : ℕ) : Set (Fin n → T) :=
+@[expose] def simplex (T : Type*) [LinearOrder T] (n : ℕ) : Set (Fin n → T) :=
   {t | StrictMono t}
 
 theorem mem_simplex {n : ℕ} {t : Fin n → T} : t ∈ simplex T n ↔ StrictMono t :=

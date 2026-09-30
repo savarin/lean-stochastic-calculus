@@ -3,9 +3,13 @@ Copyright (c) 2026 Ezzeri Esa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ezzeri Esa
 -/
-import StochasticCalculus.GeometricBrownianMotion
+module
+
+public import StochasticCalculus.GeometricBrownianMotion
 
 /-! # Integral Grönwall for localized moment profiles -/
+
+public section
 
 open MeasureTheory ProbabilityTheory Set Filter Topology
 open scoped NNReal ENNReal

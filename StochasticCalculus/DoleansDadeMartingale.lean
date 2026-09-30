@@ -3,7 +3,9 @@ Copyright (c) 2026 Ezzeri Esa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ezzeri Esa
 -/
-import StochasticCalculus.DoleansDadeExponential
+module
+
+public import StochasticCalculus.DoleansDadeExponential
 
 /-!
 # Martingality of the stochastic exponential
@@ -12,6 +14,8 @@ The general Itô expansion of `exp` applied to the compensated logarithm,
 convergence of the left sums to the integral candidate, and the martingale
 property of the exponential localized at paired continuous exit times.
 -/
+
+public section
 
 open Filter MeasureTheory ProbabilityTheory
 open scoped BigOperators ENNReal NNReal Topology

@@ -3,7 +3,9 @@ Copyright (c) 2026 Ezzeri Esa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ezzeri Esa
 -/
-import StochasticCalculus.PredictableProcess
+module
+
+public import StochasticCalculus.PredictableProcess
 
 /-!
 # The Itô isometry on adapted elementary processes
@@ -19,6 +21,8 @@ coordinate process and its natural filtration. `inner_partitionElementaryBrownia
 `norm_partitionElementaryBrownianValue` prove the partition-level Itô isometry for every adapted
 step process on a common partition.
 -/
+
+public section
 
 open MeasureTheory ProbabilityTheory Filter Topology
 open scoped ENNReal NNReal InnerProductSpace
@@ -214,7 +218,7 @@ theorem elementaryBrownianValue_smul
 
 /-- For a fixed interval, the genuine Brownian terminal value is a linear function of the
 adapted coefficient. -/
-noncomputable def elementaryBrownianValueLinear
+@[expose] noncomputable def elementaryBrownianValueLinear
     (hB : IsPreBrownianReal B P) (hsm : ∀ t, StronglyMeasurable (B t))
     {𝓕 : Filtration ℝ≥0 ‹MeasurableSpace W›}
     (hnat : 𝓕 = Filtration.natural B hsm)

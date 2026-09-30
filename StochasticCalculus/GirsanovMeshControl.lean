@@ -3,7 +3,9 @@ Copyright (c) 2026 Ezzeri Esa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ezzeri Esa
 -/
-import StochasticCalculus.GirsanovComplexEuler
+module
+
+public import StochasticCalculus.GirsanovComplexEuler
 
 /-!
 # Mesh and variation controls
@@ -13,6 +15,8 @@ partitions, the stopped mesh controls of the complex combination, its
 bracket and its compensator, the total-variation approximations of the
 integrated drift, and the terminal variation bound with its tightness.
 -/
+
+public section
 
 open Filter MeasureTheory ProbabilityTheory
 open scoped ENNReal NNReal
@@ -741,7 +745,7 @@ theorem aestronglyMeasurable_girsanovComplexCompensatedStoppedMeshControl
   exact hX.add (by simpa only [div_eq_mul_inv] using hQ.mul_const (2 : ℝ)⁻¹)
 
 /-- Discrete total variation of a complex-valued process on a uniform grid. -/
-noncomputable def complexTotalVariationApprox
+@[expose] noncomputable def complexTotalVariationApprox
     {W : Type*} (Q : ℝ≥0 → W → ℂ)
     (U : ℝ≥0) (n : ℕ) (omega : W) : ℝ :=
   ∑ i ∈ Finset.range n,
@@ -980,7 +984,7 @@ theorem totalVariationApprox_girsanovIntegratedDrift_le
 
 /-- A scalar control for the total variation of the proposed complex
 bracket `A - c² t + 2 i c C` on a positive uniform grid. -/
-noncomputable def girsanovComplexBracketVariationControl
+@[expose] noncomputable def girsanovComplexBracketVariationControl
     {W : Type*} (bracket C : ℝ≥0 → W → ℝ) (c : ℝ)
     (U : ℝ≥0) (n : ℕ) (omega : W) : ℝ :=
   totalVariationApprox bracket U (n + 1) omega + c ^ 2 * (U : ℝ) +

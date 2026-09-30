@@ -3,7 +3,9 @@ Copyright (c) 2026 Ezzeri Esa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ezzeri Esa
 -/
-import StochasticCalculus.QuadraticVariation
+module
+
+public import StochasticCalculus.QuadraticVariation
 
 /-!
 # Elementary predictable quadratic variation
@@ -13,6 +15,8 @@ adapted Brownian interval blocks, including overlapping intervals, and
 identifies the result with the time integral of the squared predictable
 integrand.
 -/
+
+public section
 
 open MeasureTheory ProbabilityTheory Filter Topology
 open scoped BigOperators ENNReal NNReal InnerProductSpace
@@ -140,7 +144,7 @@ theorem tendstoInMeasure_stopped_brownian_stopped_brownian_covariation
     · filter_upwards with ω
       simp [min_eq_right hcb]
 
-noncomputable def clippedIntervalCovariation
+@[expose] noncomputable def clippedIntervalCovariation
     (a b c d t : ℝ≥0) : ℝ :=
   (min t (min b d) : ℝ≥0) - (min t (min b c) : ℝ≥0) -
     (min t (min a d) : ℝ≥0) + (min t (min a c) : ℝ≥0)
@@ -737,7 +741,7 @@ theorem elementaryFinsuppToPredictable_coeFn [SFinite P]
 
 /-- The canonical time integral of the square of a predictable `L²` process,
 using its selected product-space representative. -/
-noncomputable def predictableQuadraticVariation
+@[expose] noncomputable def predictableQuadraticVariation
     (hsm : ∀ t, StronglyMeasurable (B t))
     (U : PredictableProcessL2 (Filtration.natural B hsm) P)
     (t : ℝ≥0) (ω : W) : ℝ :=

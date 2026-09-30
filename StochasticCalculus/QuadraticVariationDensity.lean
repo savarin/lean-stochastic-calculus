@@ -3,7 +3,9 @@ Copyright (c) 2026 Ezzeri Esa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ezzeri Esa
 -/
-import StochasticCalculus.QuadraticVariationElementary
+module
+
+public import StochasticCalculus.QuadraticVariationElementary
 
 /-!
 # Quadratic variation by predictable-process density
@@ -13,6 +15,8 @@ predictable `L²` integrands.  Uniform `L¹` perturbation estimates for both
 the discrete quadratic sums and the canonical bracket allow a
 convergence-together argument.
 -/
+
+public section
 
 open MeasureTheory ProbabilityTheory Filter Topology
 open scoped BigOperators ENNReal NNReal InnerProductSpace

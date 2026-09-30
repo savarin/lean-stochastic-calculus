@@ -3,7 +3,9 @@ Copyright (c) 2026 Ezzeri Esa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ezzeri Esa
 -/
-import StochasticCalculus.GirsanovMeshControl
+module
+
+public import StochasticCalculus.GirsanovMeshControl
 
 /-!
 # Stopped weight and higher-order controls
@@ -13,6 +15,8 @@ of the complex exponential, the compensated square control, the stopped
 variation control, and the vanishing and tight higher-order controls that
 bound the higher-order residual.
 -/
+
+public section
 
 open Filter MeasureTheory ProbabilityTheory
 open scoped ENNReal NNReal

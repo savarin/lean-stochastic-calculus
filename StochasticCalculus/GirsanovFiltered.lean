@@ -3,7 +3,9 @@ Copyright (c) 2026 Ezzeri Esa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ezzeri Esa
 -/
-import StochasticCalculus.GirsanovTheorem
+module
+
+public import StochasticCalculus.GirsanovTheorem
 
 /-!
 # Predictable Girsanov in an arbitrary Brownian filtration
@@ -12,6 +14,8 @@ The driver is adapted and each future increment is independent of the
 supplied filtration at its left endpoint. Right continuity is obtained
 internally; predictability need not refer to the natural filtration.
 -/
+
+public section
 
 open Filter MeasureTheory ProbabilityTheory
 open scoped ENNReal NNReal Topology

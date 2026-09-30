@@ -3,8 +3,10 @@ Copyright (c) 2026 Ezzeri Esa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ezzeri Esa
 -/
-import StochasticCalculus.GirsanovMoments
-import StochasticCalculus.MartingaleFourthMoment
+module
+
+public import StochasticCalculus.GirsanovMoments
+public import StochasticCalculus.MartingaleFourthMoment
 
 /-!
 # Vanishing of a continuous local martingale on zero-bracket paths
@@ -12,6 +14,8 @@ import StochasticCalculus.MartingaleFourthMoment
 Positive local exponential bounds force the square moment restricted to a
 zero-bracket event to vanish. Continuity makes the conclusion simultaneous.
 -/
+
+public section
 
 open Filter MeasureTheory ProbabilityTheory
 open scoped ENNReal NNReal Topology

@@ -3,7 +3,9 @@ Copyright (c) 2026 Ezzeri Esa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ezzeri Esa
 -/
-import StochasticCalculus.UniformPartitionSums
+module
+
+public import StochasticCalculus.UniformPartitionSums
 
 /-!
 # Quadratic variation contracts at a fixed time
@@ -13,6 +15,8 @@ closure of the in-probability contract under almost-everywhere
 modification, sums with a zero-variation term, products by time-constant
 random variables, and stopping.
 -/
+
+public section
 
 open MeasureTheory
 open ProbabilityTheory
@@ -28,14 +32,14 @@ variable {W : Type*} [NormedAddCommGroup W] [NormedSpace ℝ W] [MeasurableSpace
 
 /-- `B` has quadratic variation `q` at `t` when its uniform-partition
 squared-increment sums converge to `q` in `L²(P)`. -/
-def HasQuadraticVariationAt
+@[expose] def HasQuadraticVariationAt
     (B : ℝ≥0 → W → ℝ) (P : Measure W) (t : ℝ≥0) (q : ℝ) : Prop :=
   Filter.Tendsto
     (fun n : ℕ ↦ eLpNorm (fun ω ↦ quadraticVariationApprox B t (n + 1) ω - q) 2 P)
     Filter.atTop (nhds 0)
 
 /-- Quadratic variation in probability, used when the limiting bracket is random. -/
-def HasQuadraticVariationInProbabilityAt
+@[expose] def HasQuadraticVariationInProbabilityAt
     (X : ℝ≥0 → W → ℝ) (P : Measure W) (t : ℝ≥0) (q : W → ℝ) : Prop :=
   TendstoInMeasure P
     (fun n : ℕ ↦ quadraticVariationApprox X t (n + 1))

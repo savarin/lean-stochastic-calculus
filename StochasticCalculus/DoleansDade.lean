@@ -3,7 +3,9 @@ Copyright (c) 2026 Ezzeri Esa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ezzeri Esa
 -/
-import StochasticCalculus.DoleansDadeMartingale
+module
+
+public import StochasticCalculus.DoleansDadeMartingale
 
 /-!
 # Doléans--Dade exponential of Gaussian increments
@@ -13,6 +15,8 @@ exponential martingales, the Brownian specialization with its
 natural-filtration martingale property, and the exponential of a constant
 multiple of Brownian motion used by the pricing chain.
 -/
+
+public section
 
 open Filter MeasureTheory ProbabilityTheory
 open scoped BigOperators ENNReal NNReal Topology
@@ -83,7 +87,7 @@ structure IsCenteredGaussianIndependentIncrements
       (𝓕 a) P
 
 /-- A real square bundled as a nonnegative real variance. -/
-def realSquareNNReal (c : ℝ) : ℝ≥0 :=
+@[expose] def realSquareNNReal (c : ℝ) : ℝ≥0 :=
   ⟨c ^ 2, sq_nonneg c⟩
 
 @[simp]
@@ -417,7 +421,7 @@ theorem martingale_brownian_natural
 
 /-- The Doléans–Dade exponential associated to `c B`, whose bracket is
 `c² t`. -/
-def scaledBrownianDoleansDadeExponential
+@[expose] def scaledBrownianDoleansDadeExponential
     {W : Type*} (c : ℝ) (B : ℝ≥0 → W → ℝ)
     (t : ℝ≥0) (omega : W) : ℝ :=
   doleansDadeExponential

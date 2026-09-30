@@ -3,7 +3,9 @@ Copyright (c) 2026 Ezzeri Esa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ezzeri Esa
 -/
-import StochasticCalculus.GirsanovCrossVariation
+module
+
+public import StochasticCalculus.GirsanovCrossVariation
 
 /-!
 # Mixed variation under continuous stopping
@@ -11,6 +13,8 @@ import StochasticCalculus.GirsanovCrossVariation
 The second process remains evaluated on deterministic grids. Only the first
 process is stopped, so no continuity of the second process is needed.
 -/
+
+public section
 
 open Filter MeasureTheory ProbabilityTheory
 open scoped ENNReal NNReal Topology

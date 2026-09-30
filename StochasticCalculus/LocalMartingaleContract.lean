@@ -3,13 +3,15 @@ Copyright (c) 2026 Ezzeri Esa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ezzeri Esa
 -/
-import StochasticCalculus.WeightedBracketRiemann
-import Mathlib.Probability.ConditionalExpectation
-import Mathlib.Probability.Martingale.OptionalSampling
-import Mathlib.Probability.Process.LocalProperty
-import Mathlib.MeasureTheory.Function.UniformIntegrable
-import Mathlib.MeasureTheory.Integral.Indicator
-import Mathlib.MeasureTheory.Measure.Stieltjes
+module
+
+public import StochasticCalculus.WeightedBracketRiemann
+public import Mathlib.Probability.ConditionalExpectation
+public import Mathlib.Probability.Martingale.OptionalSampling
+public import Mathlib.Probability.Process.LocalProperty
+public import Mathlib.MeasureTheory.Function.UniformIntegrable
+public import Mathlib.MeasureTheory.Integral.Indicator
+public import Mathlib.MeasureTheory.Measure.Stieltjes
 
 /-!
 # Local martingales and quadratic-variation contracts
@@ -20,6 +22,8 @@ deterministic stop, and stopped, their instances for pre-Brownian motion,
 and the `Lᵖ` and stopping facts about martingales that the later layers use.
 -/
 
+public section
+
 open Filter MeasureTheory ProbabilityTheory
 open scoped BigOperators ENNReal NNReal Topology
 
@@ -29,7 +33,7 @@ namespace StochasticCalculus
 
 /-- A real process is a local martingale when its indicated stopped processes
 are martingales along a Mathlib localizing sequence. -/
-def IsLocalMartingale
+@[expose] def IsLocalMartingale
     {W : Type*} [MeasurableSpace W]
     (M : ℝ≥0 → W → ℝ) (𝓕 : Filtration ℝ≥0 ‹MeasurableSpace W›)
     (P : Measure W) : Prop :=
@@ -37,7 +41,7 @@ def IsLocalMartingale
 
 /-- A continuous local martingale has a local-martingale localization and
 almost-everywhere continuous sample paths. -/
-def IsContinuousLocalMartingale
+@[expose] def IsContinuousLocalMartingale
     {W : Type*} [MeasurableSpace W]
     (M : ℝ≥0 → W → ℝ) (𝓕 : Filtration ℝ≥0 ‹MeasurableSpace W›)
     (P : Measure W) : Prop :=
@@ -47,7 +51,7 @@ def IsContinuousLocalMartingale
 /-- A process-valued quadratic variation: at every fixed time, the uniform
 partition squared-increment sums converge in probability to the selected
 bracket value. -/
-def HasQuadraticVariationProcessInProbability
+@[expose] def HasQuadraticVariationProcessInProbability
     {W : Type*} [MeasurableSpace W]
     (M bracket : ℝ≥0 → W → ℝ) (P : Measure W) : Prop :=
   ∀ t, HasQuadraticVariationInProbabilityAt M P t (bracket t)
@@ -56,7 +60,7 @@ def HasQuadraticVariationProcessInProbability
 fine uniform grid at any earlier deterministic time.  This is strictly the
 interface needed by two-scale weighted-bracket arguments; fixed-time uniform
 partitions alone do not provide it. -/
-def HasQuadraticVariationBeforeStopProcessInProbability
+@[expose] def HasQuadraticVariationBeforeStopProcessInProbability
     {W : Type*} [MeasurableSpace W]
     (M bracket : ℝ≥0 → W → ℝ) (P : Measure W) : Prop :=
   ∀ T a, TendstoInMeasure P
@@ -65,7 +69,7 @@ def HasQuadraticVariationBeforeStopProcessInProbability
 
 /-- Completed-cell covariation before a deterministic cutoff on a fixed
 uniform horizon. -/
-noncomputable def quadraticCovariationBeforeStopApprox
+@[expose] noncomputable def quadraticCovariationBeforeStopApprox
     {W : Type*} (X Y : ℝ≥0 → W → ℝ) (T : ℝ≥0)
     (n : ℕ) (a : ℝ≥0) (omega : W) : ℝ :=
   ∑ i ∈ Finset.range n,
@@ -107,7 +111,7 @@ theorem HasQuadraticVariationBeforeStopProcessInProbability.const_mul
 /-- Standard stopped-process formulation of robust process quadratic
 variation: stopping at any deterministic time stops the selected bracket at
 the same time. -/
-def HasStoppedQuadraticVariationProcessInProbability
+@[expose] def HasStoppedQuadraticVariationProcessInProbability
     {W : Type*} [MeasurableSpace W]
     (M bracket : ℝ≥0 → W → ℝ) (P : Measure W) : Prop :=
   ∀ T a, TendstoInMeasure P

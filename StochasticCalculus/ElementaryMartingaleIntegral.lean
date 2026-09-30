@@ -3,7 +3,9 @@ Copyright (c) 2026 Ezzeri Esa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ezzeri Esa
 -/
-import StochasticCalculus.ContinuousExitTime
+module
+
+public import StochasticCalculus.ContinuousExitTime
 
 /-!
 # Elementary martingale integrals
@@ -13,6 +15,8 @@ a martingale on one interval: continuity, adaptedness, martingality,
 orthogonality of weighted increments, and the passage of the martingale
 property through limits in `L¹` and in measure with uniform integrability.
 -/
+
+public section
 
 open Filter MeasureTheory ProbabilityTheory
 open scoped BigOperators ENNReal NNReal Topology
@@ -26,7 +30,7 @@ half-open deterministic interval `(a, b]`.  Stopping both endpoints at
 `t` makes the process identically zero before `a`, equal to the weighted
 martingale increment between `a` and `t` on the interval, and constant
 after `b`. -/
-def elementaryMartingaleIntegralProcess
+@[expose] def elementaryMartingaleIntegralProcess
     {W : Type*} (M : ℝ≥0 → W → ℝ) (a b : ℝ≥0) (Z : W → ℝ)
     (t : ℝ≥0) (omega : W) : ℝ :=
   Z omega * (M (min t b) omega - M (min t a) omega)
